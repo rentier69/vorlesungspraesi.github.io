@@ -1,4 +1,16 @@
 <?php
+    function sql_connect(){
+        require("../configuration.php");
+        // Create connection
+        $conn = mysqli_connect(appConfig::$host, appConfig::$user, appConfig::$password);
+        if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+        }
+        mysqli_select_db($conn, appConfig::$db);
+        echo 'erfolgreich';
+        return $conn;
+    }
+
     function generate_header($title, $jumbotron_lead, $loggedOnUser){
     ?>
     <html>

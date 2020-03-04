@@ -4,5 +4,10 @@
 ?>
 
 <?php
+    $conn = sql_connect();
+    mysqli_close($conn);
+?>
+
+<?php
     generate_footer();
 ?>
