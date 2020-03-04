@@ -1,6 +1,6 @@
 <?php
     function sql_connect(){
-        require("../configuration.php");
+        require(dirname(__DIR__) . "\configuration.php");
         // Create connection
         $conn = mysqli_connect(appConfig::$host, appConfig::$user, appConfig::$password);
         if ($conn->connect_error) {
@@ -16,8 +16,8 @@
     <html>
         <head>                    
             <title><?= $title ?></title>
-            <link rel="stylesheet" href="../css/bootstrap.css" />
-            <link rel="stylesheet" href="../css/fontawesome/all.css">
+            <link rel="stylesheet" href="css/bootstrap.css" />
+            <link rel="stylesheet" href="css/fontawesome/all.css">
             <style>
             </style>
             <script>
