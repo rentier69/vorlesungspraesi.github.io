@@ -1,6 +1,6 @@
 <?php
     function sql_connect(){
-        require(dirname(__DIR__) . "\configuration.php");
+        require(dirname(__DIR__) . "/configuration.php");
         // Create connection
         $conn = mysqli_connect(appConfig::$host, appConfig::$user, appConfig::$password);
         if ($conn->connect_error) {
