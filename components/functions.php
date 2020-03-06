@@ -1,23 +1,25 @@
 <?php
     function sql_connect(){
-        require(dirname(__DIR__) . "/configuration.php");
+        require_once(dirname(__DIR__) . "/configuration.php");
         // Create connection
         $conn = mysqli_connect(appConfig::$host, appConfig::$user, appConfig::$password);
         if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
         }
         mysqli_select_db($conn, appConfig::$db);
-        echo 'erfolgreich';
+        //echo 'erfolgreich';
         return $conn;
     }
 
-    function generate_header($title, $jumbotron_lead, $loggedOnUser){
+    //$dirsUp wird benötigt, wenn aus einer Datei in einem Unterordner functions aufgerufen wird.
+    //Bsp:     generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplatform der DHBW Ravensburg", null, '../');
+    function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp){
     ?>
     <html>
         <head>                    
             <title><?= $title ?></title>
-            <link rel="stylesheet" href="css/bootstrap.css" />
-            <link rel="stylesheet" href="css/fontawesome/all.css">
+            <link rel="stylesheet" href="<?= $dirsUp?>css/bootstrap.css" />
+            <link rel="stylesheet" href="<?= $dirsUp?>css/fontawesome/css/all.css">
             <style>
             </style>
             <script>
