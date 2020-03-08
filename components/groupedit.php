@@ -3,10 +3,10 @@
 
     $gruppe_id = $_GET['id'];
     $conn = sql_connect();
-    $group_select = "SELECT * FROM vl_Gruppe WHERE Gruppe_ID = $gruppe_id";
+    $group_select = "SELECT * from vl_gruppe where gruppe_id = $gruppe_id";
     $current_group = mysqli_fetch_assoc(mysqli_query($conn, $group_select));
-    $gruppe_name = $current_group['Gruppenname'];
-    $gruppe_kurzel = $current_group['Gruppe_Kuerzel'];
+    $gruppe_name = $current_group['gruppenname'];
+    $gruppe_kurzel = $current_group['gruppe_kuerzel'];
     mysqli_close($conn);
 
     generate_header("Kurs bearbeiten", $gruppe_name, null, '../');
@@ -21,11 +21,11 @@ if(isset($_POST['group_add_remove'])){
         $group = $_GET['id'];
 
         foreach ($toDelete as $value){
-            $sql = "DELETE FROM `vl_Benutzer_Gruppe_Map` WHERE Benutzer_ID = $value AND Gruppe_ID = $group";
+            $sql = "DELETE FROM `vl_benutzer_gruppe_map` where benutzer_id = $value and gruppe_id = $group";
             mysqli_query($conn, $sql);
         }
         foreach ($toAdd as $value){
-            $sql = "INSERT INTO `vl_Benutzer_Gruppe_Map`(`Benutzer_ID`, `Gruppe_ID`) VALUES ($value,$group)";
+            $sql = "INSERT INTO `vl_benutzer_gruppe_map`(`benutzer_id`, `gruppe_id`) values ($value,$group)";
             mysqli_query($conn, $sql);
         }
         mysqli_close($conn);
@@ -33,7 +33,7 @@ if(isset($_POST['group_add_remove'])){
         $conn = sql_connect();
         $kuerzel = $_POST['kuerzel'];
         $kursname = $_POST['kurs'];        
-        $sql = "UPDATE `vl_Gruppe` SET `Gruppe_Kuerzel`='$kuerzel',`Gruppenname`= '$kursname' WHERE `Gruppe_ID` = $gruppe_id";
+        $sql = "UPDATE `vl_gruppe` set `gruppe_kuerzel`='$kuerzel',`gruppenname`= '$kursname' where `gruppe_id` = $gruppe_id";
 
         if (mysqli_query($conn, $sql)) {
             $successModify = true;
@@ -88,12 +88,11 @@ if(isset($_POST['group_add_remove'])){
             <tbody>
                 <?php
                 $conn = sql_connect();
-                //$group_select = "SELECT Benutzer_ID, Benutzername, Datum_Registriert, Datum_LetzterLogin FROM vl_Benutzer";
-                $group_select = "SELECT Benutzer_ID, Benutzername, Datum_Registriert, Datum_LetzterLogin FROM vl_Benutzer WHERE Benutzer_ID IN (SELECT Benutzer_ID FROM vl_Benutzer_Gruppe_Map where Gruppe_ID = $gruppe_id)";
+                $group_select = "SELECT benutzer_id, benutzername, datum_registriert, datum_letzterlogin from vl_benutzer where benutzer_id in (select benutzer_id from vl_benutzer_gruppe_map where gruppe_id = $gruppe_id)";
                 $result = mysqli_query($conn, $group_select);
                 while ($row = mysqli_fetch_assoc($result)){
                     ?>
-                    <tr id="member_<?= $row['Benutzer_ID']?>"><td><?= $row['Benutzer_ID']?></td><td><?= $row['Benutzername']?></td><td><?= $row['Datum_Registriert']?></td><td><?= $row['Datum_LetzterLogin']?></td><td><i class="fas fa-user-minus" onclick="markDelete(<?= $row['Benutzer_ID']?>)"></i></td></tr>
+                    <tr id="member_<?= $row['benutzer_id']?>"><td><?= $row['benutzer_id']?></td><td><?= $row['benutzername']?></td><td><?= $row['datum_registriert']?></td><td><?= $row['datum_letzterlogin']?></td><td><i class="fas fa-user-minus" onclick="markdelete(<?= $row['benutzer_id']?>)"></i></td></tr>
                     <?php
                 }
                 mysqli_close($conn);
@@ -114,12 +113,11 @@ if(isset($_POST['group_add_remove'])){
             <tbody>
                 <?php
                 $conn = sql_connect();
-                //$group_select = "SELECT Benutzer_ID, Benutzername, Datum_Registriert, Datum_LetzterLogin FROM vl_Benutzer";
-                $group_select = "SELECT Benutzer_ID, Benutzername, Datum_Registriert, Datum_LetzterLogin FROM vl_Benutzer WHERE Benutzer_ID NOT IN (SELECT Benutzer_ID FROM vl_Benutzer_Gruppe_Map where Gruppe_ID = $gruppe_id)";
+                $group_select = "select benutzer_id, benutzername, datum_registriert, datum_letzterlogin from vl_benutzer where benutzer_id not in (select benutzer_id from vl_benutzer_gruppe_map where gruppe_id = $gruppe_id)";
                 $result = mysqli_query($conn, $group_select);
                 while ($row = mysqli_fetch_assoc($result)){
                     ?>
-                    <tr id="noMember_<?= $row['Benutzer_ID']?>"><td><?= $row['Benutzer_ID']?></td><td><?= $row['Benutzername']?></td><td><?= $row['Datum_Registriert']?></td><td><?= $row['Datum_LetzterLogin']?></td><td ><i class="fas fa-user-plus" onclick="markAdd(<?= $row['Benutzer_ID']?>)"></i></td></tr>
+                    <tr id="noMember_<?= $row['benutzer_id']?>"><td><?= $row['benutzer_id']?></td><td><?= $row['benutzername']?></td><td><?= $row['datum_registriert']?></td><td><?= $row['datum_letzterlogin']?></td><td ><i class="fas fa-user-plus" onclick="markadd(<?= $row['benutzer_id']?>)"></i></td></tr>
                     <?php
                 }
                 mysqli_close($conn);

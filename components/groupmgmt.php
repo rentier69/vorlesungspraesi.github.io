@@ -10,7 +10,7 @@
         $conn = sql_connect();        
         $kuerzel = $_POST['kuerzel'];
         $kursname = $_POST['kurs'];
-        $sql = "INSERT INTO vl_Gruppe(Gruppe_Kuerzel, Gruppenname) VALUES ('$kuerzel', '$kursname')";
+        $sql = "INSERT INTO vl_gruppe(gruppe_kuerzel, gruppenname) VALUES ('$kuerzel', '$kursname')";
 
         if (mysqli_query($conn, $sql)) {
             $successCreate = true;
@@ -24,7 +24,7 @@
         $gruppe_id = $_POST['gruppe_id'];
         
         
-        $sql = "DELETE FROM vl_Gruppe WHERE Gruppe_ID = $gruppe_id";
+        $sql = "DELETE FROM vl_gruppe where gruppe_id = $gruppe_id";
 
         if (mysqli_query($conn, $sql)) {
             $successDelete= true;
@@ -100,11 +100,11 @@
             <tbody>
                 <?php
                 $conn = sql_connect();
-                $group_select = "SELECT * FROM vl_Gruppe";
+                $group_select = "SELECT * FROM vl_gruppe";
                 $result = mysqli_query($conn, $group_select);
                 while ($row = mysqli_fetch_assoc($result)){
                     ?>
-                    <tr><td><?= $row['Gruppe_ID']?></td><td><a href="groupedit.php?id=<?= $row['Gruppe_ID']?>"><?= $row['Gruppe_Kuerzel']?></a></td><td><?= $row['Gruppenname']?></td></tr>
+                    <tr><td><?= $row['gruppe_id']?></td><td><a href="groupedit.php?id=<?= $row['gruppe_id']?>"><?= $row['gruppe_kuerzel']?></a></td><td><?= $row['gruppenname']?></td></tr>
                     <?php
                 }
                 ?>
