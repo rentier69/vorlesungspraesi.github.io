@@ -1,117 +1,105 @@
-/*DROP DATABASE `vl`;*/
-CREATE DATABASE vl;
-USE vl;
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+/*drop database `vl`;
+create database vl;
+use vl;*/
+set sql_mode = "no_auto_value_on_zero";
 
-CREATE TABLE IF NOT EXISTS vl_Benutzer
+create table if not exists vl_benutzer
 (
-   Benutzer_ID INT NOT NULL AUTO_INCREMENT primary key,
-   Benutzername VARCHAR(50) NOT NULL,
-   Password VARCHAR(50) NOT NULL,
-   Aktiv BOOLEAN NOT NULL DEFAULT TRUE,
-   Datum_Registriert TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   Datum_LetzterLogin TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'
+   benutzer_id int not null auto_increment primary key,
+   benutzername varchar(50) not null,
+   password varchar(50) not null,
+   aktiv boolean not null default true,
+   datum_registriert timestamp not null default current_timestamp,
+   datum_letzterlogin timestamp not null default '0000-00-00 00:00:00'
 );
 
-CREATE TABLE IF NOT EXISTS vl_Gruppe
+create table if not exists vl_gruppe
 (
-   Gruppe_ID INT NOT NULL AUTO_INCREMENT primary key,
-   Gruppe_Kuerzel VARCHAR(15) NOT NULL,
-   Gruppenname VARCHAR(50) NOT NULL
+   gruppe_id int not null auto_increment primary key,
+   gruppe_kuerzel varchar(15) not null,
+   gruppenname varchar(50) not null
 );
 
-CREATE TABLE IF NOT EXISTS vl_Benutzer_Gruppe_Map 
+create table if not exists vl_benutzer_gruppe_map 
 (
-   Benutzer_ID INT NOT NULL references vl_Benutzer(Benutzer_ID),
-   Gruppe_ID INT NOT NULL references vl_Gruppe(Gruppe_ID),
-   primary key (Benutzer_ID, Gruppe_ID)
-   /*
-   foreign key(Benutzer_ID) references vl_Benutzer(Benutzer_ID),
-   foreign key(Gruppe_ID) references vl_Gruppe(Gruppe_ID),
-   */
+   benutzer_id int not null references vl_benutzer(benutzer_id),
+   gruppe_id int not null references vl_gruppe(gruppe_id),
+   primary key (benutzer_id, gruppe_id),
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id),
+   foreign key(gruppe_id) references vl_gruppe(gruppe_id)
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung 
+create table if not exists vl_vorlesung 
 (
-   Vorlesung_ID INT NOT NULL AUTO_INCREMENT primary key,
-   Benutzer_ID INT NOT NULL references vl_Benutzer(Benutzer_ID),
-   Vorlesung_Name VARCHAR(50) NOT NULL
+   vorlesung_id int not null auto_increment primary key,
+   benutzer_id int not null references vl_benutzer(benutzer_id),
+   vorlesung_name varchar(50) not null
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung_Gruppe_Map 
+create table if not exists vl_vorlesung_gruppe_map 
 (
-   Vorlesung_ID INT NOT NULL references vl_Vorlesung(Vorlesung_ID),
-   Gruppe_ID INT NOT NULL references vl_Gruppe(Gruppe_ID),
-   primary key (Vorlesung_ID, Gruppe_ID)
-   /*
-   foreign key(Vorlesung_ID) references vl_Vorlesung(Vorlesung_ID),
-   foreign key(Gruppe_ID) references vl_Gruppe(Gruppe_ID)
-   */
+   vorlesung_id int not null references vl_vorlesung(vorlesung_id),
+   gruppe_id int not null references vl_gruppe(gruppe_id),
+   primary key (vorlesung_id, gruppe_id),
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id),
+   foreign key(gruppe_id) references vl_gruppe(gruppe_id)
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung_Frage_Typ
+create table if not exists vl_vorlesung_frage_typ
 (
-   Frage_Typ_ID INT NOT NULL AUTO_INCREMENT primary key,
-   Frage_Typ_Titel VARCHAR(50) NOT NULL,
-   Frage_Typ_Beschreibung VARCHAR(100) NOT NULL
+   frage_typ_id int not null auto_increment primary key,
+   frage_typ_titel varchar(50) not null,
+   frage_typ_beschreibung varchar(100) not null
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung_Frage 
+create table if not exists vl_vorlesung_frage 
 (
-   Frage_ID INT NOT NULL AUTO_INCREMENT,
-   Vorlesung_ID INT NOT NULL references vl_Vorlesung(Vorlesung_ID),
-   Frage_Titel VARCHAR(50) NOT NULL,
-   Frage_Typ_ID INT NOT NULL references vl_Vorlesung_Frage_Typ(Frage_Typ_ID),
-   Fragenummer INT,
-   primary key(Frage_ID, Vorlesung_ID)
-   /*
-   foreign key(Vorlesung_ID) references vl_Vorlesung(Vorlesung_ID),
-   foreign key(Frage_Typ_ID) references vl_Vorlesung_Frage_Typ(Frage_Typ_ID)
-   */
+   frage_id int not null auto_increment,
+   vorlesung_id int not null references vl_vorlesung(vorlesung_id),
+   frage_titel varchar(50) not null,
+   frage_typ_id int not null references vl_vorlesung_frage_typ(frage_typ_id),
+   fragenummer int,
+   primary key(frage_id, vorlesung_id),
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id),
+   foreign key(frage_typ_id) references vl_vorlesung_frage_typ(frage_typ_id)
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung_Frage_AntwortMöglichkeiten 
+create table if not exists vl_vorlesung_frage_antwortmöglichkeiten 
 (
-   Frage_ID INT NOT NULL  references vl_Vorlesung_Frage(Frage_ID),
-   Antwort VARCHAR(255) NOT NULL,
-   primary key(Frage_ID, Antwort)
-   /*
-   foreign key (Frage_ID) references vl_Vorlesung_Frage(Frage_ID)
-   */
+   frage_id int not null  references vl_vorlesung_frage(frage_id),
+   antwort varchar(255) not null,
+   primary key(frage_id, antwort),
+   foreign key (frage_id) references vl_vorlesung_frage(frage_id)
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung_Frage_Antworten 
+create table if not exists vl_vorlesung_frage_antworten 
 (
-   Frage_ID INT NOT NULL references vl_Vorlesung_Frage(Frage_ID),
-   Benutzer_ID INT NOT NULL references vl_Benutzer(Benutzer_ID),
-   Antwort VARCHAR(255) NOT NULL,
-   primary key (Frage_ID, Benutzer_ID)
-   /*
-   foreign key(Benutzer_ID) references vl_Benutzer(Benutzer_ID),
-   foreign key(Frage_ID) references vl_Vorlesung_Frage(Frage_ID)
-   */
+   frage_id int not null references vl_vorlesung_frage(frage_id),
+   benutzer_id int not null references vl_benutzer(benutzer_id),
+   antwort varchar(255) not null,
+   primary key (frage_id, benutzer_id),
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id),
+   foreign key(frage_id) references vl_vorlesung_frage(frage_id)
 );
 
-CREATE TABLE IF NOT EXISTS vl_Vorlesung_Bewertung 
+create table if not exists vl_vorlesung_bewertung 
 (
-   Benutzer_ID INT NOT NULL references vl_Benutzer(Benutzer_ID),
-   Vorlesung_ID INT NOT NULL references vl_Vorlesung(Vorlesung_ID),
-   Bewertung_Zeitstempel TIMESTAMP NOT NULL,
-   Bewertung_Rating INT NOT NULL,
-   Bewertung_Kommentar VARCHAR(255),
-   primary key(Benutzer_ID, Vorlesung_ID, Bewertung_Zeitstempel)
-/*
-   foreign key(Benutzer_ID) references vl_Benutzer(Benutzer_ID),
-   foreign key(Vorlesung_ID) references vl_Vorlesung(Vorlesung_ID)
-   */
+   benutzer_id int not null references vl_benutzer(benutzer_id),
+   vorlesung_id int not null references vl_vorlesung(vorlesung_id),
+   bewertung_zeitstempel timestamp not null,
+   bewertung_rating int not null,
+   bewertung_kommentar varchar(255),
+   primary key(benutzer_id, vorlesung_id, bewertung_zeitstempel),
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id),
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id)
 );
 
-CREATE TABLE IF NOT EXISTS vl_Chat 
+create table if not exists vl_chat 
 (
-   Benutzer_ID INT NOT NULL,
-   Nachricht_Zeitstempel TIMESTAMP NOT NULL,
-   Vorlesung_ID INT NOT NULL references vl_Vorlesung(Vorlesung_ID),
-   Nachricht VARCHAR(255) NOT NULL,
-   primary key(Benutzer_ID, Nachricht_Zeitstempel, Vorlesung_ID)
-   /*foreign key(Vorlesung_ID) references vl_Vorlesung(Vorlesung_ID)*/
+   benutzer_id int not null,
+   nachricht_zeitstempel timestamp not null,
+   vorlesung_id int not null references vl_vorlesung(vorlesung_id),
+   nachricht varchar(255) not null,
+   primary key(benutzer_id, nachricht_zeitstempel, vorlesung_id),
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id)
 );
