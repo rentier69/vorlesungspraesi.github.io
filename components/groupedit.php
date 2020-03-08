@@ -92,7 +92,7 @@ if(isset($_POST['group_add_remove'])){
                 $result = mysqli_query($conn, $group_select);
                 while ($row = mysqli_fetch_assoc($result)){
                     ?>
-                    <tr id="member_<?= $row['benutzer_id']?>"><td><?= $row['benutzer_id']?></td><td><?= $row['benutzername']?></td><td><?= $row['datum_registriert']?></td><td><?= $row['datum_letzterlogin']?></td><td><i class="fas fa-user-minus" onclick="markdelete(<?= $row['benutzer_id']?>)"></i></td></tr>
+                    <tr id="member_<?= $row['benutzer_id']?>"><td><?= $row['benutzer_id']?></td><td><?= $row['benutzername']?></td><td><?= $row['datum_registriert']?></td><td><?= $row['datum_letzterlogin']?></td><td><i class="fas fa-user-minus" onclick="markDelete(<?= $row['benutzer_id']?>)"></i></td></tr>
                     <?php
                 }
                 mysqli_close($conn);
@@ -117,7 +117,7 @@ if(isset($_POST['group_add_remove'])){
                 $result = mysqli_query($conn, $group_select);
                 while ($row = mysqli_fetch_assoc($result)){
                     ?>
-                    <tr id="noMember_<?= $row['benutzer_id']?>"><td><?= $row['benutzer_id']?></td><td><?= $row['benutzername']?></td><td><?= $row['datum_registriert']?></td><td><?= $row['datum_letzterlogin']?></td><td ><i class="fas fa-user-plus" onclick="markadd(<?= $row['benutzer_id']?>)"></i></td></tr>
+                    <tr id="noMember_<?= $row['benutzer_id']?>"><td><?= $row['benutzer_id']?></td><td><?= $row['benutzername']?></td><td><?= $row['datum_registriert']?></td><td><?= $row['datum_letzterlogin']?></td><td ><i class="fas fa-user-plus" onclick="markAdd(<?= $row['benutzer_id']?>)"></i></td></tr>
                     <?php
                 }
                 mysqli_close($conn);
