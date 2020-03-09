@@ -23,7 +23,7 @@
         $conn = sql_connect();        
         $gruppe_id = $_POST['gruppe_id'];
         
-        
+        //ergänzen: delete from vl_benutzer_gruppe_map
         $sql = "DELETE FROM vl_gruppe where gruppe_id = $gruppe_id";
 
         if (mysqli_query($conn, $sql)) {

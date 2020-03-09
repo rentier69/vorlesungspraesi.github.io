@@ -64,7 +64,7 @@ create table if not exists vl_vorlesung_frage
    foreign key(frage_typ_id) references vl_vorlesung_frage_typ(frage_typ_id)
 );
 
-create table if not exists vl_vorlesung_frage_antwortmöglichkeiten 
+create table if not exists vl_vorlesung_frage_antwortmoeglichkeiten 
 (
    frage_id int not null  references vl_vorlesung_frage(frage_id),
    antwort varchar(255) not null,

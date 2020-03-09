@@ -15,8 +15,8 @@
 if(isset($_POST['group_add_remove'])){
         $conn = sql_connect();
         
-        $toDelete = explode(";", $_POST['to_delete']);
-        $toAdd = explode(";", $_POST['to_add']);
+        $toDelete = explode(";", str_replace(',', '', rtrim($_POST['to_delete'],";")));
+        $toAdd = explode(";", str_replace(',', '', rtrim($_POST['to_add'], ";")));
 
         $group = $_GET['id'];
 
@@ -126,8 +126,8 @@ if(isset($_POST['group_add_remove'])){
         </table>
         <form action="groupedit.php?id=<?= $gruppe_id?>" method="post">
             <div class="input-group mb-3">                
-                <input type="hidden" id="to_delete" name="to_delete" class="form-control" size="20" />
-                <input type="hidden" id="to_add" name="to_add" class="form-control" placeholder="Kursname" size="70" />
+                <input type="hidden" id="to_delete" name="to_delete" class="form-control" />
+                <input type="hidden" id="to_add" name="to_add" class="form-control" />
                 <div class="input-group-append">
                     <input type="submit" class="form-control btn btn-success" name="group_add_remove" value="Speichern">
                     <a href="groupmgmt.php" class="form-control btn btn-danger">Abbrechen</a>
@@ -148,7 +148,7 @@ if(isset($_POST['group_add_remove'])){
 <script>
 
 function markDelete($id) {
-    $idToRemove = $id + ';';
+    $idToRemove = ',' + $id + ';';
     if(document.getElementById("member_"+$id).hasAttribute("style")){
         document.getElementById("member_"+$id).removeAttribute("style");
         document.getElementById("to_delete").value = document.getElementById("to_delete").value.replace($idToRemove,"");
@@ -159,7 +159,7 @@ function markDelete($id) {
 }
 
 function markAdd($id) {
-    $idToAdd = $id + ';';
+    $idToAdd = ',' + $id + ';';
     if(document.getElementById("noMember_"+$id).hasAttribute("style")){
         document.getElementById("noMember_"+$id).removeAttribute("style");
         document.getElementById("to_add").value = document.getElementById("to_add").value.replace($idToAdd,"");

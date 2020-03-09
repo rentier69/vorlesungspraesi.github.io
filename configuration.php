@@ -9,6 +9,8 @@
         public static $password = '>^+{E>:T4F9-~QmT3!T';
         public static $db = 'cs-343657_project_dhbw';
         
+        public static $defaultDozentGroup = 1;
+        public static $defaultStudentGroup = 2;
 
         /* Database Settings local xampp */
         /*
