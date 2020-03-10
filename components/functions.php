@@ -1,4 +1,17 @@
 <?php
+//Bei Registrierung prüfen, ob User schon in DB
+if (isset($_GET["username"])) {
+    $conn = sql_connect();
+    $sql = "SELECT benutzername FROM vl_benutzer WHERE benutzername='" . $_GET['username'] . "';";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo true;
+    } else {
+        echo false;
+    }
+    mysqli_close($conn);
+}
+
     function sql_connect(){
         require_once(dirname(__DIR__) . "/configuration.php");
         // Create connection
