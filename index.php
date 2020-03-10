@@ -1,4 +1,13 @@
 <?php
+session_start();
+if(isset($_SESSION["username"])){
+    if(isset($_SESSION["dozent"])){
+        header("Location: components/doz_bereich.php");
+    }else{
+        header("Location: components/stud_bereich.php");
+    }
+}
+
 require("components/functions.php");
 generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplattform der DHBW Ravensburg", null, null);
 ?>
@@ -16,13 +25,27 @@ if (isset($_POST['submit'])) {
         if (strlen($username) >= 4 && strlen($password) > 0) {
             //Daten validieren
             $hash = md5($password);
-            $sql = "SELECT COUNT(*)  as vorhanden, aktiv FROM vl_benutzer WHERE benutzername = '" . $username . "' AND password = '" . $hash . "'";
+            $sql = "SELECT COUNT(*)  as vorhanden, aktiv, benutzer_id FROM vl_benutzer WHERE benutzername = '" . $username . "' AND password = '" . $hash . "'";
 
             $result = mysqli_query($conn, $sql);
             while ($row = mysqli_fetch_assoc($result)) {
-
                 if ($row["vorhanden"] == 1 && $row["aktiv"] == 1) {
                     $anmeldung_ok = true;
+                    require_once("configuration.php");
+                    $_SESSION["username"]=$username;
+                    //Prüfen ob Dozent
+                    $sql="SELECT COUNT(*) AS Dozent FROM vl_benutzer_gruppe_map WHERE benutzer_id=".$row['benutzer_id']." AND gruppe_id=".appConfig::$defaultDozentGroup.";";
+                    $result=mysqli_query($conn, $sql);
+                    while($row=mysqli_fetch_assoc($result)){
+                        if($row["Dozent"]==1){
+                            $_SESSION["dozent"]=true;
+                            header("Location: components/doz_Bereich.php");
+                        }else{
+                            header("Location: components/stud_bereich.php");
+                        }
+                    }
+                    
+                    
                 } elseif ($row["vorhanden"] == 0) {
                     $anmeldung_ok = false;
                     $errormsg = "Benutzername oder Passwort falsch";
@@ -44,8 +67,9 @@ if (isset($_POST['submit'])) {
 
 
 if (isset($anmeldung_ok)) {
-    if ($anmeldung_ok) {
-        $sql = "      SELECT gruppe.gruppenname, gruppe.gruppe_id 
+    if (!$anmeldung_ok) {
+      /*
+      $sql = "      SELECT gruppe.gruppenname, gruppe.gruppe_id 
                 FROM vl_gruppe as gruppe, vl_benutzer_gruppe_map as map, vl_benutzer as benutzer 
                 WHERE   gruppe.gruppe_id=map.gruppe_id AND
                         benutzer.benutzer_id=map.Benutzer_id AND
@@ -66,7 +90,10 @@ if (isset($anmeldung_ok)) {
         </div>
     <?php
     } else {
-    ?>
+    
+    */
+        ?>
+    
 
         <div class="alert alert-danger" role="alert">
             Login fehlgeschlagen - <?= $errormsg ?>
@@ -78,7 +105,9 @@ if (isset($anmeldung_ok)) {
 
 
 
-
+if(isset($_SESSION['gruppe'])){
+    header("Location: components/menu.php");
+}
 
 mysqli_close($conn);
 ?>
@@ -92,11 +121,11 @@ mysqli_close($conn);
 
             <input type="text" class="form-control" placeholdDiver="Benutzername" name="username" required maxlength="50" id="username" />
 
-            <div class="invalid-Feedback" id="error_username"> Bitte Benutzername eingeben</div>
+            <div class="invalid-Feedback" id="error_username" hidden> Bitte Benutzername eingeben</div>
 
             <label for="password"> Passwort </label>
             <input type="password" class="form-control" placeholdDiver="Passwort" name="password" required id="password" />
-            <div class="invalid-Feedback"> Bitte Passwort eingeben</div>
+            <div class="invalid-Feedback" id="error_password" hidden> Bitte Passwort eingeben</div>
         </div>
 
         <div class="row">
@@ -124,7 +153,8 @@ generate_footer();
     var password = document.getElementById('password');
 
     var checkForm = function() {
-
+        document.getElementById("error_username").removeAttribute("hidden");
+        document.getElementById("error_password").removeAttribute("hidden");
 
         if (checkUsername() && password.value.length > 0) {
             document.getElementById('submit').disabled = false;

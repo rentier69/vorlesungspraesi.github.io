@@ -53,7 +53,6 @@ if (isset($_POST["submit"])) {
                     }
                 } else {
                     $successInsert = false;
-                    $errorMsgInsert = "Kein Index gefunden";
                     mysqli_rollback($conn);
                 }
             } else {
@@ -96,16 +95,16 @@ mysqli_close($conn);
 <div class="container-fluid">
     <form method="POST" action="register.php" class="was-validated" id="form">
         <div class="form-group">
-            <input type="text" class="form-control" placeholdDiver="Benutzername" required id="username" minlength="4" maxlength="50" name="username">
-            <div class="invalid-feedback" id="error_username">Benutzername eingeben!</div>
-            <div class="valid-feedback" id="valid_username"> Benutzername verfügbar! </div>
+            <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username">
+            <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
+            <div class="valid-feedback" id="valid_username"> Benutzername verfügbar </div>
             <div id="ausgabe"> </div>
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" placeholdDiver="Passwort" required id="password" name="password">
-            <div class="invalid-Feedback" id="error_password"> Passwort eingeben!</div>
-            <input type="password" class="form-control" placeholdDiver="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat">
-            <div class="invalid-Feedback" id="error_passwordRepeat"> Passwörter müssen übereinstimmen!</div>
+            <input type="password" class="form-control" placeholder="Passwort" required id="password" name="password">
+            <div class="invalid-Feedback" id="error_password" hidden> Passwort eingeben</div>
+            <input type="password" class="form-control" placeholder="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat">
+            <div class="invalid-Feedback" id="error_passwordRepeat" hidden> Passwörter müssen übereinstimmen</div>
         </div>
 
         <div class="form-group">
@@ -122,12 +121,19 @@ mysqli_close($conn);
                 mysqli_close($conn);
                 ?>
             </select>
-            <div class="invalid-Feedback"> Bitte Kurs auswählen </div>
+            <div class="invalid-Feedback" id="error_kurs" hidden> Bitte Kurs auswählen </div>
         </div>
 
 
         <div class="form-group">
-            <input type="submit" class="btn btn-success form-control" value="Registrieren" id="submit" name="submit" disabled />
+            <div class="row">
+                <div class="col-4">
+                    <a class="btn btn-danger form-control" href="../index.php">Abbrechen</a>
+                </div>
+                <div class="col-8">
+                    <input type="submit" class="btn btn-success form-control" value="Registrieren" id="submit" name="submit" disabled />
+                </div>
+            </div>
         </div>
 
 
@@ -153,6 +159,11 @@ generate_footer();
 
 
     var checkForm = function() {
+
+        document.getElementById("error_password").removeAttribute("hidden");
+        document.getElementById("error_passwordRepeat").removeAttribute("hidden");
+        document.getElementById("error_kurs").removeAttribute("hidden");
+
         checkPassword();
         checkKurs();
         checkUsername();
@@ -172,10 +183,10 @@ generate_footer();
     var checkPassword = function() {
         if (password.value.length != 0) {
             if (password.value.length < 6) {
-                password.setCustomValidity('Passwort muss mind. 6 Zeichen lang sein!');
+                password.setCustomValidity('Passwort muss mind. 6 Zeichen lang sein');
                 var oldDiv = document.querySelector('#error_password');
                 var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Passwort muss mind. 6 Zeichen lang sein!"));
+                newDiv.appendChild(document.createTextNode("Passwort muss mind. 6 Zeichen lang sein"));
                 oldDiv.parentNode.replaceChild(newDiv, oldDiv);
                 newDiv.setAttribute('id', 'error_password');
                 newDiv.setAttribute('class', 'invalid-Feedback');
@@ -185,20 +196,20 @@ generate_footer();
                     passwordRepeat.setCustomValidity('');
                 } else {
                     password.setCustomValidity('');
-                    passwordRepeat.setCustomValidity('Passwörter müssen übereinstimmen!');
+                    passwordRepeat.setCustomValidity('Passwörter müssen übereinstimmen');
                     var oldDiv = document.querySelector('#error_password');
                     var newDiv = document.createElement('div');
-                    newDiv.appendChild(document.createTextNode("Passwörter müssen übereinstimmen!"));
+                    newDiv.appendChild(document.createTextNode("Passwörter müssen übereinstimmen"));
                     oldDiv.parentNode.replaceChild(newDiv, oldDiv);
                     newDiv.setAttribute('id', 'error_password');
                     newDiv.setAttribute('class', 'invalid-Feedback');
                 }
             }
         } else {
-            password.setCustomValidity('Passwort eingeben!');
+            password.setCustomValidity('Passwort eingeben');
             var oldDiv = document.querySelector('#error_password');
             var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Passwort eingeben!"));
+            newDiv.appendChild(document.createTextNode("Passwort eingeben"));
             oldDiv.parentNode.replaceChild(newDiv, oldDiv);
             newDiv.setAttribute('id', 'error_password');
             newDiv.setAttribute('class', 'invalid-Feedback');
@@ -216,19 +227,19 @@ generate_footer();
     var checkUsername = function() {
         changeSubmitButton();
         if (username.value == '') {
-            username.setCustomValidity('Benutzername eingeben!');
+            username.setCustomValidity('Benutzername eingeben');
             var oldDiv = document.querySelector('#error_username');
             var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Benutzername eingeben!"));
+            newDiv.appendChild(document.createTextNode("Benutzername eingeben"));
             oldDiv.parentNode.replaceChild(newDiv, oldDiv);
             newDiv.setAttribute('id', 'error_username');
             newDiv.setAttribute('class', 'invalid-Feedback');
         } else {
             if (username.value.length < 4) {
-                username.setCustomValidity('Benutzername muss mind. 4 Zeichen lang sein!');
+                username.setCustomValidity('Benutzername muss mind. 4 Zeichen lang sein');
                 var oldDiv = document.querySelector('#error_username');
                 var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Benutzername muss mind. 4 Zeichen lang sein!"));
+                newDiv.appendChild(document.createTextNode("Benutzername muss mind. 4 Zeichen lang sein"));
                 oldDiv.parentNode.replaceChild(newDiv, oldDiv);
                 newDiv.setAttribute('id', 'error_username');
                 newDiv.setAttribute('class', 'invalid-Feedback');
@@ -242,23 +253,23 @@ generate_footer();
                     if (xhr.readyState == 4 && xhr.status == 200) {
                         if (!xhr.responseText) {
                             username.setCustomValidity('');
-                            
-                           } else {
+
+                        } else {
                             username.setCustomValidity('Benutzername bereits vergeben');
                             var oldDiv = document.querySelector('#error_username');
                             var newDiv = document.createElement('div');
-                            newDiv.appendChild(document.createTextNode("Benutzername bereits vergeben!"));
+                            newDiv.appendChild(document.createTextNode("Benutzername bereits vergeben"));
                             oldDiv.parentNode.replaceChild(newDiv, oldDiv);
                             newDiv.setAttribute('id', 'error_username');
                             newDiv.setAttribute('class', 'invalid-Feedback');
                         }
                         changeSubmitButton();
-                        
+
                     }
-                    
+
                 };
             }
-            
+
         }
     };
 
