@@ -38,10 +38,9 @@
         $conn = sql_connect();        
         $benutzer_id = $_POST['benutzer_id'];
         
-        $sql2 = "DELETE FROM `vl_benutzer_gruppe_map` WHERE benutzer_id = $benutzer_id";
         $sql3 = "DELETE FROM vl_benutzer where benutzer_id = $benutzer_id";
 
-        if (mysqli_query($conn, $sql2) && mysqli_query($conn, $sql3)) {
+        if (mysqli_query($conn, $sql3)) {
             $successDelete= true;
         } else {
             $successDelete = false;

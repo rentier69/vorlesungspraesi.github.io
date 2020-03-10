@@ -1,11 +1,9 @@
 <?php 
     require("functions.php");
-    generate_header("Kursverwaltung", "Löschen, Anlegen, Zuordnen", null, '../');
+    generate_header("Kursverwaltung", null, null, '../');
 ?>
 
 <?php
-   
-
     if(isset($_POST['group_create'])){
         $conn = sql_connect();        
         $kuerzel = $_POST['kuerzel'];
@@ -23,7 +21,6 @@
         $conn = sql_connect();        
         $gruppe_id = $_POST['gruppe_id'];
         
-        //ergänzen: delete from vl_benutzer_gruppe_map
         $sql = "DELETE FROM vl_gruppe where gruppe_id = $gruppe_id";
 
         if (mysqli_query($conn, $sql)) {
@@ -34,9 +31,6 @@
         }
         mysqli_close($conn);
     }
-
-    
-
 ?>
 <div class="container">
     <?php
@@ -89,7 +83,8 @@
         <hr>
 
         <h3>Alle Kurse</h3>
-        <table class="table table-hover">
+        <input type="text" id="searchInput" class="form-control" onkeyup="search()" placeholder="Nach ID oder Kürzel suchen..">
+        <table class="table table-hover" id="allGroups">
             <thead>
             <tr>
                 <th>ID</th>
@@ -111,8 +106,35 @@
             </tbody>
         </table>
 </div>
+<script>
+function search() {
+  // Declare variables
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("searchInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("allGroups");
+  tr = table.getElementsByTagName("tr");
 
-
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    
+    td0 = tr[i].getElementsByTagName("td")[0];
+    td1 = tr[i].getElementsByTagName("td")[1];
+    td2 = tr[i].getElementsByTagName("td")[2];
+    if (td0 ||td1 || td2) {
+    
+      txtValue0 = td0.textContent || td0.innerText;
+      txtValue1 = td1.textContent || td1.innerText;
+      txtValue2 = td2.textContent || td2.innerText;
+      if (txtValue0.toUpperCase().indexOf(filter) > -1 || txtValue1.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
 
 <?php
     generate_footer();
