@@ -1,23 +1,16 @@
 <?php
     require("functions.php");
-
     $benutzer_id = $_GET['id'];
+
     $conn = sql_connect();
     $user_select = "SELECT * from vl_benutzer where benutzer_id = $benutzer_id";
     $current_user = mysqli_fetch_assoc(mysqli_query($conn, $user_select));
     $user_name = $current_user['benutzername'];
     $user_aktiv = $current_user['aktiv'];
     mysqli_close($conn);
-    if($user_aktiv != 1){
-        generate_header("Benutzer bearbeiten", $user_name . ' (inaktiv)', null, '../');
-    }else{
-        generate_header("Benutzer bearbeiten", $user_name, null, '../');
-    }
-?>
-<?php
+
     if(isset($_POST['save'])){
         $conn = sql_connect();
-        $user = $_GET['id'];
         $errorMsgSave = "";
         $successSave = true;
 
@@ -25,7 +18,7 @@
         if(!empty($_POST['to_delete'])){  
             $toDelete = explode(";", str_replace(',', '', rtrim($_POST['to_delete'],";")));
             foreach ($toDelete as $value){
-                $sql1 = "DELETE FROM `vl_benutzer_gruppe_map` where gruppe_id = $value and benutzer_id = $user";
+                $sql1 = "DELETE FROM `vl_benutzer_gruppe_map` where gruppe_id = $value and benutzer_id = $benutzer_id";
                 if (mysqli_query($conn, $sql1)) {
                     //nichts zu tun. $successSave bereits true
                 } else {
@@ -38,7 +31,7 @@
         if(!empty($_POST['to_add'])){
             $toAdd = explode(";", str_replace(',', '', rtrim($_POST['to_add'], ";")));
             foreach ($toAdd as $value){
-                $sql2 = "INSERT INTO `vl_benutzer_gruppe_map`(`benutzer_id`, `gruppe_id`) values ($user,$value)";
+                $sql2 = "INSERT INTO `vl_benutzer_gruppe_map`(`benutzer_id`, `gruppe_id`) values ($benutzer_id,$value)";
                 if (mysqli_query($conn, $sql2)) {
                     //nichts zu tun. $successSave bereits true
                 } else {
@@ -53,6 +46,7 @@
 
             if (mysqli_query($conn, $sql3)) {
                     //nichts zu tun. $successSave bereits true
+                    $user_name = $name;
                 } else {
                 $successSave = false;
                 $errorMsgSave . mysqli_error($conn);
@@ -63,13 +57,13 @@
 
     if(isset($_POST['user_deactivate'])){
         $conn = sql_connect();
-        $user = $_GET['id'];
         $errorMsgSave = "";
 
         $sql4 = "UPDATE `vl_benutzer` set `aktiv`= 0 where `benutzer_id` = $benutzer_id";
 
         if (mysqli_query($conn, $sql4)) {
             $successSave = true;
+            $user_aktiv = 0;
         } else {
             $successSave = false;
             $errorMsgSave . mysqli_error($conn);
@@ -77,21 +71,26 @@
         mysqli_close($conn);
     }elseif(isset($_POST['user_activate'])){
         $conn = sql_connect();
-        $user = $_GET['id'];
         $errorMsgSave = "";
 
         $sql4 = "UPDATE `vl_benutzer` set `aktiv`= 1 where `benutzer_id` = $benutzer_id";
 
         if (mysqli_query($conn, $sql4)) {
             $successSave = true;
+            $user_aktiv = 1;
         } else {
             $successSave = false;
             $errorMsgSave . mysqli_error($conn);
         }
         mysqli_close($conn);
     }
-    
-
+?>
+<?php
+    if($user_aktiv != 1){
+        generate_header("Benutzer bearbeiten", $user_name . ' (inaktiv)', null, '../');
+    }else{
+        generate_header("Benutzer bearbeiten", $user_name, null, '../');
+    }
 ?>
 <div class="container">
     <?php
@@ -211,7 +210,6 @@
 function fillInput($source, $target){
     document.getElementById($target).value = document.getElementById($source).value;
 }
-
 
 function markRemove($id) {
     $idToRemove = ',' + $id + ';';

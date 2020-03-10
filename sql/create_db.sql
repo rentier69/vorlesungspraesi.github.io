@@ -1,6 +1,6 @@
-/*drop database `vl`;
-create database vl;
-use vl;*/
+drop database `cs-343657_project_dhbw`;
+create database `cs-343657_project_dhbw`;
+use `cs-343657_project_dhbw`;
 set sql_mode = "no_auto_value_on_zero";
 
 create table if not exists vl_benutzer
@@ -25,8 +25,8 @@ create table if not exists vl_benutzer_gruppe_map
    benutzer_id int not null references vl_benutzer(benutzer_id),
    gruppe_id int not null references vl_gruppe(gruppe_id),
    primary key (benutzer_id, gruppe_id),
-   foreign key(benutzer_id) references vl_benutzer(benutzer_id),
-   foreign key(gruppe_id) references vl_gruppe(gruppe_id)
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id) on delete cascade,
+   foreign key(gruppe_id) references vl_gruppe(gruppe_id) on delete cascade
 );
 
 create table if not exists vl_vorlesung 
@@ -41,8 +41,8 @@ create table if not exists vl_vorlesung_gruppe_map
    vorlesung_id int not null references vl_vorlesung(vorlesung_id),
    gruppe_id int not null references vl_gruppe(gruppe_id),
    primary key (vorlesung_id, gruppe_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id),
-   foreign key(gruppe_id) references vl_gruppe(gruppe_id)
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade,
+   foreign key(gruppe_id) references vl_gruppe(gruppe_id) on delete cascade
 );
 
 create table if not exists vl_vorlesung_frage_typ
@@ -60,7 +60,7 @@ create table if not exists vl_vorlesung_frage
    frage_typ_id int not null references vl_vorlesung_frage_typ(frage_typ_id),
    fragenummer int,
    primary key(frage_id, vorlesung_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id),
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) /*on delete cascade*/, 
    foreign key(frage_typ_id) references vl_vorlesung_frage_typ(frage_typ_id)
 );
 
@@ -69,7 +69,7 @@ create table if not exists vl_vorlesung_frage_antwortmoeglichkeiten
    frage_id int not null  references vl_vorlesung_frage(frage_id),
    antwort varchar(255) not null,
    primary key(frage_id, antwort),
-   foreign key (frage_id) references vl_vorlesung_frage(frage_id)
+   foreign key (frage_id) references vl_vorlesung_frage(frage_id) on delete cascade
 );
 
 create table if not exists vl_vorlesung_frage_antworten 
@@ -78,8 +78,8 @@ create table if not exists vl_vorlesung_frage_antworten
    benutzer_id int not null references vl_benutzer(benutzer_id),
    antwort varchar(255) not null,
    primary key (frage_id, benutzer_id),
-   foreign key(benutzer_id) references vl_benutzer(benutzer_id),
-   foreign key(frage_id) references vl_vorlesung_frage(frage_id)
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id) on delete cascade,
+   foreign key(frage_id) references vl_vorlesung_frage(frage_id) on delete cascade
 );
 
 create table if not exists vl_vorlesung_bewertung 
@@ -90,8 +90,8 @@ create table if not exists vl_vorlesung_bewertung
    bewertung_rating int not null,
    bewertung_kommentar varchar(255),
    primary key(benutzer_id, vorlesung_id, bewertung_zeitstempel),
-   foreign key(benutzer_id) references vl_benutzer(benutzer_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id)
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id) on delete cascade,
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
 );
 
 create table if not exists vl_chat 
@@ -101,5 +101,5 @@ create table if not exists vl_chat
    vorlesung_id int not null references vl_vorlesung(vorlesung_id),
    nachricht varchar(255) not null,
    primary key(benutzer_id, nachricht_zeitstempel, vorlesung_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id)
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
 );
