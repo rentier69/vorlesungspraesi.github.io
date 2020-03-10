@@ -39,7 +39,7 @@ if (isset($_POST['submit'])) {
                     while($row=mysqli_fetch_assoc($result)){
                         if($row["Dozent"]==1){
                             $_SESSION["dozent"]=true;
-                            header("Location: components/doz_Bereich.php");
+                            header("Location: components/doz_bereich.php");
                         }else{
                             header("Location: components/stud_bereich.php");
                         }
