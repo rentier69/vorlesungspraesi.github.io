@@ -90,7 +90,7 @@
     generate_header("Kurs bearbeiten", $gruppe_name, null, '../');
 ?>
 
-<div class="container">
+<div class="container-xl">
 
     <div class="row">
         <div class="col-sm">
