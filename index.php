@@ -9,7 +9,7 @@ if(isset($_SESSION["username"])){
 }
 
 require("components/functions.php");
-generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplattform der DHBW Ravensburg", null, null);
+
 ?>
 
 <?php
@@ -65,7 +65,7 @@ if (isset($_POST['submit'])) {
 }
 
 
-
+generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplattform der DHBW Ravensburg", null, null);
 if (isset($anmeldung_ok)) {
     if (!$anmeldung_ok) {
       /*
@@ -116,15 +116,13 @@ mysqli_close($conn);
     <form method="POST" action="index.php" class="was-validated">
 
         <div class="form-group">
+            <div>
             <label for="benutzername"> Benutzername </label>
-
-
-            <input type="text" class="form-control" placeholdDiver="Benutzername" name="username" required maxlength="50" id="username" />
-
+            <input type="text" class="form-control" placeholder="Benutzername" name="username" required maxlength="50" id="username" />
             <div class="invalid-Feedback" id="error_username" hidden> Bitte Benutzername eingeben</div>
-
+            </div>
             <label for="password"> Passwort </label>
-            <input type="password" class="form-control" placeholdDiver="Passwort" name="password" required id="password" />
+            <input type="password" class="form-control" placeholder="Passwort" name="password" required id="password" />
             <div class="invalid-Feedback" id="error_password" hidden> Bitte Passwort eingeben</div>
         </div>
 
@@ -152,11 +150,11 @@ generate_footer();
     var username = document.getElementById('username');
     var password = document.getElementById('password');
 
+
     var checkForm = function() {
         document.getElementById("error_username").removeAttribute("hidden");
         document.getElementById("error_password").removeAttribute("hidden");
-
-        if (checkUsername() && password.value.length > 0) {
+        if (checkUsername() && checkPassword()) {
             document.getElementById('submit').disabled = false;
         } else {
             document.getElementById('submit').disabled = true;
@@ -190,6 +188,18 @@ generate_footer();
         return false;
 
 
+    };
+
+    var checkPassword = function(){
+        if(password.value.length>0){
+            password.setCustomValidity('');
+            return true;
+        }else{
+            password.setCustomValidity('Bitte Passwort eingeben');
+            document.getElementById('submit').disabled = true;
+            return false;
+        }
+        return false;
     };
 
 
