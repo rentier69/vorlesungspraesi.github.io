@@ -1,4 +1,9 @@
 <?php
+session_start();
+if(!isset($_SESSION["dozent"])){
+    header("Location:../index.php");
+    die("Bitte melden Sie sich an");
+}
     require("functions.php");
     $gruppe_id = $_GET['id'];
 
