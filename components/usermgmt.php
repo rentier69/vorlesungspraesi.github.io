@@ -5,7 +5,7 @@ if(!isset($_SESSION["dozent"])){
     die("Bitte melden Sie sich an");
 }
     require("functions.php");
-    generate_header("Benutzerverwaltung", null, null, '../');
+    generate_header("Benutzerverwaltung", null, $_SESSION['username'], '../');
 ?>
 
 <?php

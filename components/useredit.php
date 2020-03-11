@@ -92,9 +92,9 @@ if(!isset($_SESSION["dozent"])){
 ?>
 <?php
     if($user_aktiv != 1){
-        generate_header("Benutzer bearbeiten", $user_name . ' (inaktiv)', null, '../');
+        generate_header("Benutzer bearbeiten", $user_name . ' (inaktiv)', $_SESSION['username'], '../');
     }else{
-        generate_header("Benutzer bearbeiten", $user_name, null, '../');
+        generate_header("Benutzer bearbeiten", $user_name, $_SESSION['username'], '../');
     }
 ?>
 <div class="container-xl">

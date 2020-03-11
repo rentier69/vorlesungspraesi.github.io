@@ -92,7 +92,7 @@ if(!isset($_SESSION["dozent"])){
 ?>
 
 <?php
-    generate_header("Kurs bearbeiten", $gruppe_name, null, '../');
+    generate_header("Kurs bearbeiten", $gruppe_name, $_SESSION['username'], '../');
 ?>
 
 <div class="container-xl">
