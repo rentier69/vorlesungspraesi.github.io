@@ -92,7 +92,7 @@
         generate_header("Benutzer bearbeiten", $user_name, null, '../');
     }
 ?>
-<div class="container">
+<div class="container-xl">
     <?php
         if(isset($successSave)){
             if($successSave){
