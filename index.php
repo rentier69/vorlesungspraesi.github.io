@@ -66,78 +66,56 @@ if (isset($_POST['submit'])) {
 
 
 generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplattform der DHBW Ravensburg", null, null);
-if (isset($anmeldung_ok)) {
-    if (!$anmeldung_ok) {
-      /*
-      $sql = "      SELECT gruppe.gruppenname, gruppe.gruppe_id 
-                FROM vl_gruppe as gruppe, vl_benutzer_gruppe_map as map, vl_benutzer as benutzer 
-                WHERE   gruppe.gruppe_id=map.gruppe_id AND
-                        benutzer.benutzer_id=map.Benutzer_id AND
-                        benutzer.benutzername='" . $_POST['username'] . "';";
-        $result = mysqli_query($conn, $sql);
-        while ($row = mysqli_fetch_assoc($result)) {
-            array_push($groups, $row);
-        }
-
-
-?>
-
-        <div class="alert alert-success" role="alert">
-            Login erfolgreich - Benutzergruppe
-            <?php foreach ($groups as $group) {
-                echo ($group["gruppenname"] . "<br/>");
-            } ?>
-        </div>
-    <?php
-    } else {
-    
-    */
-        ?>
-    
-
-        <div class="alert alert-danger" role="alert">
-            Login fehlgeschlagen - <?= $errormsg ?>
-        </div>
-<?php
-
-    }
-}
-
-
 
 if(isset($_SESSION['gruppe'])){
     header("Location: components/menu.php");
 }
 
 mysqli_close($conn);
+
 ?>
 
-<div class="container-fluid">
-    <form method="POST" action="index.php" class="was-validated">
+<div class="container-xl">
+    <div class="row justify-content-center">
+    <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Login</h4>
+                </div>
+                <div class="card-body">
+                    <?php
+                    if (isset($anmeldung_ok) && !$anmeldung_ok) {
+                        ?>
+                        <div class="alert alert-danger" role="alert">
+                            Login fehlgeschlagen - <?= $errormsg ?>
+                        </div>
+                        <?php            
+                    }
+                    ?>
+                    <form method="POST" action="index.php" class="was-validated">
+                        <label for="benutzername"> Benutzername </label>
+                        <input type="text" class="form-control" placeholder="Benutzername" name="username" required maxlength="50" id="username" />
+                        <div class="invalid-Feedback" id="error_username" hidden> Bitte Benutzername eingeben</div>
 
-        <div class="form-group">
-            <div>
-            <label for="benutzername"> Benutzername </label>
-            <input type="text" class="form-control" placeholder="Benutzername" name="username" required maxlength="50" id="username" />
-            <div class="invalid-Feedback" id="error_username" hidden> Bitte Benutzername eingeben</div>
+                        <label for="password"> Passwort </label>
+                        <input type="password" class="form-control" placeholder="Passwort" name="password" required id="password" />
+                        <div class="invalid-Feedback" id="error_password" hidden> Bitte Passwort eingeben</div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="submit" class="btn btn-success btn-block" value="Login" name="submit" id="submit" disabled>
+                        </div>
+                        <div class="col-6">
+                            <a href="components/register.php" class="btn btn-secondary btn-block">Registrieren</a>
+                        </div>
+                    </div>
+                    </form>
+                </div>
             </div>
-            <label for="password"> Passwort </label>
-            <input type="password" class="form-control" placeholder="Passwort" name="password" required id="password" />
-            <div class="invalid-Feedback" id="error_password" hidden> Bitte Passwort eingeben</div>
         </div>
-
-        <div class="row">
-            <div class="col-6">
-                <input type="submit" class="btn btn-success btn-block" value="Login" name="submit" id="submit" disabled>
-            </div>
-
-            <div class="col-6">
-                <a href="components/register.php" class="btn btn-secondary btn-block">Registrieren</a>
-            </div>
-
-    </form>
+    </div>
 </div>
-
 
 
 
