@@ -91,54 +91,60 @@ if (isset($successInsert)) {
 mysqli_close($conn);
 ?>
 
-
-<div class="container-fluid">
-    <form method="POST" action="register.php" class="was-validated" id="form">
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username">
-            <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
-            <div class="valid-feedback" id="valid_username"> Benutzername verfügbar </div>
-            <div id="ausgabe"> </div>
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control" placeholder="Passwort" required id="password" name="password">
-            <div class="invalid-Feedback" id="error_password" hidden> Passwort eingeben</div>
-            <input type="password" class="form-control" placeholder="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat">
-            <div class="invalid-Feedback" id="error_passwordRepeat" hidden> Passwörter müssen übereinstimmen</div>
-        </div>
-
-        <div class="form-group">
-            <select id="kurs" class="form-control" name="kurs" required>
-                <option value="" disabled selected>Kurs auswählen</option>
-                <?php
-
-                $conn = sql_connect();
-                $kurs_select = "SELECT gruppenname, gruppe_id, gruppe_kuerzel FROM vl_gruppe WHERE gruppe_id > 2";
-                $result = mysqli_query($conn, $kurs_select);
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo ('<option value="' . $row["gruppe_id"] . '">' . $row["gruppe_kuerzel"] . '</option>');
-                }
-                mysqli_close($conn);
-                ?>
-            </select>
-            <div class="invalid-Feedback" id="error_kurs" hidden> Bitte Kurs auswählen </div>
-        </div>
-
-
-        <div class="form-group">
-            <div class="row">
-                <div class="col-4">
-                    <a class="btn btn-danger form-control" href="../index.php">Abbrechen</a>
+<div class="container-xl">
+    <div class="row justify-content-center">
+    <div class="col-sm-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Registrieren</h4>
                 </div>
-                <div class="col-8">
-                    <input type="submit" class="btn btn-success form-control" value="Registrieren" id="submit" name="submit" disabled />
+                <div class="card-body">
+                    
+                <form method="POST" action="register.php" class="was-validated" id="form">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username">
+                    <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
+                    <div class="valid-feedback" id="valid_username"> Benutzername verfügbar </div>
+                    <div id="ausgabe"> </div>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Passwort" required id="password" name="password">
+                    <div class="invalid-Feedback" id="error_password" hidden> Passwort eingeben</div>
+                    <input type="password" class="form-control" placeholder="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat">
+                    <div class="invalid-Feedback" id="error_passwordRepeat" hidden> Passwörter müssen übereinstimmen</div>
+                </div>
+                <div class="form-group">
+                    <select id="kurs" class="form-control" name="kurs" required>
+                        <option value="" disabled selected>Kurs auswählen</option>
+                        <?php
+                            $conn = sql_connect();
+                            $kurs_select = "SELECT gruppenname, gruppe_id, gruppe_kuerzel FROM vl_gruppe WHERE gruppe_id > 2";
+                            $result = mysqli_query($conn, $kurs_select);
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo ('<option value="' . $row["gruppe_id"] . '">' . $row["gruppe_kuerzel"] . '</option>');
+                            }
+                            mysqli_close($conn);
+                        ?>
+                    </select>
+                    <div class="invalid-Feedback" id="error_kurs" hidden> Bitte Kurs auswählen </div>
+                </div>
+                </div>
+                <div class="card-footer">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-8">
+                                <input type="submit" class="btn btn-success form-control" value="Registrieren" id="submit" name="submit" disabled />
+                            </div>
+                            <div class="col-4">
+                                <a class="btn btn-danger form-control" href="../index.php">Abbrechen</a>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-
-
-    </form>
-
+    </div>
 </div>
 
 

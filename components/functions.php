@@ -37,6 +37,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
         <title><?= $title ?></title>
         <link rel="stylesheet" href="<?= $dirsUp ?>css/bootstrap.css" />
         <link rel="stylesheet" href="<?= $dirsUp ?>css/fontawesome/css/all.css">
+        <link rel="stylesheet" href="<?= $dirsUp ?>css/sticky-footer.css" />
         <style>
         </style>
         <script>
@@ -101,7 +102,7 @@ function generate_footer()
 {
     $year = date('Y');
     ?>
-        <footer class="footer" style="margin-top: 2rem;">
+        <footer class="footer-custom">
             <div class="container">
                 <span class="text-muted">© <?= $year ?> Copyright Projektteam 19 Jahrgang 2017</span>
             </div>
