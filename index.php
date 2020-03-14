@@ -33,6 +33,8 @@ if (isset($_POST['submit'])) {
                     $anmeldung_ok = true;
                     require_once("configuration.php");
                     $_SESSION["username"]=$username;
+                    //Timestamp letzter Login
+                    mysqli_query($conn,"UPDATE vl_benutzer SET datum_letzterlogin = NOW() WHERE benutzer_id = ".$row['benutzer_id'].";");
                     //Prüfen ob Dozent
                     $sql="SELECT COUNT(*) AS Dozent FROM vl_benutzer_gruppe_map WHERE benutzer_id=".$row['benutzer_id']." AND gruppe_id=".appConfig::$defaultDozentGroup.";";
                     $result=mysqli_query($conn, $sql);
