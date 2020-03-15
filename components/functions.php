@@ -1,5 +1,30 @@
 <?php
 
+if (isset($_GET["kuerzel"])) {
+    $conn = sql_connect();
+    $sql = "SELECT gruppe_kuerzel FROM vl_gruppe WHERE gruppe_kuerzel='" . $_GET['kuerzel'] . "';";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo true;
+    } else {
+        echo false;
+    }
+    mysqli_close($conn);
+}
+
+if (isset($_GET["kursname"])) {
+    $conn = sql_connect();
+    $sql = "SELECT gruppenname FROM vl_gruppe WHERE gruppenname='" . $_GET['kursname'] . "';";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo true;
+    } else {
+        echo false;
+    }
+    mysqli_close($conn);
+}
+
+
 if (isset($_GET["username"])) {
     $conn = sql_connect();
     $sql = "SELECT benutzername FROM vl_benutzer WHERE benutzername='" . $_GET['username'] . "';";
