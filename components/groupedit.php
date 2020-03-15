@@ -145,13 +145,13 @@ generate_header("Kurs bearbeiten", $gruppe_name, $_SESSION['username'], '../');
         <div class="input-group mb-3">
             <div class="form-group">
                 <input type="text" name="newKuerzelSource" id="newKuerzelSource" class="form-control" placeholder="Kürzel" value="<?= $gruppe_kurzel ?>" onkeyup="fillInput('newKuerzelSource','newKuerzelTarget')" />
-                <div class="invalid-feedback" id="error_kuerzel" hidden>Kürzel eingeben</div>
-                <div class="valid-feedback" id="valid_kuerzel" hidden> Kürzel verfügbar </div>
+                <div class="invalid-feedback" id="error_newKuerzelSource" hidden>Kürzel eingeben</div>
+                <div class="valid-feedback" id="valid_newKuerzelSource" hidden> Kürzel verfügbar </div>
             </div>
             <div class="form-group">
                 <input type="text" name="newNameSource" id="newNameSource" class="form-control" placeholder="Kursname" value="<?= $gruppe_name ?>" onkeyup="fillInput('newNameSource','newNameTarget')" />
-                <div class="invalid-feedback" id="error_kursname" hidden>Kursname eingeben</div>
-                <div class="valid-feedback" id="valid_kursname" hidden> Kursname verfügbar </div>
+                <div class="invalid-feedback" id="error_newNameSource" hidden>Kursname eingeben</div>
+                <div class="valid-feedback" id="valid_newNameSource" hidden> Kursname verfügbar </div>
             </div>
         </div>
     </form>
@@ -225,8 +225,7 @@ generate_header("Kurs bearbeiten", $gruppe_name, $_SESSION['username'], '../');
 </div>
 
 <script>
-    kuerzel = document.getElementById("newKuerzelSource");
-    kursname = document.getElementById("newNameSource");
+  
 
     function fillInput($source, $target) {
         document.getElementById($target).value = document.getElementById($source).value;
@@ -254,114 +253,14 @@ generate_header("Kurs bearbeiten", $gruppe_name, $_SESSION['username'], '../');
         }
     }
 
-    var checkKuerzel = function() {
-
-        if (kuerzel.value == '') {
-            kuerzel.setCustomValidity('Kürzel eingeben');
-            var oldDiv = document.querySelector('#error_kuerzel');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Kürzel eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_kuerzel');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        } else {
-            if (kuerzel.value.length < 2) {
-                kuerzel.setCustomValidity('Kürzel muss mind. 2 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_kuerzel');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Kürzel muss mind. 2 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_kuerzel');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-            } else {
-                //falls neues Kürzel = altes Kürzel
-                if (kuerzel.value == "<?php echo $gruppe_kurzel ?>") {
-                    kuerzel.setCustomValidity('');
-                    document.getElementById("valid_kuerzel").setAttribute("hidden", "true");
-                } else {
-                    //Prüfen, ob Kürzel bereits in DB. Liefert true falls ja
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", "functions.php?kuerzel=" + kuerzel.value, true);
-                    xhr.send();
-
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4 && xhr.status == 200) {
-                            if (!xhr.responseText) {
-                                kuerzel.setCustomValidity('');
-                                document.getElementById("valid_kuerzel").removeAttribute("hidden");
-                            } else {
-                                kuerzel.setCustomValidity('Kürzel bereits vergeben');
-                                var oldDiv = document.querySelector('#error_kuerzel');
-                                var newDiv = document.createElement('div');
-                                newDiv.appendChild(document.createTextNode("Kürzel bereits vergeben"));
-                                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                                newDiv.setAttribute('id', 'error_kuerzel');
-                                newDiv.setAttribute('class', 'invalid-Feedback');
-                            }
-                        }
-                    };
-                }
-            }
-        }
-    };
-
-
-    var checkKursname = function() {
-
-        if (kursname.value == '') {
-            kursname.setCustomValidity('Kursnname eingeben');
-            var oldDiv = document.querySelector('#error_kursname');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Kursnname eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_kursname');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        } else {
-            if (kursname.value.length < 4) {
-                kursname.setCustomValidity('Kursnname muss mind. 4 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_kursname');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Kursnname muss mind. 4 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_kursname');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-            } else {
-                //falls neuer Kursname = alter Kursnname
-                if (kursname.value == "<?php echo $gruppe_name ?>") {
-                    kursname.setCustomValidity('');
-                    document.getElementById("valid_kursname").setAttribute("hidden", "true");
-                } else {
-                    //Prüfen, ob Username bereits in DB. Liefert true falls ja
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", "functions.php?kursname=" + kursname.value, true);
-                    xhr.send();
-
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4 && xhr.status == 200) {
-                            if (!xhr.responseText) {
-                                kursname.setCustomValidity('');
-                                document.getElementById("valid_kursname").removeAttribute("hidden");
-                            } else {
-                                kursname.setCustomValidity('Kursnname bereits vergeben');
-                                var oldDiv = document.querySelector('#error_kursname');
-                                var newDiv = document.createElement('div');
-                                newDiv.appendChild(document.createTextNode("Kursnname bereits vergeben"));
-                                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                                newDiv.setAttribute('id', 'error_kursname');
-                                newDiv.setAttribute('class', 'invalid-Feedback');
-                            }
-
-                        }
-
-                    };
-                }
-            }
-
-        }
-    };
-
-    kuerzel.addEventListener("input", checkKuerzel);
-    kursname.addEventListener("input", checkKursname);
+var checkForm=function(){
+    checkField("newKuerzelSource","Kürzel", null, true, "<?php echo $gruppe_kurzel ?>");
+    checkField("newNameSource", "Kursname", null, true, "<?php echo $gruppe_name ?>");
+}
+    kuerzel = document.getElementById("newKuerzelSource");
+    kursname = document.getElementById("newNameSource");
+    kuerzel.addEventListener("input", checkForm);
+    kursname.addEventListener("input", checkForm);
 </script>
 
 <?php

@@ -169,56 +169,9 @@ generate_footer();
         document.getElementById("error_passwordRepeat").removeAttribute("hidden");
         document.getElementById("error_kurs").removeAttribute("hidden");
 
-        checkPassword();
+        checkPassword("password","passwordRepeat");
         checkKurs();
-        checkUsername();
-    };
-
-    //wird in CheckUsername aufgerufen
-    var changeSubmitButton = function() {
-        if (document.querySelector(':invalid') === null) {
-            document.getElementById('submit').disabled = false;
-        } else {
-            document.getElementById('submit').disabled = true;
-        }
-    }
-
-
-
-    var checkPassword = function() {
-        if (password.value.length != 0) {
-            if (password.value.length < 6) {
-                password.setCustomValidity('Passwort muss mind. 6 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_password');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Passwort muss mind. 6 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_password');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-            } else {
-                if (password.value == passwordRepeat.value) {
-                    password.setCustomValidity('');
-                    passwordRepeat.setCustomValidity('');
-                } else {
-                    password.setCustomValidity('');
-                    passwordRepeat.setCustomValidity('Passwörter müssen übereinstimmen');
-                    var oldDiv = document.querySelector('#error_password');
-                    var newDiv = document.createElement('div');
-                    newDiv.appendChild(document.createTextNode("Passwörter müssen übereinstimmen"));
-                    oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                    newDiv.setAttribute('id', 'error_password');
-                    newDiv.setAttribute('class', 'invalid-Feedback');
-                }
-            }
-        } else {
-            password.setCustomValidity('Passwort eingeben');
-            var oldDiv = document.querySelector('#error_password');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Passwort eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_password');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        }
+        checkField("username", "Benutzername", "submit", false, null);
     };
 
     var checkKurs = function() {
@@ -228,56 +181,6 @@ generate_footer();
             kurs.setCustomValidity('');
         }
     };
-
-    var checkUsername = function() {
-        changeSubmitButton();
-        if (username.value == '') {
-            username.setCustomValidity('Benutzername eingeben');
-            var oldDiv = document.querySelector('#error_username');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Benutzername eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_username');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        } else {
-            if (username.value.length < 4) {
-                username.setCustomValidity('Benutzername muss mind. 4 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_username');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Benutzername muss mind. 4 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_username');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-            } else {
-                //Prüfen, ob Username bereits in DB. Liefert true falls ja
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "functions.php?username=" + username.value, true);
-                xhr.send();
-
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        if (!xhr.responseText) {
-                            username.setCustomValidity('');
-
-                        } else {
-                            username.setCustomValidity('Benutzername bereits vergeben');
-                            var oldDiv = document.querySelector('#error_username');
-                            var newDiv = document.createElement('div');
-                            newDiv.appendChild(document.createTextNode("Benutzername bereits vergeben"));
-                            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                            newDiv.setAttribute('id', 'error_username');
-                            newDiv.setAttribute('class', 'invalid-Feedback');
-                        }
-                        changeSubmitButton();
-
-                    }
-
-                };
-            }
-
-        }
-    };
-
 
     username.addEventListener('input', checkForm);
     password.addEventListener('input', checkForm);

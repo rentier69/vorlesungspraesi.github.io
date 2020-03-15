@@ -160,8 +160,8 @@ if ($user_aktiv != 1) {
         <div class="form-group">
             <div class="input-group mb-3">
                 <input type="text" name="newNameSource" id="newNameSource" class="form-control" onkeyup="fillInput('newNameSource','newNameTarget')" placeholder="Name" value="<?= $user_name ?>" size="20" />
-                <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
-                <div class="valid-feedback" id="valid_username" hidden> Benutzername verfügbar </div>
+                <div class="invalid-feedback" id="error_newNameSource" hidden>Benutzername eingeben</div>
+                <div class="valid-feedback" id="valid_newNameSource" hidden> Benutzername verfügbar </div>
             </div>
         </div>
     </form>
@@ -252,63 +252,14 @@ if ($user_aktiv != 1) {
         }
     }
 
-    username = document.getElementById("newNameSource");
 
 
-
-    var checkUsername = function() {
-        if (username.value == '') {
-            username.setCustomValidity('Benutzername eingeben');
-            var oldDiv = document.querySelector('#error_username');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Benutzername eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_username');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        } else {
-            if (username.value.length < 4) {
-                username.setCustomValidity('Benutzername muss mind. 4 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_username');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Benutzername muss mind. 4 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_username');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-               
-            } else {
-                 //falls neuer Benutzername = alter Benutzername
-                if (username.value == "<?php echo $user_name?>") {
-                    username.setCustomValidity('');
-                    document.getElementById("valid_username").setAttribute("hidden", "true");
-                } else {
-                    //Prüfen, ob Username bereits in DB. Liefert true falls ja
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", "functions.php?username=" + username.value, true);
-                    xhr.send();
-
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4 && xhr.status == 200) {
-                            if (!xhr.responseText) {
-                                username.setCustomValidity('');
-                                document.getElementById("valid_username").removeAttribute("hidden");
-                            } else {
-                                username.setCustomValidity('Benutzername bereits vergeben');
-                                var oldDiv = document.querySelector('#error_username');
-                                var newDiv = document.createElement('div');
-                                newDiv.appendChild(document.createTextNode("Benutzername bereits vergeben"));
-                                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                                newDiv.setAttribute('id', 'error_username');
-                                newDiv.setAttribute('class', 'invalid-Feedback');
-                            }
-                        }
-                    };
-                }
-            }
-
-        }
+    var checkForm = function() {
+        checkField("newNameSource", "Benutzername", null, true, "<?php echo $user_name ?>");
     };
 
-    username.addEventListener("input", checkUsername);
+    username = document.getElementById("newNameSource");
+    username.addEventListener("input", checkForm);
 </script>
 
 <?php

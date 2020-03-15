@@ -126,122 +126,12 @@ if (isset($_POST['group_create'])) {
     </table>
 </div>
 <script>
-    kuerzel = document.getElementById("kuerzel");
-    kursname = document.getElementById("kursname");
-
-
-    var checkKuerzel = function() {
-
-        if (kuerzel.value == '') {
-            kuerzel.setCustomValidity('Kürzel eingeben');
-            var oldDiv = document.querySelector('#error_kuerzel');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Kürzel eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_kuerzel');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        } else {
-            if (kuerzel.value.length < 2) {
-                kuerzel.setCustomValidity('Kürzel muss mind. 2 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_kuerzel');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Kürzel muss mind. 2 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_kuerzel');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-            } else {
-                //Prüfen, ob Username bereits in DB. Liefert true falls ja
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "functions.php?kuerzel=" + kuerzel.value, true);
-                xhr.send();
-
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        if (!xhr.responseText) {
-                            kuerzel.setCustomValidity('');
-
-                        } else {
-                            kuerzel.setCustomValidity('Kürzel bereits vergeben');
-                            var oldDiv = document.querySelector('#error_kuerzel');
-                            var newDiv = document.createElement('div');
-                            newDiv.appendChild(document.createTextNode("Kürzel bereits vergeben"));
-                            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                            newDiv.setAttribute('id', 'error_kuerzel');
-                            newDiv.setAttribute('class', 'invalid-Feedback');
-                        }
-                        changeSubmitButton();
-
-                    }
-
-                };
-            }
-
-        }
-    };
-
-
-    var checkKursname = function() {
-
-        if (kursname.value == '') {
-            kursname.setCustomValidity('Kursnname eingeben');
-            var oldDiv = document.querySelector('#error_kursname');
-            var newDiv = document.createElement('div');
-            newDiv.appendChild(document.createTextNode("Kursnname eingeben"));
-            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-            newDiv.setAttribute('id', 'error_kursname');
-            newDiv.setAttribute('class', 'invalid-Feedback');
-        } else {
-            if (kursname.value.length < 4) {
-                kursname.setCustomValidity('Kursnname muss mind. 4 Zeichen lang sein');
-                var oldDiv = document.querySelector('#error_kursname');
-                var newDiv = document.createElement('div');
-                newDiv.appendChild(document.createTextNode("Kursnname muss mind. 4 Zeichen lang sein"));
-                oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                newDiv.setAttribute('id', 'error_kursname');
-                newDiv.setAttribute('class', 'invalid-Feedback');
-            } else {
-                //Prüfen, ob Username bereits in DB. Liefert true falls ja
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "functions.php?kursname=" + kursname.value, true);
-                xhr.send();
-
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        if (!xhr.responseText) {
-                            kursname.setCustomValidity('');
-
-                        } else {
-                            kursname.setCustomValidity('Kursnname bereits vorhanden');
-                            var oldDiv = document.querySelector('#error_kursname');
-                            var newDiv = document.createElement('div');
-                            newDiv.appendChild(document.createTextNode("Kursnname bereits vorhanden"));
-                            oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-                            newDiv.setAttribute('id', 'error_kursname');
-                            newDiv.setAttribute('class', 'invalid-Feedback');
-                        }
-                        changeSubmitButton();
-
-                    }
-
-                };
-            }
-
-        }
-    };
-
-
-    var changeSubmitButton = function() {
-        if (document.querySelector(':invalid') === null) {
-            document.getElementById('group_create').disabled = false;
-        } else {
-            document.getElementById('group_create').disabled = true;
-        }
-    }
+    
 
     var checkForm = function() {
-        changeSubmitButton();
-        checkKuerzel();
-        checkKursname();
+       
+        checkField("kuerzel", "Kürzel", "group_create", false,null);
+        checkField("kursname", "Kursname", "group_create",false,null)
     }
 
     function search() {
@@ -272,7 +162,8 @@ if (isset($_POST['group_create'])) {
         }
     }
 
-
+    kuerzel = document.getElementById("kuerzel");
+    kursname = document.getElementById("kursname");
     kuerzel.addEventListener("input", checkForm);
     kursname.addEventListener("input", checkForm);
 </script>
