@@ -81,6 +81,8 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
         <link rel="stylesheet" href="<?= $dirsUp ?>css/bootstrap.css" />
         <link rel="stylesheet" href="<?= $dirsUp ?>css/fontawesome/css/all.css">
         <link rel="stylesheet" href="<?= $dirsUp ?>css/sticky-footer.css" />
+        <script src="../js/jquery-3.0.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"> </script>
         <script src="../js/functions.js"></script>
         <style>
         </style>

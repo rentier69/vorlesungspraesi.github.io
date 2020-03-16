@@ -89,6 +89,30 @@ if (isset($_POST['user_deactivate'])) {
     }
     mysqli_close($conn);
 }
+
+if (isset($_POST["submitPasswordReset"])) {
+    if (isset($_POST["password1"]) && isset($_POST["password2"])) {
+        $password1 = $_POST["password1"];
+        $password2 = $_POST["password2"];
+        if (strlen($password1) >= 6 && $password1 == $password2) {
+            $passwordHash = md5($password1);
+            $conn = sql_connect();
+            $sqlPassword = "UPDATE vl_benutzer SET password='" . $passwordHash . "' WHERE benutzer_id = $benutzer_id;";
+            if (mysqli_query($conn, $sqlPassword)) {
+                $successPassword = true;
+            } else {
+                $successPassword = false;
+                $errorMsgPassword . mysqli_error($conn);
+            }
+        } else {
+            $successPassword = false;
+            $errorMsgPassword = "Angaben fehlerhaft";
+        }
+    } else {
+        $successPassword = false;
+        $errorMsgPassword = "Angaben fehlerhaft";
+    }
+}
 ?>
 <?php
 if ($user_aktiv != 1) {
@@ -97,6 +121,42 @@ if ($user_aktiv != 1) {
     generate_header("Benutzer bearbeiten", $user_name, $_SESSION['username'], '../');
 }
 ?>
+<div id="passwordResetModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><?= $user_name ?> - Passwort zurücksetzen</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form class="was-validated" method="POST" action="useredit.php?id=<?= $benutzer_id ?>">
+                    <div class="form-group">
+                        <input type="password" name="password1" id="password1" class="form-control" placeholder="Passwort" size="25" required />
+                        <div class="invalid-Feedback" id="error_password1" hidden> Passwort eingeben</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password2" id="password2" class="form-control" placeholder="Passwort wiederholen" size="25" required />
+                        <div class="invalid-Feedback" id="error_password2" hidden> Passwörter müssen übereinstimmen</div>
+                    </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" name="submitPasswordReset" id="submitPasswordReset" disabled>Passwort ändern</button>
+                </form>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
 <div class="container-xl">
     <?php
     if (isset($successSave)) {
@@ -111,6 +171,23 @@ if ($user_aktiv != 1) {
             <div class="alert alert-danger" role="alert">
                 Änderungen nicht gespeichert - versuchen Sie es erneut.<br>
                 Fehler: <?= $errorMsgSave ?>
+            </div>
+        <?php
+        }
+    }
+
+    if (isset($successPassword)) {
+        if ($successPassword) {
+        ?>
+            <div class="alert alert-success" role="alert">
+                Passwort gespeichert.
+            </div>
+        <?php
+        } else {
+        ?>
+            <div class="alert alert-danger" role="alert">
+                Passwort nicht gespeichert - versuchen Sie es erneut.<br>
+                Fehler: <?= $errorMsgPassword ?>
             </div>
     <?php
         }
@@ -149,6 +226,9 @@ if ($user_aktiv != 1) {
                     <input type="submit" class="form-control btn btn-light" name="user_delete" value="Benutzer löschen">
                 </div>
             </form>
+        </div>
+        <div class="col-sm">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#passwordResetModal">Passwort zurücksetzen</button>
         </div>
         <div class="col-sm">
             <a href="usermgmt.php" class="form-control btn btn-light">Schließen</a>
@@ -258,8 +338,22 @@ if ($user_aktiv != 1) {
         checkField("newNameSource", "Benutzername", null, true, "<?php echo $user_name ?>");
     };
 
+    var checkPasswordReset = function() {
+        checkPassword("password1", "password2");
+        changeSubmitButton("submitPasswordReset");
+    };
     username = document.getElementById("newNameSource");
+    password1 = document.getElementById("password1");
+    password2 = document.getElementById("password2");
     username.addEventListener("input", checkForm);
+    password1.addEventListener("input", checkPasswordReset);
+    password2.addEventListener("input", checkPasswordReset);
+
+ 
+  $("#passwordResetModal").on('shown.bs.modal', function(){
+    document.getElementById("password1").focus();
+  });
+
 </script>
 
 <?php
