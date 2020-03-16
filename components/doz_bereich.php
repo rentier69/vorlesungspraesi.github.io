@@ -10,6 +10,7 @@ if (isset($_SESSION['username'])) {
             <div class="container-fluid">
                 <a href="groupmgmt.php" class="btn btn-primary"> Gruppenverwaltung </a>
                 <a href="usermgmt.php" class="btn btn-primary"> Userverwaltung </a>
+                <a href="lectures.php" class="btn btn-primary"> Vorlesungsverwaltung </a>
             </div>
 ');
         } else {
