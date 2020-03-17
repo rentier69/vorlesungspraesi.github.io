@@ -171,7 +171,7 @@ generate_footer();
 
         checkPassword("password","passwordRepeat");
         checkKurs();
-        checkField("username", "Benutzername", "submit", false, null);
+        checkField("username", "Benutzername", "submit", false, null, "form");
     };
 
     var checkKurs = function() {
