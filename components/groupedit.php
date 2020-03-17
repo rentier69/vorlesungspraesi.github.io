@@ -141,7 +141,7 @@ generate_header("Kurs bearbeiten", $gruppe_name, $_SESSION['username'], '../');
         }
     }
     ?>
-    <form action="groupedit.php?id=<?= $gruppe_id ?>" method="post" class="was-validated">
+    <form action="groupedit.php?id=<?= $gruppe_id ?>" method="post" class="was-validated" id="formChangeGroup">
         <div class="input-group mb-3">
             <div class="form-group">
                 <input type="text" name="newKuerzelSource" id="newKuerzelSource" class="form-control" placeholder="Kürzel" value="<?= $gruppe_kurzel ?>" onkeyup="fillInput('newKuerzelSource','newKuerzelTarget')" />
@@ -254,8 +254,8 @@ generate_header("Kurs bearbeiten", $gruppe_name, $_SESSION['username'], '../');
     }
 
 var checkForm=function(){
-    checkField("newKuerzelSource","Kürzel", null, true, "<?php echo $gruppe_kurzel ?>");
-    checkField("newNameSource", "Kursname", null, true, "<?php echo $gruppe_name ?>");
+    checkField("newKuerzelSource","Kürzel", null, true, "<?php echo $gruppe_kurzel ?>", "formChangeGroup");
+    checkField("newNameSource", "Kursname", null, true, "<?php echo $gruppe_name ?>","formChangeGroup");
 }
     kuerzel = document.getElementById("newKuerzelSource");
     kursname = document.getElementById("newNameSource");

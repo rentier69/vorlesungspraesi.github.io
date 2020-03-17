@@ -92,7 +92,7 @@ if (isset($_POST['user_create'])) {
         }
     }
     ?>
-    <form action="usermgmt.php" method="post" class="was-validated">
+    <form action="usermgmt.php" method="post" class="was-validated" id="formUserCreate">
         <div class="input-group mb-3">
             <div class="form-group">
                 <input type="text" name="name" id="username" class="form-control" placeholder="Benutzername" size="30" required />
@@ -168,7 +168,7 @@ document.getElementById("error_password2").removeAttribute("hidden");
 
 
 checkPassword("password1", "password2");
-checkField("username", "Benutzername", "user_create",false, null);
+checkField("username", "Benutzername", "user_create",false, null, "formUserCreate");
 };
 
     function search() {

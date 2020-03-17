@@ -132,8 +132,8 @@ if ($user_aktiv != 1) {
             </div>
 
             <div class="modal-body">
-                <form class="was-validated" method="POST" action="useredit.php?id=<?= $benutzer_id ?>">
-                    <div class="form-group">
+                <form class="was-validated" method="POST" action="useredit.php?id=<?= $benutzer_id ?>" id="formPasswordReset">
+                    <div class="form-group" >
                         <input type="password" name="password1" id="password1" class="form-control" placeholder="Passwort" size="25" required />
                         <div class="invalid-Feedback" id="error_password1" hidden> Passwort eingeben</div>
                     </div>
@@ -236,7 +236,7 @@ if ($user_aktiv != 1) {
     </div>
 
     <h3>Name ändern</h3>
-    <form action="useredit.php?id=<?= $benutzer_id ?>" method="post" class="was-validated">
+    <form action="useredit.php?id=<?= $benutzer_id ?>" method="post" class="was-validated" id="formNameAendern">
         <div class="form-group">
             <div class="input-group mb-3">
                 <input type="text" name="newNameSource" id="newNameSource" class="form-control" onkeyup="fillInput('newNameSource','newNameTarget')" placeholder="Name" value="<?= $user_name ?>" size="20" />
@@ -335,19 +335,17 @@ if ($user_aktiv != 1) {
 
 
     var checkForm = function() {
-        checkField("newNameSource", "Benutzername", null, true, "<?php echo $user_name ?>");
+        checkField("newNameSource", "Benutzername", null, true, "<?php echo $user_name ?>", "formNameAendern");
     };
 
     var checkPasswordReset = function() {
         checkPassword("password1", "password2");
-        changeSubmitButton("submitPasswordReset");
+        changeSubmitButton("submitPasswordReset", "formPasswordReset");
     };
     username = document.getElementById("newNameSource");
-    password1 = document.getElementById("password1");
-    password2 = document.getElementById("password2");
     username.addEventListener("input", checkForm);
-    password1.addEventListener("input", checkPasswordReset);
-    password2.addEventListener("input", checkPasswordReset);
+    document.getElementById("password1").addEventListener("input", checkPasswordReset);
+    document.getElementById("password2").addEventListener("input", checkPasswordReset);
 
  
   $("#passwordResetModal").on('shown.bs.modal', function(){

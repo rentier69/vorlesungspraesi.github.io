@@ -75,7 +75,7 @@ if (isset($_POST['group_create'])) {
         }
     }
     ?>
-    <form action="groupmgmt.php" method="post" class="was-validated">
+    <form action="groupmgmt.php" method="post" class="was-validated" id="formGroupCreate">
         <div class="input-group mb-3">
             <div class="form-group">
                 <input type="text" name="kuerzel" id="kuerzel" class="form-control" placeholder="Kürzel" size="20" required />
@@ -130,8 +130,8 @@ if (isset($_POST['group_create'])) {
 
     var checkForm = function() {
        
-        checkField("kuerzel", "Kürzel", "group_create", false,null);
-        checkField("kursname", "Kursname", "group_create",false,null)
+        checkField("kuerzel", "Kürzel", "group_create", false,null, "formGroupCreate");
+        checkField("kursname", "Kursname", "group_create",false,null, "formGroupCreate") 
     }
 
     function search() {

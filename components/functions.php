@@ -1,11 +1,12 @@
 <?php
 
-if (isset($_GET["kuerzel"])|| isset($_GET["newKuerzelSource"])) {
+
+if (isset($_GET["kuerzel"]) || isset($_GET["newKuerzelSource"])) {
     $kuerzel;
-    if(isset($_GET["kuerzel"])){
-        $kuerzel=$_GET["kuerzel"];
-    }else{
-        $kuerzel=$_GET["newKuerzelSource"];
+    if (isset($_GET["kuerzel"])) {
+        $kuerzel = $_GET["kuerzel"];
+    } else {
+        $kuerzel = $_GET["newKuerzelSource"];
     }
     $conn = sql_connect();
     $sql = "SELECT gruppe_kuerzel FROM vl_gruppe WHERE gruppe_kuerzel='" . $kuerzel . "';";
@@ -18,12 +19,12 @@ if (isset($_GET["kuerzel"])|| isset($_GET["newKuerzelSource"])) {
     mysqli_close($conn);
 }
 
-if (isset($_GET["kursname"])|| isset($_GET["newNameSource"])) {
+if (isset($_GET["kursname"]) || isset($_GET["newNameSource"])) {
     $kursname;
-    if(isset($_GET["kursname"])){
-        $kursname=$_GET["kursname"];
-    }else{
-        $kursname=$_GET["newNameSource"];
+    if (isset($_GET["kursname"])) {
+        $kursname = $_GET["kursname"];
+    } else {
+        $kursname = $_GET["newNameSource"];
     }
     $conn = sql_connect();
     $sql = "SELECT gruppenname FROM vl_gruppe WHERE gruppenname='" . $kursname . "';";
@@ -73,6 +74,31 @@ function sql_connect()
 //Bsp:     generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplatform der DHBW Ravensburg", null, '../');
 function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
 {
+    if (isset($_POST["passwordChange"]) && isset($_POST["passwordChange"]) && isset($_POST["submitPasswordChange"])) {
+        $passwordChange = $_POST["passwordChange"];
+        $password2Change = $_POST["password2Change"];
+        if (strlen($passwordChange) >= 6 && $passwordChange == $password2Change) {
+            $passwordHash = md5($passwordChange);
+            $conn = sql_connect();
+            $result = mysqli_query($conn, "SELECT benutzer_id FROM vl_benutzer WHERE benutzername='" . $_SESSION['username'] . "';");
+            if ($benutzer_id = mysqli_fetch_assoc($result)) {
+                $sqlPassword = "UPDATE vl_benutzer SET password='" . $passwordHash . "' WHERE benutzer_id =" . $benutzer_id['benutzer_id'] . ";";
+               $errorMsgPassword="";
+                if (mysqli_query($conn, $sqlPassword)) {
+                    $successPassword = true;
+                } else {
+                    $successPassword = false;
+                    $errorMsgPassword . mysqli_error($conn);
+                }
+            } else {
+                $successPassword = false;
+                $errorMsgPassword = "Angaben fehlerhaft";
+            }
+        } else {
+            $successPassword = false;
+            $errorMsgPassword = "Angaben fehlerhaft";
+        }
+    }
 ?>
     <html>
 
@@ -81,9 +107,9 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
         <link rel="stylesheet" href="<?= $dirsUp ?>css/bootstrap.css" />
         <link rel="stylesheet" href="<?= $dirsUp ?>css/fontawesome/css/all.css">
         <link rel="stylesheet" href="<?= $dirsUp ?>css/sticky-footer.css" />
-        <script src="../js/jquery-3.0.0.min.js"></script>
-        <script src="../js/bootstrap.min.js"> </script>
-        <script src="../js/functions.js"></script>
+        <script src="<?= $dirsUp ?>js/jquery-3.0.0.min.js"></script>
+        <script src="<?= $dirsUp ?>js/bootstrap.min.js"> </script>
+        <script src="<?= $dirsUp ?>js/functions.js"></script>
         <style>
         </style>
         <script>
@@ -127,14 +153,92 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                         </li>
                     </ul>
                     <form class="form-inline mt-2 mt-md-0" action="abmelden.php" method="post">
-                        <span style="color: white;"><i class="fas fa-user"></i>&nbsp;<?= $loggedOnUser ?> &nbsp;</span>
+                        <button type="button" class="btn" data-toggle="modal" data-target="#userMenu"> <span style="color: white;"><i class="fas fa-user"></i>&nbsp;<?= $loggedOnUser ?> &nbsp;</span> </button>
                         <button type="submit" class="btn btn-light my-2 my-sm-0">Logout <i class="fas fa-sign-out-alt"></i></button>
                     </form>
                 </div>
+                <!-- Modal Passwort ändern-->
+                <div id="passwordChangeModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
 
+
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><?= $loggedOnUser ?> - Passwort zurücksetzen</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form class="was-validated" method="POST" id="formChangePassword">
+                                    <div class="form-group">
+                                        <input type="password" name="passwordChange" id="passwordChange" class="form-control" placeholder="Passwort" size="25"  />
+                                        <div class="invalid-Feedback" id="error_passwordChange" hidden> Passwort eingeben</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password2Change" id="password2Change" class="form-control" placeholder="Passwort wiederholen" size="25"  />
+                                        <div class="invalid-Feedback" id="error_password2Change" hidden> Passwörter müssen übereinstimmen</div>
+                                    </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success" name="submitPasswordChange" id="submitPasswordChange" disabled>Passwort ändern</button>
+                                </form>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Modal Usermenü -->
+                <div id="userMenu" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><?= $loggedOnUser ?> - Benutzermenü</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordChangeModal" data-dismiss="modal">Passwort ändern </button>
+
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <script>
+                    $("#passwordChangeModal").on('shown.bs.modal', function() {
+                        document.getElementById("passwordChange").focus();
+                        document.getElementById("passwordChange").setAttribute("required", "true");
+                        document.getElementById("password2Change").setAttribute("required","true");
+                    });
+
+                    var checkPasswordChange = function() {
+                        checkPassword("passwordChange", "password2Change");
+                        changeSubmitButton("submitPasswordChange");
+                        if (document.querySelector('#formChangePassword:invalid') === null) {
+            document.getElementById("submitPasswordChange").disabled = false;
+        } else {
+            document.getElementById("submitPasswordChange").disabled = true;
+        }
+                    };
+
+                   
+                    document.getElementById("passwordChange").addEventListener("input", checkPasswordChange);
+                    document.getElementById("password2Change").addEventListener("input", checkPasswordChange);
+                </script>
+                
             <?php
             }
             ?>
+
         </nav>
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
@@ -142,12 +246,32 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                 <p class="lead"><?= $jumbotron_lead ?></p>
             </div>
         </div>
-    <?php
-}
-function generate_footer()
-{
-    $year = date('Y');
-    ?>
+
+
+
+        <?php
+        
+        if (isset($successPassword)) {
+            if ($successPassword) {
+        ?>
+                <div class="alert alert-success" role="alert">
+                    Passwort gespeichert.
+                </div>
+            <?php
+            } else {
+            ?>
+                <div class="alert alert-danger" role="alert">
+                    Passwort nicht gespeichert - versuchen Sie es erneut.<br>
+                    Fehler: <?= $errorMsgPassword ?>
+                </div>
+        <?php
+            }
+        }
+    }
+    function generate_footer()
+    {
+        $year = date('Y');
+        ?>
         <footer class="footer-custom">
             <div class="container">
                 <span class="text-muted">© <?= $year ?> Copyright Projektteam 19 Jahrgang 2017</span>
@@ -158,4 +282,4 @@ function generate_footer()
     </html>
 
 <?php
-}
+    }
