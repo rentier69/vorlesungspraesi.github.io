@@ -27,4 +27,5 @@ Beispieldaten für Tabellen
 
  insert into `vl_vorlesung_frage_typ` (`frage_typ_titel`, `frage_typ_beschreibung`) values 
  ('Freitext', 'Als Antwort kann ein beliebiger Text mit max. 255 Zeichen eingegeben werden.'),
- ('Single Choice', 'Aus gegebenen Optionen kann eine Antwort gewählt werden.');
+ ('Single Choice', 'Aus gegebenen Optionen kann eine Antwort gewählt werden.'),
+ ('Multiple Choice', 'Aus gegebenen Optionen können mehrere Antworten gewählt werden.');

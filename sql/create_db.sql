@@ -54,13 +54,15 @@ create table if not exists vl_vorlesung_frage_typ
 
 create table if not exists vl_vorlesung_frage 
 (
-   frage_id int not null auto_increment,
+   frage_id int not null auto_increment primary key,
    vorlesung_id int not null references vl_vorlesung(vorlesung_id),
    frage_titel varchar(50) not null,
    frage_typ_id int not null references vl_vorlesung_frage_typ(frage_typ_id),
    fragenummer int,
-   primary key(frage_id, vorlesung_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) /*on delete cascade*/, 
+   aktiv boolean not null default true,
+   vorherige_version_id int default null,
+   /*primary key(frage_id, vorlesung_id),*/
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade, 
    foreign key(frage_typ_id) references vl_vorlesung_frage_typ(frage_typ_id)
 );
 
