@@ -5,7 +5,7 @@
         die("Bitte melden Sie sich an");
     }
     require("functions.php");
-    $vorlesung_id = $_GET['id'];
+    $vorlesung_id = $_GET['v_id'];
 
     $conn = sql_connect();
     $vorlesung_select = "SELECT * from vl_vorlesung where vorlesung_id = $vorlesung_id";
@@ -28,8 +28,7 @@
                     $errorMsgSave = mysqli_error($conn);
             }
         }        
-    }elseif(isset($_POST['save_question']))
-    {        
+    }elseif(isset($_POST['save_question'])){        
         $successCreateQuestion = true;
         $errorMsgCreateQuestion = "";
 
@@ -63,6 +62,73 @@
             $successCreateQuestion = false;
             $errorMsgCreateQuestion = mysqli_error($conn);
         }
+    }elseif(isset($_POST['question_delete'])){
+        $successDelete = true;
+        $errorMsgDelete = "";
+
+        $frage_id = $_POST['frage_id'];
+        $sql = "DELETE FROM `vl_vorlesung_frage` WHERE frage_id = $frage_id";
+        if (mysqli_query($conn, $sql)) {
+            //nichts zu tun. $successDelete bereits true
+        } else {
+            $successDelete = false;
+            $errorMsgDelete = mysqli_error($conn);
+        }
+    }elseif(isset($_POST['save_modified_question'])){
+        $frage_id = $_GET['q_id'];
+        $sql = "SELECT antwort from vl_vorlesung_frage_antwortmoeglichkeiten where frage_id = $frage_id";
+        $result = mysqli_query($conn, $sql);
+        $row_count = mysqli_num_rows($result);
+
+        $sql = "SELECT frage_titel,frage_typ_id from vl_vorlesung_frage where frage_id = $frage_id";
+        $current_frage = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+        $frage_titel = $current_frage['frage_titel'];
+        $frage_typ = $current_frage['frage_typ_id'];
+    
+        $successModify = true;
+        $errorMsgModify = "";
+    
+        $new_question_text = $_POST['newTitle'];
+        //falls nicht gesetzt alter typ
+        $question_type = $frage_typ;
+    
+    
+        if(isset($_POST['question_type']) || $new_question_text != $frage_titel || count($_POST['question_option']) != $row_count){
+            if(isset($_POST['question_type'])){
+                //wenn im Formular geändert, neu belegen
+                $question_type = $_POST['question_type'];
+            }
+            //alte frage deaktivieren
+            $sql1 = "UPDATE vl_vorlesung_frage SET aktiv=false WHERE frage_id = $frage_id";
+            mysqli_query($conn, $sql1);
+            
+            //neue frage einfügen
+            $sql2 = "INSERT INTO `vl_vorlesung_frage`(`vorlesung_id`, `frage_titel`, `frage_typ_id`,`vorherige_version_id`) VALUES ($vorlesung_id,'$new_question_text',$question_type,$frage_id)";
+            if (mysqli_query($conn, $sql2)) {
+                if(isset($_POST['question_option'])){
+                    $last_id = mysqli_insert_id($conn);
+                    foreach($_POST['question_option'] as $option){                    
+                        unset($sql3);
+                        if(!empty($option)){
+                            $sql3 = "INSERT INTO `vl_vorlesung_frage_antwortmoeglichkeiten`(`frage_id`, `antwort`) VALUES ($last_id,'$option')";
+        
+                            if (mysqli_query($conn, $sql3)) {
+                                //nichts zu tun, 
+                            } else {
+                                $successModify = false;
+                                $errorMsgModify = $errorMsgModify . mysqli_error($conn);
+                            }
+                        }                    
+                    }            
+                }
+            } else {
+                    $successModify = false;
+                    $errorMsgModify = $errorMsgModify . mysqli_error($conn);
+            }
+    
+        }else{
+            //keine Änderungen
+        }
     }
     mysqli_close($conn);
 
@@ -73,6 +139,24 @@
 ?>
 
 <div class="container-xl">
+    <?php        
+        if (isset($successModify)) {
+            if ($successModify) {
+        ?>
+                <div class="alert alert-success" role="alert">
+                    Änderungen gespeichert.
+                </div>
+            <?php
+            } else {
+            ?>
+                <div class="alert alert-danger" role="alert">
+                    Änderungen nicht gespeichert - versuchen Sie es erneut.<br>
+                    Fehler: <?= $errorMsgModify ?>
+                </div>
+        <?php
+            }
+        }
+    ?>
 
     <div class="row">
         <div class="col-sm">
@@ -96,6 +180,24 @@
             <a href="lectures.php" class="form-control btn btn-light">Schließen</a>
         </div>
     </div>
+    <?php
+        if(isset($successDelete)){
+            if($successDelete){
+                ?>
+                <div class="alert alert-success" role="alert">
+                    Frage ID <?= $frage_id ?> gelöscht.
+                </div>
+                <?php
+            }else{
+                ?>
+                <div class="alert alert-danger" role="alert">
+                    Frage nicht gelöscht - versuchen Sie es erneut.<br>
+                    Fehler: <?= $errorMsgDelete?>
+                </div>
+                <?php
+            }
+        }
+        ?>
 
     <h3>Name ändern</h3>
     <?php
@@ -153,6 +255,8 @@
                 <th>ID</th>
                 <th>Frage</th>
                 <th>Typ</th>
+                <th>Aktiv</th>
+                <th>Vorherige Version ID</th>
                 <th>Eigene Nummer</th>
             </tr>
             </thead>
@@ -167,6 +271,8 @@
                             <td><?= $row['frage_id']?></td>
                             <td><a href="lecturequestion.php?mode=edit&v_id=<?= $vorlesung_id ?>&q_id=<?= $row['frage_id']?>"><?= $row['frage_titel']?></td>
                             <td><?= $row['frage_typ_id']?></td>
+                            <td><?= $row['aktiv']?></td>
+                            <td><?= $row['vorherige_version_id']?></td>
                             <td><?= $row['fragenummer']?></td>
                         </tr>
                     <?php
@@ -175,7 +281,8 @@
                 ?>
             </tbody>
         </table>
-
+        <h3>Kurse</h3>
+        <p>Hier Zuordung zu Kursen ergänzen</p> 
 </div>
 
 <script>
@@ -209,4 +316,3 @@ function markAdd($id) {
 <?php
     generate_footer();
 ?>
-

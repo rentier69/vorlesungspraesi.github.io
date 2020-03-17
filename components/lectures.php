@@ -102,7 +102,7 @@ if(!isset($_SESSION["dozent"])){
                 $result = mysqli_query($conn, $group_select);
                 while ($row = mysqli_fetch_assoc($result)){
                     ?>
-                    <tr><td><?= $row['vorlesung_id']?></td><td><a href="lectureedit.php?id=<?= $row['vorlesung_id']?>"><?= $row['vorlesung_name']?></a></td></tr>
+                    <tr><td><?= $row['vorlesung_id']?></td><td><a href="lectureedit.php?v_id=<?= $row['vorlesung_id']?>"><?= $row['vorlesung_name']?></a></td></tr>
                     <?php
                 }
                 ?>

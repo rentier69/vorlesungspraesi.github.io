@@ -21,15 +21,11 @@
         generate_header("Frage bearbeiten", $frage_titel, $_SESSION['username'], '../');
     }
 ?>
-
-<?php
-?>
-
 <div class="container-xl">
     <?php
     if($_GET['mode'] == 'create'){        
     ?>
-        <form method="post" action="lectureedit.php?id=<?= $vorlesung_id ?>">
+        <form method="post" action="lectureedit.php?v_id=<?= $vorlesung_id ?>">
         <div id="saveQuestion" class="row">
             <div class="col-sm">
                 <input disabled="true" type="submit" class="form-control btn btn-success" name="save_question" id="save_question" value="Speichern">
@@ -63,86 +59,110 @@
             <fieldset id="question_options">
                 <input type="text" class="form-control" name="question_option[]" id="question_option">
             </fieldset>
-            <a class="btn btn-primary text-white mt-1" onclick="question_option_add()">Weitere Antwortmöglichkeit</a>
-            </div>
+            <a class="btn btn-primary text-white mt-1" onclick="question_option_add('question_options')">Weitere Antwortmöglichkeit</a>
+        </div>
     </form>
     <?php
     }elseif($_GET['mode'] == 'edit'){
     ?>
-        <div class="row">
-            <div class="col-sm">
-            <form action="lecturequestion.php?mode=edit&v_id=<?= $vorlesung_id ?>&q_id=<?= $frage_id?>" method="post">
+        <div class="row">            
+            <div class="col-sm order-2">
+                <form action="lectureedit.php?v_id=<?= $vorlesung_id ?>" method="post">
                     <div class="input-group mb-3">
-                        <input type="hidden" id="to_delete" name="to_delete" class="form-control" />
-                        <input type="hidden" name="newTitleTarget" id="newTitleTarget" class="form-control" value="<?= $frage_titel ?>" />
-                        <input type="submit" class="form-control btn btn-success" name="save" value="Änderungen speichern">
-                    </div>
-                </form>
-            </div>
-            <div class="col-sm">
-                <form action="lectureedit.php?id=<?= $vorlesung_id ?>" method="post">
-                    <div class="input-group mb-3">
-                        <input type="hidden" name="gruppe_id" value="<?= $gruppe_id ?>" />
+                        <input type="hidden" name="frage_id" value="<?= $frage_id ?>" />
                         <input type="submit" class="form-control btn btn-light" name="question_delete" value="Frage Löschen">
                     </div>
                 </form>
             </div>
-            <div class="col-sm">
+            <div class="col-sm order-3">
                 <a href="lectureedit.php?id=<?= $vorlesung_id ?>" class="form-control btn btn-light">Schließen</a>
+            </div>
+            <div class="col-sm order-1">          
+                    <div class="input-group mb-3">
+                        <button class="form-control btn btn-success" name="save_modified_question" onclick="form_submit('editQuestion')">Änderungen speichern</button>
+                    </div>
+            </div>
+        </div>
+        <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Achtung!</h4>
+            <p>Änderungen an einer Frage führen zu einer neuen Version, damit bereits gespeicherte Antworten weiter zur korrekten Frage und den korrekten Antworten führen.</p>
+            <hr>
+            <p class="mb-0">Bei einer Änderung wird <b>nichts aus der Datenbank gelöscht.</b></p>
+        </div>
+
+        <form id="editQuestion" action="lectureedit.php?v_id=<?= $vorlesung_id ?>&q_id=<?= $frage_id?>" method="post">
+        <!-- zur Identifikation der ausgeführten Funktion -->
+        <input type="hidden" name="save_modified_question" value="Änderungen speichern">
+
+        <h3>Frage bearbeiten</h3>
+        <div class="input-group mb-3">
+            <input readonly type="text" name="newTitle" id="newTitle" class="form-control" placeholder="Frage" value="<?= $frage_titel ?>"/>
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="button" onclick="enable('newTitle')"><i class="fas fa-edit"></i></button>
             </div>
         </div>
         <?php
-        if (isset($successModify)) {
-            if ($successModify) {
-        ?>
-                <div class="alert alert-success" role="alert">
-                    Änderungen gespeichert.
-                </div>
-            <?php
-            } else {
-            ?>
-                <div class="alert alert-danger" role="alert">
-                    Änderungen nicht gespeichert - versuchen Sie es erneut.<br>
-                    Fehler: <?= $errorMsgModify ?>
-                </div>
-        <?php
-            }
-        }
-        ?>
-        <h3>Frage bearbeiten</h3>
-        <input readonly type="text" name="newTitleSource" id="newTitleSource" class="form-control" placeholder="Frage" value="<?= $frage_titel ?>" onclick="enable('newTitleSource')" onkeyup="fillInput('newTitleSource','newTitleTarget')" />
-        
-
-        <?php
             if($frage_typ != 1){
                 ?>
-                <h3>Antwortoptionen bearbeiten</h3>
-                <?php
-                $conn = sql_connect();     
-                $sql = "SELECT antwort from vl_vorlesung_frage_antwortmoeglichkeiten where frage_id = $frage_id";
-                $result = mysqli_query($conn, $sql);
-                $i = 1;
-                while ($row = mysqli_fetch_assoc($result)){
-                    $input_id = "question_option_" . $i;
-                ?>
-                    <input readonly type="text" name="question_option[]" id="<?= $input_id?>" class="form-control mt-1" placeholder="Anwortmöglichkeit" value="<?= $row['antwort'] ?>" onclick="enable('<?= $input_id ?>')"/>
-                <?php
-                $i++;
-                }
-                mysqli_close($conn);
-                ?>
+                <h3>Fragentyp bearbeiten</h3>
+                <div class="input-group mb-3">
+                    <select disabled id="question_type" name="question_type" class="form-control">
+                        <?php
+                            if($frage_typ == 2){
+                                ?>
+                                <option selected value="2">Single Choice</option>
+                                <option value="3">Multiple Choice</option>
+                                <?php
+                            }elseif($frage_typ == 3){
+                                ?>
+                                <option selected value="3">Multiple Choice</option>
+                                <option value="2">Single Choice</option>
+                                <?php
+                            }
+                        ?>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="button" onclick="enable('question_type')"><i class="fas fa-edit"></i></button>
+                    </div>
+                </div>
 
+                <h3>Antwortoptionen bearbeiten</h3>
+                <fieldset id="question_option">
+                    <?php
+                        $sql = "SELECT antwort from vl_vorlesung_frage_antwortmoeglichkeiten where frage_id = $frage_id";
+                        $result = mysqli_query($conn, $sql);
+                        $i = 1;
+                        while ($row = mysqli_fetch_assoc($result)){
+                            $input_id = "question_options_" . $i;
+                    ?>                    
+                        <div class="input-group mb-3">
+                            <input readonly type="text" name="question_option[]" id="<?= $input_id?>" class="form-control" placeholder="Anwortmöglichkeit" value="<?= $row['antwort'] ?>"/>
+                             <div class="input-group-append">
+                                <button class="btn btn-secondary" type="button" onclick="enable('<?= $input_id ?>')"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    <?php
+                        $i++;
+                        }
+                    ?>
+                </fieldset>
+                <a class="btn btn-primary text-white mt-1" onclick="question_option_add('question_option')"><i class="fas fa-plus"></i></a>
+                <a class="btn btn-light mt-1" onclick="question_option_remove('question_option')"><i class="fas fa-minus"></i></a>
+            </form>
                 <?php
             }
         ?>
         
     <?php
-    }
-    ?>
-    
+        mysqli_close($conn);
+        }
+    ?>    
 </div>
 
 <script>
+    function form_submit($form_id){
+        document.getElementById($form_id).submit(); 
+    }
     function typeSelected(){
         document.getElementById('question_text').setAttribute('readonly', 'readonly');
         document.getElementById('question_type').setAttribute('readonly', 'readonly');
@@ -152,16 +172,23 @@
         }
         document.getElementById('save_question').removeAttribute('disabled');
     }
-
-    function question_option_add(){
+    function question_option_add($div_id){
         var inp = document.createElement("input");
         inp.className = "form-control mt-1";
         inp.name = "question_option[]"
-        inp.id = "question_option"
-        inp.type = "text";
-        
-        document.getElementById('question_options').appendChild(inp);
+        inp.id = "question_options";
+        inp.type = "text";        
+        document.getElementById($div_id).appendChild(inp);
         inp.focus();
+
+        console.log(document.getElementById("myForm").elements.length);
+    }
+    function question_option_remove($div_id){
+        $div = document.getElementById($div_id);
+        if($div.childNodes.length != 0){
+            $div.removeChild($div.lastChild);
+        }
+        console.log(document.getElementById("myForm").elements.length);
     }
     function reset_page(){
         document.getElementById('question_text').removeAttribute('readonly');
@@ -174,11 +201,13 @@
     function fillInput($source, $target) {
         document.getElementById($target).value = document.getElementById($source).value;
     }
-
     function enable($div_id){
-        document.getElementById($div_id).removeAttribute('readonly');
+        if(document.getElementById($div_id).hasAttribute('readonly')){
+            document.getElementById($div_id).removeAttribute('readonly');
+        }else if(document.getElementById($div_id).hasAttribute('disabled')){
+            document.getElementById($div_id).removeAttribute('disabled');
+        }
     }
-
 </script>
 
 <?php
