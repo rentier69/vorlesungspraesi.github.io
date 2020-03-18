@@ -34,7 +34,7 @@
                 <input type="reset" class="form-control btn btn-danger" onclick="reset_page()">
             </div>
             <div class="col-sm">
-            <a href="lectureedit.php?id=<?= $vorlesung_id ?>" class="form-control btn btn-light" role="button">Schließen</a>
+            <a href="lectureedit.php?v_id=<?= $vorlesung_id ?>" class="form-control btn btn-light" role="button">Schließen</a>
             </div>  
         </div>
         <label for="question_text">1. Schritt: Frage formulieren</label>
