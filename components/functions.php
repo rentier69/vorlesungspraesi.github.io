@@ -265,7 +265,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
         </main>
         <footer class="footer-custom">
             <div class="container">
-                <span class="text-muted">© <?= $year ?> Copyright Projektteam 19 Jahrgang 2017</span>
+                <span class="text-muted">© <?= $year ?> Projektteam 19 Jahrgang 2017</span>
             </div>
         </footer>
     </body>
