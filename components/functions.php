@@ -103,10 +103,11 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
     <html>
 
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title><?= $title ?></title>
         <link rel="stylesheet" href="<?= $dirsUp ?>css/bootstrap.css" />
         <link rel="stylesheet" href="<?= $dirsUp ?>css/fontawesome/css/all.css">
-        <link rel="stylesheet" href="<?= $dirsUp ?>css/sticky-footer.css" />
+        <link rel="stylesheet" href="<?= $dirsUp ?>css/custom.css" />
         <script src="<?= $dirsUp ?>js/jquery-3.0.0.min.js"></script>
         <script src="<?= $dirsUp ?>js/bootstrap.min.js"> </script>
         <script src="<?= $dirsUp ?>js/functions.js"></script>
@@ -118,7 +119,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
 
     <body>
 
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <a class="navbar-brand">
                 <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                     <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
@@ -152,7 +153,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                             ?>
                         </li>
                     </ul>
-                    <form class="form-inline mt-2 mt-md-0" action="abmelden.php" method="post">
+                    <form class="form-inline my-2 my-lg-0" action="abmelden.php" method="post">
                         <button type="button" class="btn" data-toggle="modal" data-target="#userMenu"> <span style="color: white;"><i class="fas fa-user"></i>&nbsp;<?= $loggedOnUser ?> &nbsp;</span> </button>
                         <button type="submit" class="btn btn-light my-2 my-sm-0">Logout <i class="fas fa-sign-out-alt"></i></button>
                     </form>
@@ -160,14 +161,11 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                 <!-- Modal Passwort ändern-->
                 <div id="passwordChangeModal" class="modal fade" role="dialog">
                     <div class="modal-dialog modal-lg">
-
-
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title"><?= $loggedOnUser ?> - Passwort zurücksetzen</h4>
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
-
                             <div class="modal-body">
                                 <form class="was-validated" method="POST" id="formChangePassword">
                                     <div class="form-group">
@@ -178,16 +176,13 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                                         <input type="password" name="password2Change" id="password2Change" class="form-control" placeholder="Passwort wiederholen" size="25"  />
                                         <div class="invalid-Feedback" id="error_password2Change" hidden> Passwörter müssen übereinstimmen</div>
                                     </div>
-
                             </div>
-
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-success" name="submitPasswordChange" id="submitPasswordChange" disabled>Passwort ändern</button>
                                 </form>
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <!-- Modal Usermenü -->
@@ -198,19 +193,13 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                                 <h4 class="modal-title"><?= $loggedOnUser ?> - Benutzermenü</h4>
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
-
                             <div class="modal-body">
-
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordChangeModal" data-dismiss="modal">Passwort ändern </button>
-
                             </div>
-
                             <div class="modal-footer">
-
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <script>
@@ -240,7 +229,8 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
             ?>
 
         </nav>
-        <div class="jumbotron jumbotron-fluid">
+        <main role="main">
+        <div class="jumbotron">
             <div class="container">
                 <h1 class="display-4"><?= $title ?></h1>
                 <p class="lead"><?= $jumbotron_lead ?></p>
@@ -272,6 +262,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
     {
         $year = date('Y');
         ?>
+        </main>
         <footer class="footer-custom">
             <div class="container">
                 <span class="text-muted">© <?= $year ?> Copyright Projektteam 19 Jahrgang 2017</span>
