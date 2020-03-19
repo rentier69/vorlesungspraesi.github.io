@@ -4,7 +4,6 @@ html {
   }
 body{
   margin-bottom: 80px; /* Margin bottom by footer height +20px */
-  padding-top: 3.5rem; /* für jumbotron header */
 }
 .footer-custom {
     position: absolute;

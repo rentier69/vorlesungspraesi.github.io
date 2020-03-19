@@ -119,7 +119,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
 
     <body>
 
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             <a class="navbar-brand">
                 <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                     <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
@@ -140,18 +140,33 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
+                    <ul class="navbar-nav mr-auto">                        
                             <?php
                             if (isset($_SESSION['dozent'])) {
                                 //Navbar für Anwender
-                                echo '<a class="nav-link" href="doz_bereich.php">Home <span class="sr-only">(current)</span></a>';
+                                ?>                                
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="doz_bereich.php">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="usermgmt.php">Benutzer</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="groupmgmt.php">Gruppen</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="lectures.php">Vorlesungen</a>
+                                </li>
+                                <?php
                             } else {
                                 //Navbar für Studenten
-                                echo '<a class="nav-link" href="stud_bereich.php">Home <span class="sr-only">(current)</span></a>';
+                                ?>
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="stud_bereich.php">Home</a>
+                                </li>
+                                <?php
                             }
                             ?>
-                        </li>
                     </ul>
                     <form class="form-inline my-2 my-lg-0" action="abmelden.php" method="post">
                         <button type="button" class="btn" data-toggle="modal" data-target="#userMenu"> <span style="color: white;"><i class="fas fa-user"></i>&nbsp;<?= $loggedOnUser ?> &nbsp;</span> </button>
@@ -229,7 +244,6 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
             ?>
 
         </nav>
-        <main role="main">
         <div class="jumbotron">
             <div class="container">
                 <h1 class="display-4"><?= $title ?></h1>
@@ -262,7 +276,6 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
     {
         $year = date('Y');
         ?>
-        </main>
         <footer class="footer-custom">
             <div class="container">
                 <span class="text-muted">© <?= $year ?> Projektteam 19 Jahrgang 2017</span>
