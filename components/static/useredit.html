@@ -1,0 +1,135 @@
+<div id="passwordResetModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><?= $user_name ?> - Passwort zurücksetzen</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form class="was-validated" method="POST" action="useredit.php?id=<?= $benutzer_id ?>" id="formPasswordReset">
+                    <div class="form-group" >
+                        <input type="password" name="password1" id="password1" class="form-control" placeholder="Passwort" size="25" required />
+                        <div class="invalid-Feedback" id="error_password1" hidden> Passwort eingeben</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password2" id="password2" class="form-control" placeholder="Passwort wiederholen" size="25" required />
+                        <div class="invalid-Feedback" id="error_password2" hidden> Passwörter müssen übereinstimmen</div>
+                    </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" name="submitPasswordReset" id="submitPasswordReset" disabled>Passwort ändern</button>
+                </form>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Benutzer bearbeiten</h1>
+    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+           
+        
+        <button class="btn btn-sm btn-outline-success">
+            Speichern
+        </button>
+        <button class="btn btn-sm btn-outline-secondary">
+            Benutzer deaktivieren
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#passwordResetModal">
+            Passwort zurücksetzen
+        </button>
+        <button class="btn btn-sm btn-outline-secondary">
+            Benutzer löschen
+        </button>
+        <button onclick="changeMode('users')" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    </div>
+</div>
+<div id="main-body">
+    <!--
+    <div class="row">
+        <div class="col-sm">
+            <form action="useredit.php?id=<?= $benutzer_id ?>" method="post">
+                <div class="input-group mb-3">
+                    <input type="hidden" id="to_delete" name="to_delete" class="form-control" />
+                    <input type="hidden" id="to_add" name="to_add" class="form-control" />
+                    <input type="hidden" name="newNameTarget" id="newNameTarget" class="form-control" value="<?= $user_name ?>" />
+                    <input type="submit" class="form-control btn btn-success" name="save" value="Alle Änderungen speichern">
+                </div>
+            </form>
+        </div>
+        <div class="col-sm">
+            <form action="useredit.php?id=<?= $benutzer_id ?>" method="post">
+                <div class="input-group mb-3">
+                    <input type="hidden" name="benutzer_id" value="<?= $benutzer_id ?>" />
+                    <input type="submit" class="form-control btn btn-light" name="user_deactivate" value="Benutzer deaktivieren">
+                    <input type="submit" class="form-control btn btn-light" name="user_activate" value="Benutzer aktivieren">
+                </div>
+            </form>
+        </div>
+        <div class="col-sm">
+            <form action="usermgmt.php" method="post">
+                <div class="input-group mb-3">
+                    <input type="hidden" name="benutzer_id" value="<?= $benutzer_id ?>" />
+                    <input type="submit" class="form-control btn btn-light" name="user_delete" value="Benutzer löschen">
+                </div>
+            </form>
+        </div>
+        <div class="col-sm">
+            <button type="button" class="btn btn-light form-control" data-toggle="modal" data-target="#passwordResetModal">Passwort zurücksetzen</button>
+        </div>
+        <div class="col-sm">
+            <a href="#"  class="form-control btn btn-light">Schließen</a>
+        </div>
+    </div>
+-->
+    
+    <h3>Name ändern</h3>
+    <form action="useredit.php?id=<?= $benutzer_id ?>" method="post" class="was-validated" id="formNameAendern">
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <input type="text" name="newNameSource" id="newNameSource" class="form-control" onkeyup="fillInput('newNameSource','newNameTarget')" placeholder="Name" value="<?= $user_name ?>" size="20" />
+                <div class="invalid-feedback" id="error_newNameSource" hidden>Benutzername eingeben</div>
+                <div class="valid-feedback" id="valid_newNameSource" hidden> Benutzername verfügbar </div>
+            </div>
+        </div>
+    </form>
+    <h3>Mitglied von</h3>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kürzel</th>
+                <th>Name</th>
+                <th>Aus Gruppe entfernen</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    
+    <h3>Alle Gruppen</h3>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kürzel</th>
+                <th>Name</th>
+                <th>Zu Gruppe hinzufügen</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>    
+</div>
