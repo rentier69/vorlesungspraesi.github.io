@@ -75,16 +75,14 @@ var checkField = function (field_id_string, field_name, submit_id_string, pruefu
                             newDiv.setAttribute('class', 'invalid-Feedback');
                         }
                         changeSubmitButton(submit_id_string, form_id_string);
-
                     }
-
                 };
             }
         }
     }
 };
 
-var checkPassword = function(password_id_string, passwordRepeat_id_string) {
+var checkPassword = function(password_id_string, passwordRepeat_id_string, submit_id_string, form_id_string) {
     password=document.getElementById(password_id_string);
     passwordRepeat=document.getElementById(passwordRepeat_id_string);
     if (password.value.length != 0) {
@@ -100,6 +98,7 @@ var checkPassword = function(password_id_string, passwordRepeat_id_string) {
             if (password.value == passwordRepeat.value) {
                 password.setCustomValidity('');
                 passwordRepeat.setCustomValidity('');
+                changeSubmitButton(submit_id_string, form_id_string);
             } else {
                 password.setCustomValidity('');
                 passwordRepeat.setCustomValidity('Passwörter müssen übereinstimmen');
