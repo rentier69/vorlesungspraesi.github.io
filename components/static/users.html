@@ -1,88 +1,35 @@
-<!--<?php
-if (isset($successDelete)) {
-    if ($successDelete) {
-?>
-        <div class="alert alert-success" role="alert">
-            Benutzer <?= $_POST['benutzer_id'] ?> erfolgreich gelöscht.
-        </div>
-    <?php
-    } else {
-    ?>
-        <div class="alert alert-danger" role="alert">
-            Löschen nicht erfolgreich - versuchen Sie es erneut.<br>
-            Fehler: <?= $errorMsgDelete ?>
-        </div>
-<?php
-    }
-}
-?>
-<h3>Benutzer anlegen</h3>
-<?php
-if (isset($successCreate)) {
-    if ($successCreate) {
-?>
-        <div class="alert alert-success" role="alert">
-            Benutzer <?= $_POST['name'] ?> erfolgreich angelegt.
-        </div>
-    <?php
-    } else {
-    ?>
-        <div class="alert alert-danger" role="alert">
-            Anlage nicht erfolgreich - versuchen Sie es erneut.<br>
-            Fehler: <?= $errorMsgCreate ?>
-        </div>
-<?php
-    }
-}
-?>
--->
 <div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Benutzerverwaltung</h1>
-    <!--
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group mr-2">
-            <button class="btn btn-sm btn-outline-secondary">Share</button>
-            <button class="btn btn-sm btn-outline-secondary">Export</button>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-        </button>
-    </div>
-    -->
 </div>
 <div id="main-body">
     <form action="#" method="post" class="was-validated" id="formUserCreate">
-        <div class="input-group mb-3">
-            <div class="form-group">
-                <input type="text" name="username" id="username" onkeyup="checkField('username', 'Benutzername', 'user_create', false, null, 'formUserCreate')" class="form-control" placeholder="Benutzername" size="40" required />
+        <div class="form-row">
+            <div class="col-md-2">
+                <input type="text" name="username" id="username" onkeyup="checkField('username', 'Benutzername', 'user_create', false, null, 'formUserCreate')" class="form-control" placeholder="Benutzername" required />
                 <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
                 <div class="valid-feedback" id="valid_username"> Benutzername verfügbar </div>
             </div>
-            <div class="form-group">
-            <input type="password" name="password1" id="password1" oninput="checkPassword('password1', 'password2', 'user_create', 'formUserCreate')" class="form-control" placeholder="Passwort" size="35" required />
-            <div class="invalid-Feedback" id="error_password1" hidden> Passwort eingeben</div>
+            <div class="col-md-2">
+                <input type="password" name="password1" id="password1" oninput="checkPassword('password1', 'password2', 'user_create', 'formUserCreate')" class="form-control" placeholder="Passwort" required />
+                <div class="invalid-Feedback" id="error_password1" hidden> Passwort eingeben</div>
             </div>
-            <div class="form-group">
-            <input type="password" name="password2" id="password2" oninput="checkPassword('password1', 'password2', 'user_create', 'formUserCreate')" class="form-control" placeholder="Passwort wiederholen" size="35" required />
-            <div class="invalid-Feedback" id="error_password2" hidden>Passwörter müssen übereinstimmen</div>
+            <div class="col-md-2">
+                <input type="password" name="password2" id="password2" oninput="checkPassword('password1', 'password2', 'user_create', 'formUserCreate')" class="form-control" placeholder="Passwort wiederholen" required />
+                <div class="invalid-Feedback" id="error_password2" hidden>Passwörter müssen übereinstimmen</div>
             </div>
-            <select class="form-control" name="user_type" id="user_type">
-                <option selected value="student">Student</option>
-                <option value="dozent">Dozent</option>
-            </select>
-            <div class="input-group-append">
-                <div class="form-group">
-                    <button disabled class="btn btn-primary btn-block" name="user_create" onclick="event.preventDefault(); createUser(click);" id="user_create">Benutzer anlegen</button>
-                </div>
+            <div class="col-md-2">
+                <select class="custom-select form-control" name="user_type" id="user_type">
+                    <option selected value="student">Student</option>
+                    <option value="dozent">Dozent</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button disabled class="btn btn-primary btn-block form-control" name="user_create" onclick="event.preventDefault(); createUser();" id="user_create">Benutzer anlegen</button>
             </div>
         </div>
     </form>
-    
-    <hr>
     <h3>Alle Benutzer</h3>
     <input type="text" id="searchInput" class="form-control" onkeyup="searchUsers()" placeholder="Nach ID oder Name suchen..">
-    
     <table class="table table-hover" id="allUsers">
         <thead>
             <tr>
