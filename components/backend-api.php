@@ -1,4 +1,27 @@
 <?php
+session_start();
+?>
+
+<?php
+if (isset($_SESSION['username'])) {
+    if (isset($_SESSION["dozent"])) {
+        if ($_SESSION["dozent"]) {
+            //hier weitermachen
+        } else {
+            echo "Authentifizierung fehlgeschlagen";
+            exit();
+        }
+    } else {
+        echo "Authentifizierung fehlgeschlagen";
+        exit();
+    }
+} else {
+    echo "Authentifizierung fehlgeschlagen";
+    exit();
+}
+?>
+
+<?php
     require('functions.php');
     header('Content-Type: application/json; charset=utf-8');
 

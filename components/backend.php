@@ -1,3 +1,25 @@
+<?php
+session_start();
+?>
+
+<?php
+if (isset($_SESSION['username'])) {
+    if (isset($_SESSION["dozent"])) {
+        if ($_SESSION["dozent"]) {
+            //hier weitermachen
+        } else {
+            header("Location: ../index.php");
+            die("Bitte melden Sie sich als Dozent an");
+        }
+    } else {
+        header("Location: ../index.php");
+        die("Bitte melden Sie sich als Dozent an");
+    }
+} else {
+    header("Location: ../index.php");
+    die("Bitte melden Sie sich an");
+}
+?>
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,13 +29,16 @@
         <!-- <link rel="stylesheet" href="../css/custom.css" /> -->
         <link rel="stylesheet" href="../css/backend.css" />
         <script src="../js/jquery-3.0.0.min.js"></script>
-        <script src="../js/bootstrap.min.js"> </script>
-        <script src="../js/functions.js"></script>
-        <script src="../js/backend.js"></script>
+        <script async src="../js/bootstrap.min.js"> </script>
+        <script async src="../js/functions.js"></script>
+        <script async src="../js/backend.js"></script>
     </head>
     <body>
-        <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap p-0 shadow">
-            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">
+        <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
+            <div class="navbar-toggler clickable" id="sidebarCollapse">                    
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <a class="navbar-brand" href="backend.php">
                 <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                     <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
                     <path fill="#E2001A" d="M33 .3l-9 9.1c-.4.4-.8 1.2-.8 1.6v19.7c0 .4.4.4.8 0l9.1-9.1c.4-.4.8-1.2.8-1.6V.3c-.1-.4-.4-.4-.9 0z"></path>
@@ -26,18 +51,30 @@
                     <path fill="#5C6971" d="M106.6 26.4c0 1-.2 1.8-.6 2.6-.4.8-.9 1.4-1.6 1.9-.7.5-1.5.9-2.3 1.2-.9.3-1.8.4-2.8.4h-4.9c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4V11.7c0-.1.1-.3.2-.4.1-.1.2-.1.4-.1h5.3c.8 0 1.6.1 2.4.3.8.2 1.5.5 2 1 .6.4 1.1 1 1.4 1.7.4.7.5 1.5.5 2.4 0 .6-.1 1.1-.4 1.6-.3.5-.6 1-1 1.4-.4.4-.8.8-1.3 1.1-.5.3-.9.5-1.3.6.6.1 1.2.3 1.7.6s1 .7 1.4 1.1c.4.4.7 1 1 1.5.4.6.5 1.2.5 1.9zm-2.9-9.8c0-1.1-.4-1.9-1.1-2.6-.7-.6-1.7-1-2.9-1h-3.5v7.4h3.4c.5 0 1-.1 1.5-.3.5-.2.9-.5 1.3-.8.4-.3.7-.7.9-1.2.3-.4.4-.9.4-1.5zm.5 9.7c0-1.2-.4-2.2-1.3-2.9-.8-.7-1.9-1.1-3.3-1.1h-3.5v8.3h3.5c.6 0 1.2-.1 1.8-.3.6-.2 1-.5 1.5-.9.4-.4.7-.8 1-1.4.2-.5.3-1.1.3-1.7zm21.3 5.6c0 .1-.1.3-.2.4-.1.1-.2.2-.4.2h-1.6c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4l-3.5-17.8-3.5 17.8c0 .1-.1.3-.2.4-.1.1-.3.2-.4.2h-1.6c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4l-4.1-20.2c0-.1 0-.3.1-.4.1-.1.2-.1.4-.1h1.3c.3 0 .6.2.6.5l3.2 17.9 3.5-17.9c.1-.3.3-.5.6-.5h1.6c.3 0 .5.2.6.5l3.5 17.9 3.2-17.9c.1-.3.3-.5.6-.5h1.3c.1 0 .3 0 .4.1.1.1.1.2.1.4l-4.3 20.2z"></path>
                 </svg>
             </a>
-            <!--<input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">-->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
             </button>
-            <form class="form-inline my-2 my-lg-0 justify-content-end w-100" action="abmelden.php" method="post">
-                    <button type="button" class="btn" data-toggle="modal" data-target="#userMenu"> <span style="color: white;"><i class="fas fa-user"></i>&nbsp;Testuser &nbsp;</span> </button>
-                    <button type="submit" class="btn btn-dark my-2 my-sm-0">Logout <i class="fas fa-sign-out-alt"></i></button>
-            </form>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="form-inline my-2 my-lg-0 justify-content-end w-100">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i> <?= $_SESSION["username"]?>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupUserMenu">
+                            <a class="dropdown-item"  data-toggle="modal" data-target="#userMenu" href="#">
+                                Benutzermenü
+                            </a>
+                            <a class="dropdown-item" href="logout.php">
+                                Logout <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>                
+            </div>
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <nav class="col-md-2 d-md-block bg-light sidebar flex-md-nowrap" id="sidebar">
                     <div class="sidebar-sticky">
                         <ul class="nav flex-column" id="nav">
                             <li class="nav-item">
@@ -63,8 +100,35 @@
                         </ul>
                     </div>
                 </nav>
-                <div role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main"></div>
+                
+                <div role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4 row no-gutters">
+                    
+                    <div id="main" class="col">
+
+                    </div>                
+                </div>
             </div>
         </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#sidebarCollapse').on('click', function () {
+                    $('.sidebar').toggleClass('active');
+                });
+                $('#nav').on('click', function () {
+                    //soll nur bei mobile devices ausgeführt werden
+                    //selber wert wie in media query in backend.css
+                    if ($(window).width() <= 768 ){
+                        $('.sidebar').toggleClass('active');
+                    }                    
+                });
+                $('#main').on('click', function () {
+                    //soll nur bei mobile devices ausgeführt werden
+                    //selber wert wie in media query in backend.css
+                    if ($(window).width() <= 768 ){
+                        $('.sidebar').toggleClass('active',false);
+                    }  
+                });
+            });
+        </script>
     </body>
 </html>

@@ -12,7 +12,7 @@ if (isset($_SESSION['username'])) {
                 <a href="usermgmt.php" class="btn btn-primary"> Userverwaltung </a>
                 <a href="lectures.php" class="btn btn-primary"> Vorlesungsverwaltung </a>
             </div>
-');
+            ');
         } else {
             header("Location: ../index.php");
             die("Bitte melden Sie sich als Dozent an");

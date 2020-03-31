@@ -2,7 +2,7 @@
 session_start();
 if(isset($_SESSION["username"])){
     if(isset($_SESSION["dozent"])){
-        header("Location: components/doz_bereich.php");
+        header("Location: components/backend.php");
     }else{
         header("Location: components/stud_bereich.php");
     }
@@ -41,7 +41,7 @@ if (isset($_POST['submit'])) {
                     while($row=mysqli_fetch_assoc($result)){
                         if($row["Dozent"]==1){
                             $_SESSION["dozent"]=true;
-                            header("Location: components/doz_bereich.php");
+                            header("Location: components/backend.php");
                         }else{
                             header("Location: components/stud_bereich.php");
                         }

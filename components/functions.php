@@ -168,7 +168,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                             }
                             ?>
                     </ul>
-                    <form class="form-inline my-2 my-lg-0" action="abmelden.php" method="post">
+                    <form class="form-inline my-2 my-lg-0" action="logout.php" method="post">
                         <button type="button" class="btn" data-toggle="modal" data-target="#userMenu"> <span style="color: white;"><i class="fas fa-user"></i>&nbsp;<?= $loggedOnUser ?> &nbsp;</span> </button>
                         <button type="submit" class="btn btn-light my-2 my-sm-0">Logout <i class="fas fa-sign-out-alt"></i></button>
                     </form>
