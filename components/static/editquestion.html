@@ -1,0 +1,58 @@
+<div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2" id="main-top-heading">Frage bearbeiten</h1>    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">       
+            <button onclick="editQuestion.save();" id="save_question" class="btn btn-sm btn-outline-success">
+                Speichern
+            </button>
+            <!-- <button onclick="createQuestion.reset_page()" class="btn btn-sm btn-outline-secondary"> -->
+            <button onclick="editQuestion.delete();" class="btn btn-sm btn-outline-secondary">
+                Frage löschen
+            </button>
+            <button onclick="closeEditQuestion();" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div id="main-body">
+    <div id="changeQuestionAlert" style="visibility: hidden; height: 0;">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Achtung!</h4>
+            <p>Änderungen an einer Frage, die bereits gespeicherte Antworten in der Datenbank hat, führen zu einer neuen Version der Frage, damit bereits gespeicherte Antworten weiter zur ursprünglichen Frage führen.</p>
+            <hr>
+            <p class="mb-0">Bei einer Änderung wird <b>nichts aus der Datenbank gelöscht.</b></p>
+        </div>
+    </div>
+
+    <h3>Frage bearbeiten</h3>
+    <div class="input-group mb-3">
+        <input disabled type="text" name="question_text" id="question_text" class="form-control" placeholder="Frage"/>
+        <div class="input-group-append">
+            <button class="btn btn-secondary" type="button" onclick="enableInput(['question_text'])"><i class="fas fa-edit"></i></button>
+        </div>
+    </div>
+    
+    <!-- wird nur bei SC und MC eingeblendet -->
+    <h3>Fragentyp bearbeiten</h3>
+    <div class="input-group">
+        <select  disabled id="question_type" name="question_type" class="form-control custom-select" onchange="editQuestion.typeChanged(this.value)">
+        </select>
+        <!-- <select disabled id="question_type" name="question_type" class="form-control custom-select"></select> -->
+        <div class="input-group-append">
+            <button class="btn btn-secondary" type="button" onclick="enableInput(['question_type'])"><i class="fas fa-edit"></i></button>
+        </div>
+    </div>
+    <small id="question_type_help" class="form-text text-muted"></small>
+    
+        
+    <div id="setOptions" style="visibility: hidden;">
+        <h3>Antwortoptionen bearbeiten</h3>
+        <fieldset id="question_options"></fieldset>
+
+        <div class="mt-2"> 
+            <button class="btn btn-sm btn-outline-primary" onclick="event.preventDefault();editQuestion.question_option_add('question_options')"><i class="fas fa-plus"></i></button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="event.preventDefault();editQuestion.question_option_remove('question_options')"><i class="fas fa-minus"></i></button>    
+        </div>
+    </div>
+</div>

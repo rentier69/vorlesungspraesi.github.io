@@ -1,0 +1,36 @@
+<div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2" id="main-top-heading">Frage erstellen</h1>    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">       
+            <button disabled onclick="createQuestion.save();" id="save_question" class="btn btn-sm btn-outline-success">
+                Speichern
+            </button>
+            <!-- <button onclick="createQuestion.reset_page()" class="btn btn-sm btn-outline-secondary"> -->
+            <button onclick="changeMode('createquestion');" class="btn btn-sm btn-outline-secondary">
+                Zurücksetzen
+            </button>
+            <button onclick="closeCreateQuestion();" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div id="main-body">
+    <form method="post" id="createquestion" action="#">
+        <label for="question_text">1. Schritt: Frage formulieren</label>
+        <input type="text" class="form-control" name="question_text" id="question_text">
+        
+        <label for="question_type">2. Schritt: Fragentyp wählen</label>
+        <select  id="question_type" name="question_type" class="form-control custom-select" onchange="createQuestion.typeChanged(this.value)">
+        </select> 
+        <small id="question_type_help" class="form-text text-muted"></small>
+        <div id="setOptions" style="visibility: hidden; height: 0;">
+            <label>3. Schritt: Anwortmöglichkeiten hinzufügen</label>
+            <fieldset id="question_options"></fieldset>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="event.preventDefault();createQuestion.question_option_add('question_options')"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="event.preventDefault();createQuestion.question_option_remove('question_options')"><i class="fas fa-minus"></i></button>
+            </div>
+        </div>
+    </form>
+</div>
