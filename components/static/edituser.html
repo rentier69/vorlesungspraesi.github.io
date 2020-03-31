@@ -18,7 +18,7 @@
                     </div>
             </div>
             <div class="modal-footer">
-                <button disabled type="submit" onclick="event.preventDefault(); userEdit.resetPasswort();"class="btn btn-success" data-dismiss="modal" name="submitPasswordReset" id="submitPasswordReset">Passwort ändern</button>
+                <button disabled type="submit" onclick="event.preventDefault(); editUser.resetPasswort();"class="btn btn-success" data-dismiss="modal" name="submitPasswordReset" id="submitPasswordReset">Passwort ändern</button>
                 </form>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
             </div>
@@ -33,19 +33,19 @@
             <!-- <button class="btn btn-sm btn-outline-success">
                 Speichern
             </button>  -->
-            <button hidden id="button_activate" onclick="userEdit.activate();" class="btn btn-sm btn-outline-secondary">
+            <button hidden id="button_activate" onclick="editUser.activate();" class="btn btn-sm btn-outline-secondary">
                 Benutzer aktivieren
             </button>
-            <button hidden id="button_deactivate"  onclick="userEdit.deactivate();" class="btn btn-sm btn-outline-secondary">
+            <button hidden id="button_deactivate"  onclick="editUser.deactivate();" class="btn btn-sm btn-outline-secondary">
                 Benutzer deaktivieren
             </button>
             <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#passwordResetModal">
                 Passwort zurücksetzen
             </button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="userEdit.delete();">
+            <button class="btn btn-sm btn-outline-secondary" onclick="editUser.delete();">
                 Benutzer löschen
             </button>
-            <button onclick="closeUserEdit();" class="btn btn-sm btn-outline-secondary">
+            <button onclick="closeEditUser();" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -63,7 +63,7 @@
                     <button class="btn btn-secondary" type="button" onclick="enableInput(['newName','buttonSaveUsername'])"><i class="fas fa-edit"></i></button>
                 </div>
                 <div class="input-group-append">
-                    <button disabled class="btn btn-outline-success" id="buttonSaveUsername" onclick="event.preventDefault(); userEdit.rename(); "type="button">Speichern</button>
+                    <button disabled class="btn btn-outline-success" id="buttonSaveUsername" onclick="event.preventDefault(); editUser.rename(); "type="button">Speichern</button>
                 </div>
             </div>            
         </div>

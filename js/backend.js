@@ -89,10 +89,10 @@ function changeMode(mode, item_id) {
             });
             document.getElementById("nav_users").classList.add("active");
             break;
-        case "useredit":
-            getData("get", "static/useredit.html", null, "html").done(function (data) {
+        case "edituser":
+            getData("get", "static/edituser.html", null, "html").done(function (data) {
                 setStaticHtml(data);
-                initializeUserEdit(item_id);
+                initializeEditUser(item_id);
             });
             document.getElementById("nav_users").classList.add("active");
             break;
@@ -123,7 +123,7 @@ function createUser(data) {
         //var data = JSON.parse(data);
 
         // Build HTML table row with given data
-        newRow = '<tr class="clickable" onclick="changeMode(\'useredit\',' + data.benutzer_id + ')">';
+        newRow = '<tr class="clickable" onclick="changeMode(\'edituser\',' + data.benutzer_id + ')">';
         newRow += "<td>" + data.benutzer_id + "</td>";
         newRow += "<td>" + data.benutzername + "</td>";
         newRow += "<td>" + data.aktiv + "</td>";
@@ -144,7 +144,7 @@ function loadUserList(data) {
         // Build HTML table with given data
         var tbody = "";
         for (let row of data) {
-            tbody += '<tr class="clickable" onclick="changeMode(\'useredit\',' + row.benutzer_id + ')">';
+            tbody += '<tr class="clickable" onclick="changeMode(\'edituser\',' + row.benutzer_id + ')">';
             tbody += "<td>" + row.benutzer_id + "</td>";
             tbody += "<td>" + row.benutzername + "</td>";
             tbody += "<td>" + row.aktiv + "</td>";
@@ -157,48 +157,48 @@ function loadUserList(data) {
         document.getElementById("allUsersBody").innerHTML += tbody;
     }
 }
-function initializeUserEdit(id) {
-    userEdit.benutzer_id = id;
-    userEdit.queryDetails();
-    userEdit.queryGroupMembership();
-    userEdit.prepareUserInterface();
+function initializeEditUser(id) {
+    editUser.benutzer_id = id;
+    editUser.queryDetails();
+    editUser.queryGroupMembership();
+    editUser.prepareUserInterface();
 }
-function closeUserEdit() {
-    userEdit.benutzer_id = null;
-    userEdit.details = null;
-    userEdit.groupMembership = null;
+function closeEditUser() {
+    editUser.benutzer_id = null;
+    editUser.details = null;
+    editUser.groupMembership = null;
     changeMode('users');
 }
 function userCallbackHandler() {
-    userEdit.details = null;
-    userEdit.groupMembership = null;
-    userEdit.queryDetails();
-    userEdit.queryGroupMembership();
-    userEdit.prepareUserInterface();
+    editUser.details = null;
+    editUser.groupMembership = null;
+    editUser.queryDetails();
+    editUser.queryGroupMembership();
+    editUser.prepareUserInterface();
 }
-var userEdit = {
+var editUser = {
     benutzer_id: null,
     details: null,
     groupMembership: null,
     queryDetails: function () {
-        var url = "backend-api.php?mode=users&action=getById&u_id=" + userEdit.benutzer_id;
-        getData("get", url, null).done(userEdit.setDetails);
+        var url = "backend-api.php?mode=users&action=getById&u_id=" + editUser.benutzer_id;
+        getData("get", url, null).done(editUser.setDetails);
     },
     queryGroupMembership: function () {
-        var url = "backend-api.php?mode=users&action=getGroupMembership&u_id=" + userEdit.benutzer_id;
-        getData("get", url, null).done(userEdit.setGroupMembership);
+        var url = "backend-api.php?mode=users&action=getGroupMembership&u_id=" + editUser.benutzer_id;
+        getData("get", url, null).done(editUser.setGroupMembership);
     },
     setDetails: function (data) {
-        userEdit.details = data;
+        editUser.details = data;
     },
     setGroupMembership: function (data) {
-        userEdit.groupMembership = data;
+        editUser.groupMembership = data;
     },
     prepareUserInterface: function () {
-        if (userEdit.details != null && userEdit.groupMembership != null) {
-            document.getElementById("main-top-heading").innerHTML = "Benutzer bearbeiten: " + userEdit.details.benutzername;
-            document.getElementById("newName").value = userEdit.details.benutzername;
-            if (userEdit.details.aktiv == 1) {
+        if (editUser.details != null && editUser.groupMembership != null) {
+            document.getElementById("main-top-heading").innerHTML = "Benutzer bearbeiten: " + editUser.details.benutzername;
+            document.getElementById("newName").value = editUser.details.benutzername;
+            if (editUser.details.aktiv == 1) {
                 document.getElementById("button_deactivate").removeAttribute("hidden");
                 document.getElementById("button_activate").setAttribute("hidden", true);
             } else {
@@ -209,12 +209,12 @@ var userEdit = {
             document.getElementById("memberOfBody").innerHTML = "";
             document.getElementById("notMemberOfBody").innerHTML = "";
 
-            for (let row of userEdit.groupMembership) {
-                userEdit.addToMemberhipTable(row);
+            for (let row of editUser.groupMembership) {
+                editUser.addToMemberhipTable(row);
             }
         } else {
             //warten bis variablen durch ajax callback befüllt wurden
-            setTimeout(userEdit.prepareUserInterface, 50);
+            setTimeout(editUser.prepareUserInterface, 50);
         }
     },
     addToMemberhipTable: function (row) {
@@ -224,11 +224,11 @@ var userEdit = {
         newRow += "<td>" + row.gruppenname + "</td>";
 
         if (row.memberOf == 1) {
-            newRow += '<td><i class="fas fa-minus clickable" onclick="userEdit.removeFromGroup(' + row.gruppe_id + ')"></td>';
+            newRow += '<td><i class="fas fa-minus clickable" onclick="editUser.removeFromGroup(' + row.gruppe_id + ')"></td>';
             newRow += "</tr>";
             document.getElementById("memberOfBody").innerHTML += newRow
         } else if (row.memberOf == 0) {
-            newRow += '<td><i class="fas fa-plus clickable" onclick="userEdit.addToGroup(' + row.gruppe_id + ')"></td>';
+            newRow += '<td><i class="fas fa-plus clickable" onclick="editUser.addToGroup(' + row.gruppe_id + ')"></td>';
             newRow += "</tr>";
             document.getElementById("notMemberOfBody").innerHTML += newRow
         }
@@ -236,14 +236,14 @@ var userEdit = {
     activate: function () {
         var url = "backend-api.php?mode=users&action=activate";
         var data = {
-            id: userEdit.benutzer_id
+            id: editUser.benutzer_id
         }
         getData("post", url, data).done(userCallbackHandler);
     },
     deactivate: function () {
         var url = "backend-api.php?mode=users&action=deactivate";
         var data = {
-            id: userEdit.benutzer_id
+            id: editUser.benutzer_id
         }
         getData("post", url, data).done(userCallbackHandler);
     },
@@ -251,7 +251,7 @@ var userEdit = {
         var url = "backend-api.php?mode=users&action=rename";
         var data = {
             name: document.getElementById("newName").value,
-            id: userEdit.benutzer_id
+            id: editUser.benutzer_id
         }
         getData("post", url, data).done(userCallbackHandler);
         disableInput(['newName', 'buttonSaveUsername'])
@@ -259,7 +259,7 @@ var userEdit = {
     resetPasswort: function () {
         var url = "backend-api.php?mode=users&action=resetPw";
         var data = {
-            id: userEdit.benutzer_id,
+            id: editUser.benutzer_id,
             pw: document.getElementById("password1").value
         }
         getData("post", url, data).done(userCallbackHandler);
@@ -268,7 +268,7 @@ var userEdit = {
     addToGroup: function (group_id) {
         var url = "backend-api.php?mode=users&action=addToGroup";
         var data = {
-            u_id: userEdit.benutzer_id,
+            u_id: editUser.benutzer_id,
             g_id: group_id
         }
         getData("post", url, data).done(userCallbackHandler);
@@ -276,7 +276,7 @@ var userEdit = {
     removeFromGroup: function (group_id) {
         var url = "backend-api.php?mode=users&action=removeFromGroup";
         var data = {
-            u_id: userEdit.benutzer_id,
+            u_id: editUser.benutzer_id,
             g_id: group_id
         }
         getData("post", url, data).done(userCallbackHandler);
@@ -284,10 +284,10 @@ var userEdit = {
     delete: function () {
         var url = "backend-api.php?mode=users&action=delete";
         var data = {
-            id: userEdit.benutzer_id
+            id: editUser.benutzer_id
         }
         getData("post", url, data).done();
-        closeUserEdit();
+        closeEditUser();
     }
 };
 /*
