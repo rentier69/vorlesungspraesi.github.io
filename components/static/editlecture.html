@@ -18,59 +18,58 @@
     </div>
 </div>
 <div id="main-body">
-    <h3>Name ändern</h3>
-        <form action="#" method="post">
-            <div class="input-group mb-3">
-                <input disabled type="text" name="newName" id="newName" class="form-control" placeholder="Name"/>
-                <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button" onclick="enableInput(['newName','buttonSaveLectureName'])"><i class="fas fa-edit"></i></button>
-                </div>
-                <div class="input-group-append">
-                    <button disabled class="btn btn-outline-success" id="buttonSaveLectureName" onclick="event.preventDefault(); editLecture.rename(); "type="button">Speichern</button>
-                </div>        
+    <form action="#" method="post">
+        <div class="input-group mb-3">
+            <input disabled type="text" name="newName" id="newName" class="form-control" placeholder="Name"/>
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="button" onclick="enableInput(['newName','buttonSaveLectureName'])"><i class="fas fa-edit"></i></button>
             </div>
-        </form>
-        <div class="border-top my-3"></div>
-        <h3>Fragen</h3>
-        <table class="table table-hover table-responsive-sm" id="questions">
-            <thead>
+            <div class="input-group-append">
+                <button disabled class="btn btn-outline-success" id="buttonSaveLectureName" onclick="event.preventDefault(); editLecture.rename(); "type="button">Speichern</button>
+            </div>        
+        </div>
+    </form>
+    <div class="border-top my-3"></div>
+    <h3>Fragen</h3>
+    <table class="table table-hover table-responsive-sm" id="questions">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Frage</th>
+            <th>Typ</th>
+            <th>Aktiv</th>
+            <th>Vorherige Version ID</th>
+            <th>Eigene Nummer</th>
+        </tr>
+        </thead>
+        <tbody id="questionsBody"></tbody>
+    </table>
+    <div class="border-top my-3"></div>
+    <h3>Gruppen</h3>
+    <h4>Zugeordnet</h4>
+    <table class="table table-hover table-responsive-sm">
+        <thead>
             <tr>
-                <th>ID</th>
-                <th>Frage</th>
-                <th>Typ</th>
-                <th>Aktiv</th>
-                <th>Vorherige Version ID</th>
-                <th>Eigene Nummer</th>
+                <th>#</th>
+                <th>Kürzel</th>
+                <th>Name</th>
+                <th>Zuordnung aufheben</th>
             </tr>
-            </thead>
-            <tbody id="questionsBody"></tbody>
-        </table>
-        <div class="border-top my-3"></div>
-        <h3>Gruppen</h3>
-        <h4>Zugeordnet</h4>
-        <table class="table table-hover table-responsive-sm">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Kürzel</th>
-                    <th>Name</th>
-                    <th>Zuordnung aufheben</th>
-                </tr>
-            </thead>
-            <tbody id="assignedToBody">
-            </tbody>
-        </table>    
-        <h4>Nicht zugeordnet</h4>
-        <table class="table table-hover table-responsive-sm">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Kürzel</th>
-                    <th>Name</th>
-                    <th>Zuordnen</th>
-                </tr>
-            </thead>
-            <tbody id="notAssignedToBody">
-            </tbody>
-        </table>
+        </thead>
+        <tbody id="assignedToBody">
+        </tbody>
+    </table>    
+    <h4>Nicht zugeordnet</h4>
+    <table class="table table-hover table-responsive-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Kürzel</th>
+                <th>Name</th>
+                <th>Zuordnen</th>
+            </tr>
+        </thead>
+        <tbody id="notAssignedToBody">
+        </tbody>
+    </table>
 </div>

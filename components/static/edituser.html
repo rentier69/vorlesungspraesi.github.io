@@ -52,11 +52,10 @@
     </div>
 </div>
 <div id="main-body">
-    <h3>Name ändern</h3>
     <form action="#" method="post" class="was-validated" id="formNameAendern">
         <div class="form-group">
             <div class="input-group mb-3">
-                <input disabled type="text" name="newName" id="newName" class="form-control" placeholder="Name"/>
+                <input disabled type="text" name="newName" id="newName" class="form-control" placeholder="Name" onkeyup="checkField('newName', 'Benutzername', 'buttonSaveUsername', false, null, 'formNameAendern')"/>
                 <div class="invalid-feedback" id="error_newName" hidden>Benutzername eingeben</div>
                 <div class="valid-feedback" id="valid_newName" hidden> Benutzername verfügbar </div>
                 <div class="input-group-append">
@@ -72,7 +71,7 @@
     <table class="table table-hover table-responsive-sm">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Kürzel</th>
                 <th>Name</th>
                 <th>Aus Gruppe entfernen</th>
@@ -85,7 +84,7 @@
     <table class="table table-hover table-responsive-sm">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Kürzel</th>
                 <th>Name</th>
                 <th>Zu Gruppe hinzufügen</th>
