@@ -15,8 +15,7 @@
                 break;
             case 'groups':
                 groups();
-                break;   
-            
+                break;            
             default:
                 die("Kein gültiger Modus gesetzt!");
                 break;
@@ -432,6 +431,91 @@
     }
 
     function groups(){
+        $conn = sql_connect();
+
+        if (isset($_GET["action"])) {
+            if($_GET["action"] == "getAll"){
+                $resultArr = array();
+                $select = "select * from vl_gruppe";
+                $result = mysqli_query($conn, $select);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $resultArr[] = $row;
+                }
+                echo json_encode($resultArr);
+            }elseif ($_GET["action"] == "getById") {
+                $id = $_GET["g_id"];
+                $select = "SELECT * from vl_gruppe where gruppe_id = $id";
+                $group = mysqli_fetch_assoc(mysqli_query($conn, $select));
+                echo json_encode($group);
+            }elseif ($_GET["action"] == "addToGroup") {
+                $u_id = $_POST["u_id"];
+                $g_id = $_POST["g_id"];
+                $insert = "INSERT INTO `vl_benutzer_gruppe_map`(`benutzer_id`, `gruppe_id`) values ($u_id,$g_id)";
+                if (mysqli_query($conn, $insert)) {
+                    //erfolg
+                }else {
+                    echo mysqli_error($conn);
+                }
+            }elseif ($_GET["action"] == "removeFromGroup") {
+                $u_id = $_POST["u_id"];
+                $g_id = $_POST["g_id"];
+                $delete = "DELETE FROM `vl_benutzer_gruppe_map` where gruppe_id = $g_id and benutzer_id = $u_id";
+                if (mysqli_query($conn, $delete)) {
+                    //erfolg
+                }else {
+                    echo mysqli_error($conn);
+                }                
+            }elseif ($_GET["action"] == "getGroupMembership") {
+                $id = $_GET["g_id"];
+                $resultArr = array();
+                $select_members = "SELECT benutzer_id, benutzername, aktiv, datum_registriert, datum_letzterlogin, 1 AS memberOf from vl_benutzer where benutzer_id in (select benutzer_id from vl_benutzer_gruppe_map where gruppe_id = $id)";
+                $select_notmembers = "SELECT benutzer_id, benutzername, aktiv, datum_registriert, datum_letzterlogin, 0 AS memberOf from vl_benutzer where benutzer_id not in (select benutzer_id from vl_benutzer_gruppe_map where gruppe_id = $id)";
+                $result_members = mysqli_query($conn, $select_members);
+                while ($row = mysqli_fetch_assoc($result_members)) {
+                    $resultArr[] = $row;
+                }
+                $result_notmembers = mysqli_query($conn, $select_notmembers);
+                while ($row = mysqli_fetch_assoc($result_notmembers)) {
+                    $resultArr[] = $row;
+                }
+    
+                echo json_encode($resultArr);
+            }elseif ($_GET["action"] == "rename") {
+                $id = $_POST["g_id"];
+                $kuerzel = $_POST["kuerzel"];
+                $name = $_POST["name"];
+                $update = "UPDATE `vl_gruppe` set `gruppe_kuerzel`='$kuerzel',`gruppenname`= '$name' where `gruppe_id` = $id";
+    
+                if (mysqli_query($conn, $update)) {
+                    //erfolg
+                } else {
+                    echo mysqli_error($conn);
+                }
+            }elseif ($_GET["action"] == "delete") {
+                $id = $_POST["g_id"];
+    
+                $delete = "DELETE FROM vl_gruppe where gruppe_id = $id";
+    
+                if (mysqli_query($conn, $delete)) {
+                    //erfolg
+                } else {
+                    echo mysqli_error($conn);
+                }
+            }elseif ($_GET["action"] == "create"){
+                $kuerzel = $_POST['kuerzel'];
+                $name = $_POST['name'];
+
+                $insert = "INSERT INTO vl_gruppe(gruppe_kuerzel, gruppenname) VALUES ('$kuerzel', '$name')";
+
+                if (mysqli_query($conn, $insert)) {
+                    //erfolg
+                } else {                    
+                    echo mysqli_error($conn);
+                }
+            }
+        }
+
+        mysqli_close($conn);
 
     }
     

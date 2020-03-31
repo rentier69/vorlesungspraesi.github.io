@@ -1,0 +1,64 @@
+<div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2" id="main-top-heading"></h1>    
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">       
+            <!-- <button class="btn btn-sm btn-outline-success">
+                Speichern
+            </button>  -->
+            <button class="btn btn-sm btn-outline-secondary" onclick="editGroup.delete();">
+                Gruppe löschen
+            </button>
+            <button onclick="closeEditGroup();" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div id="main-body">
+    <form action="#" method="post" class="was-validated" id="formNameAendern">
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <input required disabled type="text" name="newKuerzel" id="newKuerzel" class="form-control" placeholder="Kürzel" onkeyup="checkField('newKuerzel', 'Kürzel', 'group_rename', false, null, 'formNameAendern');" />
+                <div class="invalid-feedback order-last" id="error_kursname" hidden>Kürzel eingeben</div>
+                <div class="valid-feedback order-last" id="valid_kursname"> Kürzel verfügbar </div>
+                <input required disabled type="text" name="newName" id="newName" class="form-control" placeholder="Kursname" />
+                <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" onclick="enableInput(['newKuerzel','newName','group_rename'])"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="input-group-append">
+                    <button disabled class="btn btn-outline-success" id="group_rename" onclick="event.preventDefault(); editGroup.rename(); "type="button">Speichern</button>
+                </div>
+            </div>            
+        </div>
+    </form>
+    <h3>Mitglieder</h3>
+    <table class="table table-hover table-responsive-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Benutzername</th>
+                <th>Aktiviert</th>
+                <th>Registriert am</th>
+                <th>Zuletzt aktiv am</th>
+                <th>Aktion</th>
+            </tr>
+        </thead>
+        <tbody id="memberBody">
+        </tbody>
+    </table>    
+    <h3>Alle Benutzer</h3>
+    <table class="table table-hover table-responsive-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Benutzername</th>
+                <th>Aktiviert</th>
+                <th>Registriert am</th>
+                <th>Zuletzt aktiv am</th>
+                <th>Aktion</th>
+            </tr>
+        </thead>
+        <tbody id="notMemberBody">
+        </tbody>
+    </table>    
+</div>

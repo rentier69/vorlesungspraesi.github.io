@@ -1,1 +1,35 @@
-1
+<div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Gruppenverwaltung</h1>
+</div>
+<div id="main-body">
+    <form action="#" method="post" class="was-validated" id="formGroupCreate">
+        <div class="form-row">
+            <div class="col-md-2">               
+                <input required type="text" name="kuerzel" id="kuerzel" class="form-control" placeholder="Kürzel" onkeyup="checkField('kuerzel', 'Kürzel', 'group_create', false, null, 'formGroupCreate');" />
+                <div class="invalid-feedback" id="error_kuerzel" hidden>Kürzel eingeben</div>
+                <div class="valid-feedback" id="valid_kuerzel"> Kürzel verfügbar </div>
+            </div>
+            <div class="col-md-4">
+                <input required type="text" name="kursname" id="kursname" class="form-control" placeholder="Kursname" />
+                <!-- <div class="invalid-feedback" id="error_kursname" hidden>Kursname eingeben</div>
+                <div class="valid-feedback" id="valid_kursname"> Kursname verfügbar </div> -->
+            </div>
+            <div class="col-md-2">
+                <button disabled class="btn btn-primary" name="group_create" id="group_create" onclick="event.preventDefault(); createGroup();" >Gruppe anlegen</button>
+            </div>
+        </div>
+    </form>
+    <h3>Alle Gruppen</h3>
+    <input type="text" id="searchInput" class="form-control" onkeyup="searchInTwoColumns('allGroups')" placeholder="Nach ID oder Name suchen..">
+    <table class="table table-hover table-responsive-sm" id="allGroups">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Kürzel</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody id="allGroupsBody">
+        </tbody>
+    </table>
+</div>

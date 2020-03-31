@@ -57,7 +57,7 @@ function changeMode(mode, item_id) {
         case "lectures":
             getData("get", "static/lectures.html", null, "html").done(function (data) {
                 setStaticHtml(data);
-                loadLectureList();
+                loadLectureList(null);
             });
             document.getElementById("nav_lectures").classList.add("active");
             break;
@@ -85,7 +85,7 @@ function changeMode(mode, item_id) {
         case "users":
             getData("get", "static/users.html", null, "html").done(function (data) {
                 setStaticHtml(data);
-                loadUserList();
+                loadUserList(null);
             });
             document.getElementById("nav_users").classList.add("active");
             break;
@@ -97,9 +97,19 @@ function changeMode(mode, item_id) {
             document.getElementById("nav_users").classList.add("active");
             break;
         case "groups":
-            getData("get", "static/groups.html", null, "html").done(setStaticHtml);
+            getData("get", "static/groups.html", null, "html").done(function (data) {
+                setStaticHtml(data);
+                loadGroupList(null);
+            });            
             document.getElementById("nav_groups").classList.add("active");
             break;
+        case "editgroup":
+        getData("get", "static/editgroup.html", null, "html").done(function (data) {
+            setStaticHtml(data);
+            initializeEditGroup(item_id);
+        });
+        document.getElementById("nav_groups").classList.add("active");
+        break;
         default:
             break;
     }
@@ -110,32 +120,15 @@ function setStaticHtml(data) {
 /*
 Funktionen für Benutzerverwaltung
 */
-function createUser(data) {
-    if (data == null) {
-        var data = {
-            username: document.getElementById('username').value,
-            pw: document.getElementById('password1').value,
-            user_type: document.getElementById('user_type').value
-        }
-
-        getData("post", "backend-api.php?mode=users&action=create", data).done(createUser);
-    } else {
-        //var data = JSON.parse(data);
-
-        // Build HTML table row with given data
-        newRow = '<tr class="clickable" onclick="changeMode(\'edituser\',' + data.benutzer_id + ')">';
-        newRow += "<td>" + data.benutzer_id + "</td>";
-        newRow += "<td>" + data.benutzername + "</td>";
-        newRow += "<td>" + data.aktiv + "</td>";
-        newRow += "<td>" + data.datum_registriert + "</td>";
-        newRow += "<td>" + data.datum_letzterlogin + "</td>";
-        newRow += "</tr>";
-
-        // Put table into HTML container
-        document.getElementById("allUsersBody").innerHTML += newRow;
-
-        document.getElementById("formUserCreate").reset();
+function createUser() {    
+    var data = {
+        username: document.getElementById('username').value,
+        pw: document.getElementById('password1').value,
+        user_type: document.getElementById('user_type').value
     }
+    getData("post", "backend-api.php?mode=users&action=create", data).done(function(){
+        changeMode('users');
+    });
 }
 function loadUserList(data) {
     if (data == null) {
@@ -293,27 +286,151 @@ var editUser = {
 /*
 Funktionen für Gruppenverwaltung
 */
+function loadGroupList(data) {
+    if (data == null) {
+        getData("get", "backend-api.php?mode=groups&action=getAll", null).done(loadGroupList);
+    } else {
+        // Build HTML table with given data
+        var tbody = "";
+        for (let row of data) {
+            tbody += '<tr class="clickable" onclick="changeMode(\'editgroup\',' + row.gruppe_id + ')">';
+            tbody += "<td>" + row.gruppe_id + "</td>";
+            tbody += "<td>" + row.gruppe_kuerzel + "</td>";
+            tbody += "<td>" + row.gruppenname + "</td>";
+            tbody += "</tr>";
+        }
+
+        // Put table into HTML container
+        document.getElementById("allGroupsBody").innerHTML = tbody;
+    }
+}
+function createGroup(){
+    var data = {
+        kuerzel: document.getElementById('kuerzel').value,
+        name: document.getElementById('kursname').value,
+    }
+    getData("post", "backend-api.php?mode=groups&action=create", data,"text").done(function () {
+        changeMode('groups');
+    });
+}
+function initializeEditGroup(id) {
+    editGroup.gruppen_id = id;
+    editGroup.queryDetails();
+    editGroup.queryGroupMembership();
+    editGroup.prepareUserInterface();
+}
+function closeEditGroup() {
+    editGroup.gruppen_id = null;
+    editGroup.details = null;
+    editGroup.groupMembership = null;
+    changeMode('groups');
+}
+function groupCallbackHandler() {
+    editGroup.details = null;
+    editGroup.groupMembership = null;
+    editGroup.queryDetails();
+    editGroup.queryGroupMembership();
+    editGroup.prepareUserInterface();
+}
+var editGroup = {
+    gruppen_id: null,
+    details: null,
+    groupMembership: null,
+    queryDetails: function () {
+        var url = "backend-api.php?mode=groups&action=getById&g_id=" + editGroup.gruppen_id;
+        getData("get", url, null).done(editGroup.setDetails);
+    },
+    queryGroupMembership: function () {
+        var url = "backend-api.php?mode=groups&action=getGroupMembership&g_id=" + editGroup.gruppen_id;
+        getData("get", url, null).done(editGroup.setGroupMembership);
+    },
+    setDetails: function (data) {
+        editGroup.details = data;
+    },
+    setGroupMembership: function (data) {
+        editGroup.groupMembership = data;
+    },
+    prepareUserInterface: function () {
+        if (editGroup.details != null && editGroup.groupMembership != null) {
+            document.getElementById("main-top-heading").innerHTML = "Gruppe bearbeiten: " + editGroup.details.gruppenname;
+            document.getElementById("newKuerzel").value = editGroup.details.gruppe_kuerzel;
+            document.getElementById("newName").value = editGroup.details.gruppenname;
+            
+            document.getElementById("memberBody").innerHTML = "";
+            document.getElementById("notMemberBody").innerHTML = "";
+
+            for (let row of editGroup.groupMembership) {
+                editGroup.addToMemberhipTable(row);
+            }
+        } else {
+            //warten bis variablen durch ajax callback befüllt wurden
+            setTimeout(editGroup.prepareUserInterface, 50);
+        }
+    },
+    addToMemberhipTable: function (row) {
+        //var newRow = '<tr class="clickable" onclick="changeMode(\'edituser\',' + row.benutzer_id + ')">';
+        var newRow = '<tr>';
+        newRow += "<td>" + row.benutzer_id + "</td>";
+        newRow += "<td>" + row.benutzername + "</td>";
+        newRow += "<td>" + row.aktiv + "</td>";
+        newRow += "<td>" + row.datum_registriert + "</td>";
+        newRow += "<td>" + row.datum_letzterlogin + "</td>";
+
+        if (row.memberOf == 1) {
+            newRow += '<td><i class="fas fa-minus clickable" onclick="editGroup.removeFromGroup(' + row.benutzer_id + ')"></td>';
+            newRow += "</tr>";
+            document.getElementById("memberBody").innerHTML += newRow
+        } else if (row.memberOf == 0) {
+            newRow += '<td><i class="fas fa-plus clickable" onclick="editGroup.addToGroup(' + row.benutzer_id + ')"></td>';
+            newRow += "</tr>";
+            document.getElementById("notMemberBody").innerHTML += newRow
+        }
+    },
+    rename: function () {
+        var url = "backend-api.php?mode=groups&action=rename";
+        var data = {
+            g_id : editGroup.gruppen_id,
+            kuerzel: document.getElementById("newKuerzel").value,
+            name: document.getElementById("newName").value
+        }
+        getData("post", url, data,"text").done(groupCallbackHandler);
+        disableInput(['newName', 'newKuerzel','group_rename']);
+    },
+    addToGroup: function (benutzer_id) {
+        var url = "backend-api.php?mode=groups&action=addToGroup";
+        var data = {
+            u_id: benutzer_id,
+            g_id: editGroup.gruppen_id
+        }
+        getData("post", url, data, "text").done(groupCallbackHandler);
+    },
+    removeFromGroup: function (benutzer_id) {
+        var url = "backend-api.php?mode=groups&action=removeFromGroup";
+        var data = {
+            u_id: benutzer_id,
+            g_id: editGroup.gruppen_id
+        }
+        getData("post", url, data,"text").done(groupCallbackHandler);
+    },
+    delete: function () {
+        var url = "backend-api.php?mode=groups&action=delete";
+        var data = {
+            g_id: editGroup.gruppen_id
+        }
+        getData("post", url, data, "text").done(closeEditGroup());        
+    }
+};
 
 /*
 Funktionen für Vorlesungsverwaltung
 */
 function createLecture(data) {
-    if (data == null) {
-        var data = {
-            name: document.getElementById('newLecture').value,
-        }
-        getData("post", "backend-api.php?mode=lectures&action=create", data).done(createLecture);
-    } else {
-        // Build HTML table row with given data
-        newRow = '<tr class="clickable" onclick="changeMode(\'editlecture\',' + data.vorlesung_id + ')">';
-        newRow += "<td>" + data.vorlesung_id + "</td>";
-        newRow += "<td>" + data.vorlesung_name + "</td>";
-        newRow += "</tr>";
-
-        // Put table into HTML container
-        document.getElementById("allLecturesBody").innerHTML += newRow;
-        document.getElementById("formLectureCreate").reset();
+    var data = {
+        name: document.getElementById('newLecture').value,
     }
+    getData("post", "backend-api.php?mode=lectures&action=create", data).done(function(){
+        changeMode('lectures');
+    });
 }
 function loadLectureList(data) {
     if (data == null) {
@@ -327,9 +444,8 @@ function loadLectureList(data) {
             tbody += "<td>" + row.vorlesung_name + "</td>";
             tbody += "</tr>";
         }
-
         // Put table into HTML container
-        document.getElementById("allLecturesBody").innerHTML += tbody;
+        document.getElementById("allLecturesBody").innerHTML = tbody;
     }
 }
 function initializeEditLecture(id) {
