@@ -74,7 +74,7 @@ if (isset($_SESSION['username'])) {
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <nav class="col-md-2 d-md-block bg-light sidebar flex-md-nowrap" id="sidebar">
+                <nav class="col-md-2 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky">
                         <ul class="nav flex-column" id="nav">
                             <li class="nav-item">
@@ -101,31 +101,34 @@ if (isset($_SESSION['username'])) {
                     </div>
                 </nav>
                 
-                <div role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4 row no-gutters">
-                    
-                    <div id="main" class="col">
-
-                    </div>                
+                <div role="main" class="col no-gutters">
+                    <div id="loadingOverlay">
+                        <div id="loadingSpinner" style="width: 3rem; height: 3rem; display:none;"></div>
+                    </div>
+                    <div id="main" class="col"></div>                
                 </div>
             </div>
         </div>
         <script type="text/javascript">
             $(document).ready(function () {
+                changeMode('home');
+
+                //eventlistener für responsive sidebar
                 $('#sidebarCollapse').on('click', function () {
-                    $('.sidebar').toggleClass('active');
+                    $('.sidebar').toggleClass('inactive');
                 });
                 $('#nav').on('click', function () {
                     //soll nur bei mobile devices ausgeführt werden
                     //selber wert wie in media query in backend.css
-                    if ($(window).width() <= 768 ){
-                        $('.sidebar').toggleClass('active');
+                    if ($(window).width() < 768 ){
+                        $('.sidebar').toggleClass('inactive');
                     }                    
                 });
                 $('#main').on('click', function () {
                     //soll nur bei mobile devices ausgeführt werden
                     //selber wert wie in media query in backend.css
-                    if ($(window).width() <= 768 ){
-                        $('.sidebar').toggleClass('active',false);
+                    if ($(window).width() < 768 ){
+                        $('.sidebar').toggleClass('inactive',false);
                     }  
                 });
             });

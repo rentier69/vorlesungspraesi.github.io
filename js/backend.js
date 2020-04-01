@@ -49,9 +49,17 @@ function disableInput(input_ids) {
 function changeMode(mode, item_id) {
     var activeNav = nav.querySelector('.active');
     activeNav.classList.remove("active");
+    
+    //loading overlay hinzufügen
+    addLoadingOverlay();
+
     switch (mode) {
         case "home":
-            getData("get", "static/home.html", null, "html").done(setStaticHtml);
+            getData("get", "static/home.html", null, "html").done(function (data) {
+                setStaticHtml(data);
+
+                removeLoadingOverlay(); //wenn home mit Inhalten gefüllt ist hier raus!
+            });
             document.getElementById("nav_home").classList.add("active");
             break;
         case "lectures":
@@ -117,6 +125,22 @@ function changeMode(mode, item_id) {
 function setStaticHtml(data) {
     document.getElementById("main").innerHTML = data;
 }
+
+function addLoadingOverlay(){
+    document.getElementById("loadingOverlay").classList.add("loading-overlay","d-flex" ,"justify-content-center");
+    spinnerElement = document.getElementById("loadingSpinner");
+    spinnerElement.classList.add("spinner-border", "text-primary", "align-self-center");
+    spinnerElement.style.display = "block";
+}
+
+function removeLoadingOverlay(){
+    //aufrufen, wenn alle benötigten Daten geladen sind
+    document.getElementById("loadingOverlay").classList.remove("loading-overlay","d-flex" ,"justify-content-center");
+    spinnerElement = document.getElementById("loadingSpinner");
+    spinnerElement.classList.remove("spinner-border", "text-primary", "align-self-center");
+    spinnerElement.style.display = "none";
+}
+
 /*
 Funktionen für Benutzerverwaltung
 */
@@ -133,7 +157,7 @@ function createUser() {
 function loadUserList(data) {
     if (data == null) {
         getData("get", "backend-api.php?mode=users&action=getAll", null).done(loadUserList);
-    } else {
+    } else {        
         // Build HTML table with given data
         var tbody = "";
         for (let row of data) {
@@ -148,6 +172,7 @@ function loadUserList(data) {
 
         // Put table into HTML container
         document.getElementById("allUsersBody").innerHTML += tbody;
+        removeLoadingOverlay();
     }
 }
 function initializeEditUser(id) {
@@ -205,6 +230,7 @@ var editUser = {
             for (let row of editUser.groupMembership) {
                 editUser.addToMemberhipTable(row);
             }
+            removeLoadingOverlay();
         } else {
             //warten bis variablen durch ajax callback befüllt wurden
             setTimeout(editUser.prepareUserInterface, 50);
@@ -302,6 +328,7 @@ function loadGroupList(data) {
 
         // Put table into HTML container
         document.getElementById("allGroupsBody").innerHTML = tbody;
+        removeLoadingOverlay();
     }
 }
 function createGroup(){
@@ -362,6 +389,7 @@ var editGroup = {
             for (let row of editGroup.groupMembership) {
                 editGroup.addToMemberhipTable(row);
             }
+            removeLoadingOverlay();
         } else {
             //warten bis variablen durch ajax callback befüllt wurden
             setTimeout(editGroup.prepareUserInterface, 50);
@@ -446,6 +474,7 @@ function loadLectureList(data) {
         }
         // Put table into HTML container
         document.getElementById("allLecturesBody").innerHTML = tbody;
+        removeLoadingOverlay();
     }
 }
 function initializeEditLecture(id) {
@@ -516,6 +545,7 @@ var editLecture = {
             for (let row of editLecture.assignedGroups) {
                 editLecture.addToAssignedToTable(row);
             }
+            removeLoadingOverlay();
         } else {
             //warten bis variablen durch ajax callback befüllt wurden
             setTimeout(editLecture.prepareUserInterface, 50);
@@ -648,6 +678,7 @@ var createQuestion = {
                 option = '<option value="' + row.frage_typ_id + '">' + row.frage_typ_titel + '</option>'
                 document.getElementById("question_type").innerHTML += option;
             }
+            removeLoadingOverlay();
         } else {
             //warten bis variablen durch ajax callback befüllt wurden
             setTimeout(createQuestion.prepareUserInterface, 50);
@@ -829,12 +860,14 @@ var editQuestion = {
                             '</div>';
                         document.getElementById('question_options').innerHTML += question_option;
                         count++;
-                    }                
+                    }
+                    //removeLoadingOverlay();           
                 }else {
                     //warten bis variablen durch ajax callback befüllt wurden
                     setTimeout(editQuestion.prepareUserInterface, 50);
                 }
             }
+            removeLoadingOverlay();
         } else {
             //warten bis variablen durch ajax callback befüllt wurden
             setTimeout(editQuestion.prepareUserInterface, 50);
