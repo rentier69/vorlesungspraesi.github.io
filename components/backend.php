@@ -29,9 +29,9 @@ if (isset($_SESSION['username'])) {
         <!-- <link rel="stylesheet" href="../css/custom.css" /> -->
         <link rel="stylesheet" href="../css/backend.css" />
         <script src="../js/jquery-3.0.0.min.js"></script>
-        <script async src="../js/bootstrap.min.js"> </script>
-        <script async src="../js/functions.js"></script>
-        <script async src="../js/backend.js"></script>
+        <script src="../js/bootstrap.min.js"> </script>
+        <script src="../js/functions.js"></script>
+        <script src="../js/backend.js"></script>
     </head>
     <body>
         <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
