@@ -54,7 +54,7 @@ body {
 
 @media (max-width: 767px) {
   .sidebar {
-    position: absolute;
+    position: fixed;
     margin-left: -250px;
   }
   .sidebar.inactive {
