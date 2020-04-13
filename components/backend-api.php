@@ -201,17 +201,20 @@ if (isset($_SESSION['username'])) {
                 $v_id = $_POST['v_id'];
                 $question_text = $_POST['question_text'];
                 $question_type = $_POST['question_type'];
-                $question_options = $_POST['question_option'];
+
+                //bei Freitextfragen auf jeden Fall leer
+                if(isset($_POST['question_option'])){
+                    $question_options = $_POST['question_option'];
+                }                
 
                 $sql = "INSERT INTO `vl_vorlesung_frage`(`vorlesung_id`, `frage_titel`, `frage_typ_id`) VALUES ($v_id,'$question_text',$question_type)";
                 if (mysqli_query($conn, $sql)) {
-                    if(isset($question_options)){
-                        $last_id = mysqli_insert_id($conn);
+                    $last_id = mysqli_insert_id($conn);
+                    if(isset($question_options)){                        
                         foreach($question_options as $option){                    
                             unset($sql);
                             if(!empty($option)){
                                 $sql = "INSERT INTO `vl_vorlesung_frage_antwortmoeglichkeiten`(`frage_id`, `antwort`) VALUES ($last_id,'$option')";
-            
                                 if (mysqli_query($conn, $sql)) {
                                     //nichts zu tun, 
                                 } else {
@@ -220,6 +223,9 @@ if (isset($_SESSION['username'])) {
                             }                    
                         }            
                     }
+                    $result_select = "SELECT * from vl_vorlesung_frage where frage_id = $last_id";
+                    $created_question = mysqli_fetch_assoc(mysqli_query($conn, $result_select));
+                    echo json_encode($created_question);
                 } else {
                     echo mysqli_error($conn);
                 }
@@ -228,7 +234,11 @@ if (isset($_SESSION['username'])) {
                 $v_id = $_POST['v_id'];
                 $question_text = $_POST['question_text'];
                 $question_type = $_POST['question_type'];
-                $question_options = $_POST['question_option'];
+
+                //bei Freitextfragen auf jeden Fall leer
+                if(isset($_POST['question_option'])){
+                    $question_options = $_POST['question_option'];
+                }
                 
                 $successNewVersion = true;
 
@@ -246,17 +256,22 @@ if (isset($_SESSION['username'])) {
                     $sql2 = "INSERT INTO `vl_vorlesung_frage`(`vorlesung_id`, `frage_titel`, `frage_typ_id`,`vorherige_version_id`) VALUES ($v_id,'$question_text',$question_type,$q_id)";
                     if (mysqli_query($conn, $sql2)) {
                         $last_id = mysqli_insert_id($conn);
-                        foreach($question_options as $option){                    
-                            unset($sql3);
-                            if(!empty($option)){
-                                $sql3 = "INSERT INTO `vl_vorlesung_frage_antwortmoeglichkeiten`(`frage_id`, `antwort`) VALUES ($last_id,'$option')";
-                                if (mysqli_query($conn, $sql3)) {
-                                    //erfolg
-                                } else {
-                                    $successNewVersion = false;
-                                }
-                            }                    
+                        if(isset($question_options)){
+                            foreach($question_options as $option){                    
+                                unset($sql3);
+                                if(!empty($option)){
+                                    $sql3 = "INSERT INTO `vl_vorlesung_frage_antwortmoeglichkeiten`(`frage_id`, `antwort`) VALUES ($last_id,'$option')";
+                                    if (mysqli_query($conn, $sql3)) {
+                                        //erfolg
+                                    } else {
+                                        $successNewVersion = false;
+                                    }
+                                }                    
+                            }
                         }
+                        $result_select = "SELECT * from vl_vorlesung_frage where frage_id = $last_id";
+                        $created_question = mysqli_fetch_assoc(mysqli_query($conn, $result_select));
+                        echo json_encode($created_question);                      
                     } else {
                         $successNewVersion = false;
                     }
@@ -292,7 +307,6 @@ if (isset($_SESSION['username'])) {
                 if($successModify){
                     //neue frage mit gleicher id einfügen 
                     $sql2 = "INSERT INTO `vl_vorlesung_frage`(`frage_id`,`vorlesung_id`, `frage_titel`, `frage_typ_id`, `fragenummer`) VALUES ($q_id, $v_id,'$question_text',$question_type,$question_rank)";
-                    echo $sql2;
                     if (mysqli_query($conn, $sql2)) {
                         if(isset($question_options)){
                             foreach($question_options as $option){                    
@@ -306,7 +320,10 @@ if (isset($_SESSION['username'])) {
                                     }
                                 }                    
                             }
-                        }                        
+                        }
+                        $result_select = "SELECT * from vl_vorlesung_frage where frage_id = $q_id";
+                        $created_question = mysqli_fetch_assoc(mysqli_query($conn, $result_select));
+                        echo json_encode($created_question);                       
                     } else {
                         $successNewVersion = false;
                     }
@@ -529,9 +546,12 @@ if (isset($_SESSION['username'])) {
                 $name = $_POST['name'];
 
                 $insert = "INSERT INTO vl_gruppe(gruppe_kuerzel, gruppenname) VALUES ('$kuerzel', '$name')";
-
+                
                 if (mysqli_query($conn, $insert)) {
-                    //erfolg
+                    $last_id = mysqli_insert_id($conn);
+                    $result_select = "SELECT * from vl_gruppe where gruppe_id = $last_id";
+                    $created_group = mysqli_fetch_assoc(mysqli_query($conn, $result_select));
+                    echo json_encode($created_group);
                 } else {                    
                     echo mysqli_error($conn);
                 }

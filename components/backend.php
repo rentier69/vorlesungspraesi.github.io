@@ -76,6 +76,9 @@ if (isset($_SESSION['username'])) {
             <div class="row">
                 <nav class="col-md-2 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        Verwaltung
+                        </h6>
                         <ul class="nav flex-column" id="nav">
                             <li class="nav-item">
                                 <a class="nav-link active" id="nav_home" href="#" onclick="changeMode('home')"><i class="fas fa-home fa-fw mr-1"></i>Home</a>
@@ -90,18 +93,12 @@ if (isset($_SESSION['username'])) {
                                 <a class="nav-link" id="nav_groups" href="#" onclick="changeMode('groups')"><i class="fas fa-users fa-fw mr-1"></i>Gruppen</a>
                             </li>
                         </ul>
-                        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        Zwischenüberschrift
-                        </h6>
-                        <ul class="nav flex-column mb-2">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Current month</a>
-                            </li>              
-                        </ul>
                     </div>
                 </nav>
                 
                 <div role="main" class="col no-gutters">
+                    <div id="inAppNotifications" class="inAppNotifications p-1 row">
+                    </div>
                     <div id="loadingOverlay">
                         <div id="loadingSpinner" style="width: 3rem; height: 3rem; display:none;"></div>
                     </div>

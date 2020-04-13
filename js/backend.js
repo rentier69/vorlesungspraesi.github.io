@@ -57,8 +57,7 @@ function changeMode(mode, item_id) {
         case "home":
             getData("get", "static/home.html", null, "html").done(function (data) {
                 setStaticHtml(data);
-
-                removeLoadingOverlay(); //wenn home mit Inhalten gefüllt ist hier raus!
+                getData("get", "backend-api.php?mode=lectures&action=getAll", null).done(prepareHomePage);
             });
             document.getElementById("nav_home").classList.add("active");
             break;
@@ -141,6 +140,64 @@ function removeLoadingOverlay(){
     spinnerElement.style.display = "none";
 }
 
+function addNotification(type, title, bodyText = ""){
+    getData("get", "static/notification.html", null, "html").done(function (data) {
+        var parser = new DOMParser();
+        //parsen, damit notification vor einblenden angepasst werden kann
+        var notification = parser.parseFromString(data, 'text/html');
+        var notification_id = "notification" + Date.now();
+
+        //id muss einzigartig sein, damit zeitgesteuerter fade-out funktioniert
+        notification.getElementById("notification").id = notification_id;
+        switch (type) {
+            case "success":
+                notification.getElementById(notification_id).classList.add("border-success");
+                notification.getElementById("notificationType").classList.add("bg-success");
+                notification.getElementById("notificationIcon").classList.add("fa-check");
+                break;
+            case "danger":
+                notification.getElementById(notification_id).classList.add("border-danger");
+                notification.getElementById("notificationType").classList.add("bg-danger");
+                notification.getElementById("notificationIcon").classList.add("fa-exclamation-circle");
+                break;
+            case "warning":
+                notification.getElementById(notification_id).classList.add("border-warning");
+                notification.getElementById("notificationType").classList.add("bg-warning");
+                notification.getElementById("notificationIcon").classList.add("fa-exclamation-circle");
+                break;        
+            default:
+                break;
+        }
+        notification.getElementById("notificationHeader").innerHTML = title;
+        notification.getElementById("notificationBodyText").innerHTML = bodyText;
+        
+        //nicht sichtbar machen, damit fade-in klappt
+        notification.getElementById(notification_id).style.display = "none";
+        document.getElementById("inAppNotifications").innerHTML += notification.documentElement.innerHTML;
+        $('#' + notification_id).fadeIn("fast", "linear", function(){
+            timeoutNotification(notification_id)
+        });        
+    });
+}
+function timeoutNotification(notification_id){
+    //5000ms warten, bis Benachrichtigung ausgeblendet wird
+    setTimeout(function(){
+        $('#' + notification_id).fadeOut("slow", "linear");
+    }, 5000);
+}
+
+function prepareHomePage(data) {    
+    // Build HTML table with given data
+    var selBody = "";
+    for (let row of data) {
+        option = '<option value="' + row.vorlesung_id + '">' + row.vorlesung_name + '</option>';
+        selBody += option;
+    }
+    // Put table into HTML container
+    document.getElementById("lectureToStart").innerHTML = selBody;
+    removeLoadingOverlay();    
+}
+
 /*
 Funktionen für Benutzerverwaltung
 */
@@ -150,8 +207,9 @@ function createUser() {
         pw: document.getElementById('password1').value,
         user_type: document.getElementById('user_type').value
     }
-    getData("post", "backend-api.php?mode=users&action=create", data).done(function(){
+    getData("post", "backend-api.php?mode=users&action=create", data).done(function(data){
         changeMode('users');
+        addNotification("success","Benutzer " + data.benutzer_id + " " + data.benutzername + " wurde erfolgreich erstellt!");
     });
 }
 function loadUserList(data) {
@@ -257,14 +315,20 @@ var editUser = {
         var data = {
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(userCallbackHandler);
+        getData("post", url, data).done(function(data){
+            addNotification("success","Benutzer " + editUser.details.benutzername + " wurde aktiviert!");
+            userCallbackHandler();
+        });
     },
     deactivate: function () {
         var url = "backend-api.php?mode=users&action=deactivate";
         var data = {
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(userCallbackHandler);
+        getData("post", url, data).done(function(data){
+            addNotification("warning","Benutzer " + editUser.details.benutzername + " wurde deaktiviert!");
+            userCallbackHandler();
+        });
     },
     rename: function () {
         var url = "backend-api.php?mode=users&action=rename";
@@ -272,7 +336,10 @@ var editUser = {
             name: document.getElementById("newName").value,
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(userCallbackHandler);
+        getData("post", url, data).done(function(data){
+            addNotification("success","Benutzer " + editUser.benutzer_id + " wurde umbenannt!");
+            userCallbackHandler();
+        });
         disableInput(['newName', 'buttonSaveUsername'])
     },
     resetPasswort: function () {
@@ -281,7 +348,10 @@ var editUser = {
             id: editUser.benutzer_id,
             pw: document.getElementById("password1").value
         }
-        getData("post", url, data).done(userCallbackHandler);
+        getData("post", url, data).done(function(data){
+            addNotification("success","Passwort von " + editUser.details.benutzername + " wurde zurückgesetzt!");
+            userCallbackHandler();
+        });
         document.getElementById("formPasswordReset").reset();
     },
     addToGroup: function (group_id) {
@@ -290,7 +360,10 @@ var editUser = {
             u_id: editUser.benutzer_id,
             g_id: group_id
         }
-        getData("post", url, data).done(userCallbackHandler);
+        getData("post", url, data).done(function(data){
+            addNotification("success",editUser.details.benutzername + " der Gruppe " + group_id + " hinzugefügt");
+            userCallbackHandler();
+        });
     },
     removeFromGroup: function (group_id) {
         var url = "backend-api.php?mode=users&action=removeFromGroup";
@@ -298,15 +371,20 @@ var editUser = {
             u_id: editUser.benutzer_id,
             g_id: group_id
         }
-        getData("post", url, data).done(userCallbackHandler);
+        getData("post", url, data).done(function(data){
+            addNotification("warning",editUser.details.benutzername + " von der Gruppe " + group_id + " entfernt");
+            userCallbackHandler();
+        });
     },
     delete: function () {
         var url = "backend-api.php?mode=users&action=delete";
         var data = {
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done();
-        closeEditUser();
+        getData("post", url, data).done(function(data){
+            addNotification("danger",editUser.details.benutzername + " gelöscht!");
+            closeEditUser();
+        });
     }
 };
 /*
@@ -336,7 +414,8 @@ function createGroup(){
         kuerzel: document.getElementById('kuerzel').value,
         name: document.getElementById('kursname').value,
     }
-    getData("post", "backend-api.php?mode=groups&action=create", data,"text").done(function () {
+    getData("post", "backend-api.php?mode=groups&action=create", data).done(function(data){
+        addNotification("success","Gruppe " + data.gruppe_id + " " + data.gruppenname + " wurde erfolgreich erstellt!");
         changeMode('groups');
     });
 }
@@ -421,7 +500,10 @@ var editGroup = {
             kuerzel: document.getElementById("newKuerzel").value,
             name: document.getElementById("newName").value
         }
-        getData("post", url, data,"text").done(groupCallbackHandler);
+        getData("post", url, data,"text").done(function(){
+            addNotification("success","Gruppe " + editGroup.gruppen_id + " wurde umbenannt!");
+            groupCallbackHandler();
+        });        
         disableInput(['newName', 'newKuerzel','group_rename']);
     },
     addToGroup: function (benutzer_id) {
@@ -430,7 +512,10 @@ var editGroup = {
             u_id: benutzer_id,
             g_id: editGroup.gruppen_id
         }
-        getData("post", url, data, "text").done(groupCallbackHandler);
+        getData("post", url, data, "text").done(function(){
+            addNotification("success",data.u_id + " wurde der Gruppe " + editGroup.details.gruppenname + " hinzugefügt");
+            groupCallbackHandler();
+        });
     },
     removeFromGroup: function (benutzer_id) {
         var url = "backend-api.php?mode=groups&action=removeFromGroup";
@@ -438,14 +523,20 @@ var editGroup = {
             u_id: benutzer_id,
             g_id: editGroup.gruppen_id
         }
-        getData("post", url, data,"text").done(groupCallbackHandler);
+        getData("post", url, data,"text").done(function(){
+            addNotification("warning",data.u_id + " wurde von der Gruppe " + editGroup.details.gruppenname + " entfernt");
+            groupCallbackHandler();
+        });
     },
     delete: function () {
         var url = "backend-api.php?mode=groups&action=delete";
         var data = {
             g_id: editGroup.gruppen_id
         }
-        getData("post", url, data, "text").done(closeEditGroup());        
+        getData("post", url, data, "text").done(function(data){
+            addNotification("danger",editGroup.details.gruppenname + " gelöscht!");
+            closeEditGroup();
+        });
     }
 };
 
@@ -456,8 +547,9 @@ function createLecture(data) {
     var data = {
         name: document.getElementById('newLecture').value,
     }
-    getData("post", "backend-api.php?mode=lectures&action=create", data).done(function(){
+    getData("post", "backend-api.php?mode=lectures&action=create", data).done(function(data){
         changeMode('lectures');
+        addNotification("success","Vorlesung " + data.vorlesung_id + " " + data.vorlesung_name + " wurde erfolgreich erstellt!");
     });
 }
 function loadLectureList(data) {
@@ -613,7 +705,10 @@ var editLecture = {
             "q_id": selected.q_id,
             "rank": selected.rank
         }
-        getData("post", url, data,"text").done(editLectureCallbackHandler);
+        getData("post", url, data,"text").done(function() {
+            addNotification("success","Reihenfolge geändert","Frage: " + data.q_id + "<br>Rang: " + data.rank);
+            editLectureCallbackHandler();
+        });
     },
     rename: function () {
         var url = "backend-api.php?mode=lectures&action=rename";
@@ -621,7 +716,10 @@ var editLecture = {
             name: document.getElementById("newName").value,
             id: editLecture.vorlesung_id
         }
-        getData("post", url, data).done(editLectureCallbackHandler);
+        getData("post", url, data).done(function () {
+            editLectureCallbackHandler();
+            addNotification("success","Vorlesung " + editLecture.vorlesung_id + " wurde umbenannt!");
+        });
         disableInput(['newName', 'buttonSaveLectureName'])
     },
     assignToGroup: function (group_id) {
@@ -630,7 +728,10 @@ var editLecture = {
             v_id: editLecture.vorlesung_id,
             g_id: group_id
         }
-        getData("post", url, data).done(editLectureCallbackHandler);
+        getData("post", url, data).done(function () {
+            editLectureCallbackHandler();
+            addNotification("success","Vorlesung " + editLecture.vorlesung_id + " der Gruppe " + data.g_id + " zugeordnet");
+        });
     },
     unassignFromGroup: function (group_id) {
         var url = "backend-api.php?mode=lectures&action=unassignFromGroup";
@@ -638,15 +739,20 @@ var editLecture = {
             v_id: editLecture.vorlesung_id,
             g_id: group_id
         }
-        getData("post", url, data).done(editLectureCallbackHandler);
+        getData("post", url, data).done(function () {
+            editLectureCallbackHandler();
+            addNotification("warning","Vorlesung " + editLecture.vorlesung_id + " von der Gruppe " + data.g_id + " entfernt");
+        });
     },
     delete: function () {
         var url = "backend-api.php?mode=lectures&action=delete";
         var data = {
             id: editLecture.vorlesung_id
         }
-        getData("post", url, data).done();
-        closeEditLecture();
+        getData("post", url, data).done(function(data){
+            addNotification("danger", editLecture.details.vorlesung_name + " gelöscht!");
+            closeEditLecture();
+        });        
     }
 }
 
@@ -745,15 +851,20 @@ var createQuestion = {
             "v_id": editLecture.vorlesung_id,
             "question_text": document.getElementById("question_text").value,
             "question_type": document.getElementById("question_type").value,
-            "question_option": []
+            //"question_option": []
         }
-        document.getElementById('question_options').childNodes.forEach(function (item) {
-            if (item.value != null) {
-                data.question_option.push(item.value);
-            }
-        });
-        getData("post", url, data).done();
-        changeMode('editlecture', editLecture.vorlesung_id);
+        if(data.question_type != 1){
+            data.question_option = []
+            document.getElementById('question_options').childNodes.forEach(function (item) {
+                if (item.value != null) {
+                    data.question_option.push(item.value);
+                }
+            });
+        }        
+        getData("post", url, data).done(function(response){
+            addNotification("success", "Frage " + response.frage_id + " wurde erfolgreich erstellt!")
+            changeMode('editlecture', editLecture.vorlesung_id);
+        });        
     }
 }
 
@@ -927,8 +1038,11 @@ var editQuestion = {
         var data = {
             "q_id": editQuestion.questionId
         }
-        getData("post", url, data).done();
-        closeEditQuestion();
+        getData("post", url, data).done(function (response) {
+            addNotification("danger", "Frage " + data.q_id + " gelöscht!");
+            closeEditQuestion();
+        });
+        
     },
     save: function () {
         if (editQuestion.hasGivenAnswers) {
@@ -965,8 +1079,15 @@ var editQuestion = {
             });
             data.question_option = question_option;
         }
-        console.log(data);
-        getData("post", url, data, "text").done(closeEditQuestion);
+        getData("post", url, data).done(function (response) {
+            //benachrichtung anders, wenn neue Version erstellt wird
+            if (editQuestion.hasGivenAnswers) {
+                addNotification("success", "Neue Frage " + response.frage_id + " erstellt!");
+            }else{
+                addNotification("success", "Frage " + response.frage_id + " gespeichert!");
+            }            
+            closeEditQuestion();
+        });
     }
     /*
     Funktion implementieren, die prüft, ob Änderungen vorgenommen wurden, um dann den Speichern Button zu aktiviern
