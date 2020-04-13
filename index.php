@@ -4,7 +4,7 @@ if(isset($_SESSION["username"])){
     if(isset($_SESSION["dozent"])){
         header("Location: components/backend.php");
     }else{
-        header("Location: components/stud_bereich.php");
+        header("Location: components/frontend.php");
     }
 }
 
@@ -15,8 +15,6 @@ require("components/functions.php");
 <?php
 $conn = sql_connect();
 $groups = array();
-
-
 
 if (isset($_POST['submit'])) {
     if (isset($_POST['username']) && $_POST['password']) {
@@ -43,7 +41,7 @@ if (isset($_POST['submit'])) {
                             $_SESSION["dozent"]=true;
                             header("Location: components/backend.php");
                         }else{
-                            header("Location: components/stud_bereich.php");
+                            header("Location: components/frontend.php");
                         }
                     }
                     

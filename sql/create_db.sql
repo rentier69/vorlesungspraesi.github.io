@@ -95,13 +95,28 @@ create table if not exists vl_vorlesung_bewertung
    foreign key(benutzer_id) references vl_benutzer(benutzer_id) on delete cascade,
    foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
 );
-
+/*
+Eintrag in Tabelle wird erstellt, wenn eine Vorlesung gestartet wird.
+Eintrag wird gelöscht, wenn die Vorlesung beendet wird.
+*/
+create table if not exists vl_vorlesung_aktiv
+(
+   vorlesung_id int not null references vl_vorlesung(vorlesung_id),
+   zeit_gestartet timestamp not null default current_timestamp,
+   primary key(vorlesung_id, zeit_gestartet),
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
+);
+/*
+vorlesung_id bezieht sich auf vl_vorlesung_aktiv
+wenn dort die aktive Vorlesung gelöscht wird, werden alle zugehörigen Chat-Nachrichten gelöscht
+*/
 create table if not exists vl_chat 
 (
-   benutzer_id int not null,
+   benutzer_id int not null references vl_benutzer(benutzer_id),
    nachricht_zeitstempel timestamp not null,
-   vorlesung_id int not null references vl_vorlesung(vorlesung_id),
+   vorlesung_id int not null references vl_vorlesung_aktiv(vorlesung_id),
    nachricht varchar(255) not null,
    primary key(benutzer_id, nachricht_zeitstempel, vorlesung_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
+   foreign key(vorlesung_id) references vl_vorlesung_aktiv(vorlesung_id) on delete cascade,
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id) /* kein "on delete cascade" - bei löschen eines Benutzers während einer Vorlesung würden bereits abgeschickte Nachrichten gelöscht */
 );

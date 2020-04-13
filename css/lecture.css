@@ -1,0 +1,7 @@
+[role="main"] {
+    padding-top: 65px; /* Space for fixed navbar */
+}
+
+.clickable {
+    cursor: pointer;
+}
