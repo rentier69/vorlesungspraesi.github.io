@@ -170,7 +170,8 @@ function addNotification(type, title, bodyText = ""){
         }
         notification.getElementById("notificationHeader").innerHTML = title;
         notification.getElementById("notificationBodyText").innerHTML = bodyText;
-        
+        //notification.getElementById("closeNotification").onclick = "document.getElementById('" + notification_id + "').style.display = 'none'";
+        notification.getElementById("closeNotification").setAttribute("onclick","document.getElementById('" + notification_id + "').style.display = 'none'");
         //nicht sichtbar machen, damit fade-in klappt
         notification.getElementById(notification_id).style.display = "none";
         document.getElementById("inAppNotifications").innerHTML += notification.documentElement.innerHTML;
@@ -183,7 +184,7 @@ function timeoutNotification(notification_id){
     //5000ms warten, bis Benachrichtigung ausgeblendet wird
     setTimeout(function(){
         $('#' + notification_id).fadeOut("slow", "linear");
-    }, 5000);
+    }, 3000);
 }
 
 function prepareHomePage(data) {    

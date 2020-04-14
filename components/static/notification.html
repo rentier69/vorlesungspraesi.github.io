@@ -1,14 +1,16 @@
-<div id="notification" class="notification row no-gutters border shadow-sm mb-1 bg-white rounded w-100 h-auto">
+<div id="notification" class="notification row no-gutters border shadow-sm mb-1 bg-white rounded w-100 h-auto" onmouseover="this.style.opacity = 0.1;" onmouseout="this.style.opacity = 1;">
     <div id="notificationType" class="notificationType col-1 d-flex justify-content-center">
         <i id="notificationIcon" class="fas align-self-center text-white"></i>
     </div>
-    <div id="notificationBody" class="notificationBody col p-3 align-self-center">
-        <div id="notificationHeader" class="notificationHeader font-weight-bold">
+    <div id="notificationBody" class="notificationBody col px-3 no-gutters align-self-center">
+        <div class="row justify-content-end px-2">
+            <button type="button" id="closeNotification" class="close pull-right align-self-center" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-        <div id="notificationBodyText" class="notificationText">
+        <div class="row px-2 pb-1 pt-0">
+            <span id="notificationHeader" class="notificationHeader font-weight-bold w-100"></span><br>
+            <span id="notificationBodyText" class="notificationText w-100"></span>
         </div>
-    </div>
-    <button type="button" class="close pull-right p-3 align-self-center" onclick="this.parentElement.style.display = 'none'" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+    </div> 
 </div>
