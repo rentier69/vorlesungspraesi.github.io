@@ -316,7 +316,7 @@ var editUser = {
         var data = {
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(data){
             addNotification("success","Benutzer " + editUser.details.benutzername + " wurde aktiviert!");
             userCallbackHandler();
         });
@@ -326,7 +326,7 @@ var editUser = {
         var data = {
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(data){
             addNotification("warning","Benutzer " + editUser.details.benutzername + " wurde deaktiviert!");
             userCallbackHandler();
         });
@@ -337,7 +337,7 @@ var editUser = {
             name: document.getElementById("newName").value,
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(){
             addNotification("success","Benutzer " + editUser.benutzer_id + " wurde umbenannt!");
             userCallbackHandler();
         });
@@ -349,7 +349,7 @@ var editUser = {
             id: editUser.benutzer_id,
             pw: document.getElementById("password1").value
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(){
             addNotification("success","Passwort von " + editUser.details.benutzername + " wurde zurückgesetzt!");
             userCallbackHandler();
         });
@@ -361,7 +361,7 @@ var editUser = {
             u_id: editUser.benutzer_id,
             g_id: group_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(){
             addNotification("success",editUser.details.benutzername + " der Gruppe " + group_id + " hinzugefügt");
             userCallbackHandler();
         });
@@ -372,7 +372,7 @@ var editUser = {
             u_id: editUser.benutzer_id,
             g_id: group_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(){
             addNotification("warning",editUser.details.benutzername + " von der Gruppe " + group_id + " entfernt");
             userCallbackHandler();
         });
@@ -382,7 +382,7 @@ var editUser = {
         var data = {
             id: editUser.benutzer_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(){
             addNotification("danger",editUser.details.benutzername + " gelöscht!");
             closeEditUser();
         });
@@ -715,9 +715,9 @@ var editLecture = {
         var url = "backend-api.php?mode=lectures&action=rename";
         var data = {
             name: document.getElementById("newName").value,
-            id: editLecture.vorlesung_id
+            v_id: editLecture.vorlesung_id
         }
-        getData("post", url, data).done(function () {
+        getData("post", url, data, "text").done(function () {
             editLectureCallbackHandler();
             addNotification("success","Vorlesung " + editLecture.vorlesung_id + " wurde umbenannt!");
         });
@@ -729,7 +729,7 @@ var editLecture = {
             v_id: editLecture.vorlesung_id,
             g_id: group_id
         }
-        getData("post", url, data).done(function () {
+        getData("post", url, data, "text").done(function () {
             editLectureCallbackHandler();
             addNotification("success","Vorlesung " + editLecture.vorlesung_id + " der Gruppe " + data.g_id + " zugeordnet");
         });
@@ -740,7 +740,7 @@ var editLecture = {
             v_id: editLecture.vorlesung_id,
             g_id: group_id
         }
-        getData("post", url, data).done(function () {
+        getData("post", url, data, "text").done(function () {
             editLectureCallbackHandler();
             addNotification("warning","Vorlesung " + editLecture.vorlesung_id + " von der Gruppe " + data.g_id + " entfernt");
         });
@@ -748,9 +748,9 @@ var editLecture = {
     delete: function () {
         var url = "backend-api.php?mode=lectures&action=delete";
         var data = {
-            id: editLecture.vorlesung_id
+            v_id: editLecture.vorlesung_id
         }
-        getData("post", url, data).done(function(data){
+        getData("post", url, data, "text").done(function(data){
             addNotification("danger", editLecture.details.vorlesung_name + " gelöscht!");
             closeEditLecture();
         });        
@@ -965,7 +965,7 @@ var editQuestion = {
                         var question_option = '';
                         question_option_input_id = "question_option_" + count;
                         question_option = '<div class="input-group mb-3">' +
-                            '<input disabled type="text" class="form-control" id="' + question_option_input_id + '" placeholder="Anwortmöglichkeit" value="' + option + '">' +
+                            '<input disabled type="text" class="form-control" id="' + question_option_input_id + '" placeholder="Anwortmöglichkeit" value="' + option["antwort"] + '">' +
                             '<div class="input-group-append">' +
                             '<button class="btn btn-secondary" type="button" onclick="enableInput([\'' + question_option_input_id + '\'])"><i class="fas fa-edit"></i></button>' +
                             '</div>' +
@@ -1039,7 +1039,7 @@ var editQuestion = {
         var data = {
             "q_id": editQuestion.questionId
         }
-        getData("post", url, data).done(function (response) {
+        getData("post", url, data, "text").done(function () {
             addNotification("danger", "Frage " + data.q_id + " gelöscht!");
             closeEditQuestion();
         });
