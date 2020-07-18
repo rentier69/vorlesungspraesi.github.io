@@ -38,12 +38,12 @@ if (isset($_GET["kursname"]) || isset($_GET["newNameSource"])) {
 }
 
 
-if (isset($_GET["username"]) || isset($_GET["newNameSource"])) {
+if (isset($_GET["username"]) || isset($_GET["newName"])) {
     $username;
     if (isset($_GET["username"])) {
         $username = $_GET["username"];
     } else {
-        $username = $_GET["newNameSource"];
+        $username = $_GET["newName"];
     }
     $conn = sql_connect();
     $sql = "SELECT benutzername FROM vl_benutzer WHERE benutzername='" . $username . "';";
@@ -55,7 +55,6 @@ if (isset($_GET["username"]) || isset($_GET["newNameSource"])) {
     }
     mysqli_close($conn);
 }
-
 
 function sql_connect()
 {
@@ -110,7 +109,7 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
         <link rel="stylesheet" href="<?= $dirsUp ?>css/custom.css" />
         <script src="<?= $dirsUp ?>js/jquery-3.0.0.min.js"></script>
         <script src="<?= $dirsUp ?>js/bootstrap.min.js"> </script>
-        <script src="<?= $dirsUp ?>js/functions.js"></script>
+        <script src="<?= $dirsUp ?>js/lecture.js"></script>
         <script src="<?= $dirsUp ?>js/lecture.js"></script>
         <style>
         </style>
@@ -187,10 +186,12 @@ function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
                                     <div class="form-group">
                                         <input type="password" name="passwordChange" id="passwordChange" class="form-control" placeholder="Passwort" size="25"  />
                                         <div class="invalid-Feedback" id="error_passwordChange" hidden> Passwort eingeben</div>
+                                        <div class="valid-Feedback" id="valid_passwordChange" hidden> </div>
                                     </div>
                                     <div class="form-group">
                                         <input type="password" name="password2Change" id="password2Change" class="form-control" placeholder="Passwort wiederholen" size="25"  />
                                         <div class="invalid-Feedback" id="error_password2Change" hidden> Passwörter müssen übereinstimmen</div>
+                                        <div class="valid-Feedback" id="valid_password2Change" hidden> </div>
                                     </div>
                             </div>
                             <div class="modal-footer">

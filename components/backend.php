@@ -30,7 +30,7 @@ if (isset($_SESSION['username'])) {
         <link rel="stylesheet" href="../css/backend.css" />
         <script src="../js/jquery-3.0.0.min.js"></script>
         <script src="../js/bootstrap.min.js"> </script>
-        <script src="../js/functions.js"></script>
+        <script src="../js/lecture.js"></script>
         <script src="../js/backend.js"></script>
     </head>
     <body>

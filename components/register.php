@@ -102,15 +102,17 @@ mysqli_close($conn);
 
                     <form method="POST" action="register.php" class="was-validated" id="form">
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username">
+                            <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username" autofocus>
                             <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
                             <div class="valid-feedback" id="valid_username"> Benutzername verfügbar </div>
                         </div>
                         <div class="form-group">
                             <input type="password" class="form-control" placeholder="Passwort" required id="password" name="password">
                             <div class="invalid-Feedback" id="error_password" hidden> Passwort eingeben</div>
+                            <div class="valid-feedback" id="valid_password"></div>
                             <input type="password" class="form-control" placeholder="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat">
                             <div class="invalid-Feedback" id="error_passwordRepeat" hidden> Passwörter müssen übereinstimmen</div>
+                            <div class="valid-feedback" id="valid_passwordRepeat"></div>
                         </div>
                         <div class="form-group">
                             <select id="kurs" class="form-control" name="kurs" required>
@@ -169,9 +171,9 @@ generate_footer();
         document.getElementById("error_passwordRepeat").removeAttribute("hidden");
         document.getElementById("error_kurs").removeAttribute("hidden");
 
-        checkPassword("password","passwordRepeat");
+        checkPassword("password","passwordRepeat","submit", "form");
         checkKurs();
-        checkField("username", "Benutzername", "submit", false, null, "form");
+        checkField("username", "Benutzername", "submit", "form", true);
     };
 
     var checkKurs = function() {
