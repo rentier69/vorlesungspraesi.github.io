@@ -20,7 +20,7 @@ if (isset($_SESSION['username'])) {
 }
 ?>
 <?php
-    require('functions.php');
+    require('lecture-api.php');
     $conn = sql_connect();
     $v_id = $_POST["lectureToStart"];
     $insert = "INSERT INTO `vl_vorlesung_aktiv`(`vorlesung_id`) VALUES ($v_id)";

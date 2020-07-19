@@ -52,7 +52,63 @@ function sendMessage(v_id) {
 function getMessage(v_id) {
     getData("post", "lecture-api.php?action=postMessage", data, "text").done();
 }
+function addNotification(type, title, bodyText = ""){
+    getData("get", "static/notification.html", null, "html").done(function (data) {
+        var parser = new DOMParser();
+        //parsen, damit notification vor einblenden angepasst werden kann
+        var notification = parser.parseFromString(data, 'text/html');
+        var notification_id = "notification" + Date.now();
 
+        //id muss einzigartig sein, damit zeitgesteuerter fade-out funktioniert
+        notification.getElementById("notification").id = notification_id;
+        switch (type) {
+            case "success":
+                notification.getElementById(notification_id).classList.add("border-success");
+                notification.getElementById("notificationType").classList.add("bg-success");
+                notification.getElementById("notificationIcon").classList.add("fa-check");
+                break;
+            case "danger":
+                notification.getElementById(notification_id).classList.add("border-danger");
+                notification.getElementById("notificationType").classList.add("bg-danger");
+                notification.getElementById("notificationIcon").classList.add("fa-exclamation-circle");
+                break;
+            case "warning":
+                notification.getElementById(notification_id).classList.add("border-warning");
+                notification.getElementById("notificationType").classList.add("bg-warning");
+                notification.getElementById("notificationIcon").classList.add("fa-exclamation-circle");
+                break;        
+            default:
+                break;
+        }
+        notification.getElementById("notificationHeader").innerHTML = title;
+        notification.getElementById("notificationBodyText").innerHTML = bodyText;
+        //notification.getElementById("closeNotification").onclick = "document.getElementById('" + notification_id + "').style.display = 'none'";
+        notification.getElementById("closeNotification").setAttribute("onclick","document.getElementById('" + notification_id + "').style.display = 'none'");
+        //nicht sichtbar machen, damit fade-in klappt
+        notification.getElementById(notification_id).style.display = "none";
+        document.getElementById("inAppNotifications").innerHTML += notification.documentElement.innerHTML;
+        $('#' + notification_id).fadeIn("fast", "linear", function(){
+            timeoutNotification(notification_id)
+        });        
+    });
+}
+function timeoutNotification(notification_id){
+    //5000ms warten, bis Benachrichtigung ausgeblendet wird
+    setTimeout(function(){
+        $('#' + notification_id).fadeOut("slow", "linear");
+    }, 3000);
+}
+
+
+function changePassword(){
+    data = {
+        "pw": document.getElementById("passwordChange").value
+    }
+    getData("post", "lecture-api.php?action=changePassword", data, "text").done(function(){
+        addNotification("success","Passwort erfolgreich geändert!");
+    });
+    document.getElementById("formChangePassword").reset();
+};
 
 
 //invalid-feedback und valid-feedback werden beide benötigt und müssen immer die ID error_<field_id> und valid_<field_id> haben 
@@ -66,7 +122,7 @@ var checkField = function (field_id, field_name, submit_id, form_id, check_in_db
         if (check_in_db == true) {
             //Prüfen, ob Wert bereits in DB. Liefert true falls ja
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "functions.php?" + field_id + "=" + field.value, true);
+            xhr.open("GET", "lecture-api.php?" + field_id + "=" + field.value, true);
             setErrorMessage(field, field_id, 'Fehler bei der Datenbankabfrage')
             xhr.send();
             xhr.onreadystatechange = function () {

@@ -8,7 +8,7 @@ if(isset($_SESSION["username"])){
     }
 }
 
-require("components/functions.php");
+require("components/lecture-api.php");
 
 ?>
 
@@ -94,7 +94,7 @@ mysqli_close($conn);
                     ?>
                     <form method="POST" action="index.php" class="was-validated">
                         <label for="benutzername"> Benutzername </label>
-                        <input type="text" class="form-control" placeholder="Benutzername" name="username" required maxlength="50" id="username" />
+                        <input type="text" class="form-control" placeholder="Benutzername" name="username" required maxlength="50" id="username" autofocus/>
                         <div class="invalid-Feedback" id="error_username" hidden> Bitte Benutzername eingeben</div>
 
                         <label for="password"> Passwort </label>
