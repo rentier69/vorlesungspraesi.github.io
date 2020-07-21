@@ -77,9 +77,9 @@ if (isset($_SESSION['username'])) {
             <div class="row">
                 <nav class="col-md-2 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky">
-                        <ul class="nav flex-column pt-2" id="nav">
+                        <ul class="nav flex-column pt-2">
                             <li class="nav-item">
-                                <a class="nav-link active" href="../index.php"><i class="fas fa-home fa-fw mr-1"></i>Home</a>
+                                <a class="nav-link" href="../index.php"><i class="fas fa-home fa-fw mr-1"></i>Home</a>
                             </li>                            
                         </ul>
                         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
@@ -87,7 +87,7 @@ if (isset($_SESSION['username'])) {
                         </h6>
                         <ul class="nav flex-column" id="nav">
                             <li class="nav-item">
-                                <a class="nav-link" id="nav_lectures" href="#" onclick="changeMode('lectures')"><i class="fas fa-chalkboard fa-fw mr-1"></i>Vorlesungen</a>
+                                <a class="nav-link active" id="nav_lectures" href="#" onclick="changeMode('lectures')"><i class="fas fa-chalkboard fa-fw mr-1"></i>Vorlesungen</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="nav_users" href="#" onclick="changeMode('users')"><i class="fas fa-user fa-fw mr-1"></i>Benutzer</a>

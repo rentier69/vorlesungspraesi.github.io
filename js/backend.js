@@ -28,20 +28,26 @@ function searchInTwoColumns(tableId) {
 
 //item_id benötigt für die Bearbeitung von best. Benutzern / Gruppen / Vorlesungen
 function changeMode(mode, item_id) {
-    var activeNav = nav.querySelector('.active');
-    activeNav.classList.remove("active");
+    try {
+        var activeNav = nav.querySelector('.active');
+        activeNav.classList.remove("active");
+        
+    } catch (error) {
+        console.log(error);
+    }
+    
     
     //loading overlay hinzufügen
     addLoadingOverlay();
 
     switch (mode) {
-        case "home":
-            getData("get", "static/home.html", null, "html").done(function (data) {
-                setStaticHtml(data);
-                getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(prepareHomePage);
-            });
-            document.getElementById("nav_home").classList.add("active");
-            break;
+        // case "home":
+        //     getData("get", "static/home.html", null, "html").done(function (data) {
+        //         setStaticHtml(data);
+        //         getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(prepareHomePage);
+        //     });
+        //     document.getElementById("nav_home").classList.add("active");
+        //     break;
         case "lectures":
             getData("get", "static/lectures.html", null, "html").done(function (data) {
                 setStaticHtml(data);
