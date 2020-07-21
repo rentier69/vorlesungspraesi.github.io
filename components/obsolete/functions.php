@@ -1,6 +1,5 @@
 <?php
 
-
 if (isset($_GET["kuerzel"]) || isset($_GET["newKuerzelSource"])) {
     $kuerzel;
     if (isset($_GET["kuerzel"])) {

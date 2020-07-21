@@ -22,7 +22,7 @@
 ?>
 
 <?php
-    require('lecture-api.php');
+    require_once('../functions.php');
     header('Content-Type: application/json; charset=utf-8');
 
     if(isset($_GET["mode"])){
@@ -813,7 +813,7 @@
                     }
                     break;            
                 default:
-                die("Keine gültige Action gesetzt!");
+                    die("Keine gültige Action gesetzt!");
                     break;
             }        
             if ($query_success) {

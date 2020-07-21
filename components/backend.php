@@ -1,5 +1,7 @@
 <?php
 session_start();
+require("functions.php");
+
 if (isset($_SESSION['username'])) {
     if (isset($_SESSION["dozent"])) {
         if ($_SESSION["dozent"]) {
@@ -16,7 +18,7 @@ if (isset($_SESSION['username'])) {
     header("Location: ../index.php");
     die("Bitte melden Sie sich an");
 }
-require("lecture-api.php");
+
 
 ?>
 <html>
@@ -25,12 +27,12 @@ require("lecture-api.php");
         <title>Backend</title>
         <link rel="stylesheet" href="../css/bootstrap.css" />
         <link rel="stylesheet" href="../css/fontawesome/css/all.css">
-        <!-- <link rel="stylesheet" href="../css/custom.css" /> -->
+        <link rel="stylesheet" href="../css/design.css" />
         <link rel="stylesheet" href="../css/backend.css" />
         <script src="../js/jquery-3.0.0.min.js"></script>
         <script src="../js/bootstrap.min.js"> </script>
-        <script src="../js/lecture.js"></script>
-        <script src="../js/lecture-host.js"></script>
+        <script src="../js/main.js"></script>
+        <script src="../js/backend.js"></script>
     </head>
     <body>
         <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
@@ -75,13 +77,15 @@ require("lecture-api.php");
             <div class="row">
                 <nav class="col-md-2 bg-light sidebar" id="sidebar">
                     <div class="sidebar-sticky">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        Verwaltung
+                        <ul class="nav flex-column pt-2" id="nav">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="../index.php"><i class="fas fa-home fa-fw mr-1"></i>Home</a>
+                            </li>                            
+                        </ul>
+                        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Verwaltungsfunktionen
                         </h6>
                         <ul class="nav flex-column" id="nav">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="nav_home" href="#" onclick="changeMode('home')"><i class="fas fa-home fa-fw mr-1"></i>Home</a>
-                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="nav_lectures" href="#" onclick="changeMode('lectures')"><i class="fas fa-chalkboard fa-fw mr-1"></i>Vorlesungen</a>
                             </li>
@@ -107,7 +111,7 @@ require("lecture-api.php");
         </div>
         <script type="text/javascript">
             $(document).ready(function () {
-                changeMode('home');
+                changeMode('lectures');
 
                 //eventlistener für responsive sidebar
                 $('#sidebarCollapse').on('click', function () {
