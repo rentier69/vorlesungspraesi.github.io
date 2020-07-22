@@ -31,10 +31,16 @@
 <div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2" id="main-top-heading"></h1>    
     <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group mr-2">       
-            <!-- <button class="btn btn-sm btn-outline-success">
-                Speichern
-            </button>  -->
+        <div class="btn-group mr-2" role="group">
+            <button class="btn btn-sm btn-outline-secondary" onclick="editUser.delete();">
+                Benutzer löschen
+            </button>
+            <button hidden id="button_setStudent" class="btn btn-sm btn-outline-secondary" onclick="editUser.setStatus(0);">
+                Status ändern (neu: Student)
+            </button>
+            <button hidden id="button_setDozent" class="btn btn-sm btn-outline-secondary" onclick="editUser.setStatus(1);">
+                Status ändern (neu: Dozent)
+            </button>
             <button hidden id="button_activate" onclick="editUser.activate();" class="btn btn-sm btn-outline-secondary">
                 Benutzer aktivieren
             </button>
@@ -43,10 +49,7 @@
             </button>
             <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#passwordResetModal">
                 Passwort zurücksetzen
-            </button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="editUser.delete();">
-                Benutzer löschen
-            </button>
+            </button>            
             <button onclick="closeEditUser();" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-times"></i>
             </button>

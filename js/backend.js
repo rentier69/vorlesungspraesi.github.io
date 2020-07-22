@@ -152,7 +152,7 @@ function createUser() {
     }
     getData("post", "../components/api/backend-api.php?mode=users&action=create", data).done(function(data){
         changeMode('users');
-        addNotification("success","Benutzer " + data.benutzer_id + " " + data.benutzername + " wurde erfolgreich erstellt!");
+        addNotification("success","Benutzer " + data.benutzername + " (" + data.benutzer_id + ") wurde erfolgreich erstellt!");
     });
 }
 function loadUserList(data) {
@@ -166,6 +166,7 @@ function loadUserList(data) {
             tbody += "<td>" + row.benutzer_id + "</td>";
             tbody += "<td>" + row.benutzername + "</td>";
             tbody += "<td>" + row.aktiv + "</td>";
+            tbody += "<td>" + row.dozent + "</td>";
             tbody += "<td>" + row.datum_registriert + "</td>";
             tbody += "<td>" + row.datum_letzterlogin + "</td>";
             tbody += "</tr>";
@@ -217,12 +218,21 @@ var editUser = {
         if (editUser.details != null && editUser.groupMembership != null) {
             document.getElementById("main-top-heading").innerHTML = "Benutzer bearbeiten: " + editUser.details.benutzername;
             document.getElementById("newName").value = editUser.details.benutzername;
+
             if (editUser.details.aktiv == 1) {
                 document.getElementById("button_deactivate").removeAttribute("hidden");
                 document.getElementById("button_activate").setAttribute("hidden", true);
             } else {
                 document.getElementById("button_activate").removeAttribute("hidden");
                 document.getElementById("button_deactivate").setAttribute("hidden", true);
+            }
+            console.log(editUser.details);
+            if (editUser.details.dozent == 1) {
+                document.getElementById("button_setStudent").removeAttribute("hidden");
+                document.getElementById("button_setDozent").setAttribute("hidden", true);
+            } else {
+                document.getElementById("button_setDozent").removeAttribute("hidden");
+                document.getElementById("button_setStudent").setAttribute("hidden", true);
             }
 
             document.getElementById("memberOfBody").innerHTML = "";
@@ -316,6 +326,18 @@ var editUser = {
         }
         getData("post", url, data, "text").done(function(){
             addNotification("warning",editUser.details.benutzername + " von der Gruppe " + group_id + " entfernt");
+            userCallbackHandler();
+        });
+    },
+    //dozent = 1 oder 0
+    setStatus: function (dozent){
+        var url = "../components/api/backend-api.php?mode=users&action=setStatus";
+        var data = {
+            u_id: editUser.benutzer_id,
+            status: dozent
+        }        
+        getData("post", url, data, "text").done(function(){
+            addNotification("success", "Status von " + editUser.details.benutzername + " geändert");
             userCallbackHandler();
         });
     },

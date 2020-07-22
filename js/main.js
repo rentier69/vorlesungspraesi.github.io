@@ -119,7 +119,6 @@ var changeSubmitButton = function (submit_id, form_id) {
 };
 
 function addNotification(type, title, bodyText = ""){
-    console.log("drin");
     getData("get", "/vl1/components/static/notification.html", null, "html").done(function (data) {
         var parser = new DOMParser();
         //parsen, damit notification vor einblenden angepasst werden kann

@@ -3,22 +3,22 @@
 ?>
 
 <?php
-    if (isset($_SESSION['username'])) {
-        if (isset($_SESSION["dozent"])) {
-            if ($_SESSION["dozent"]) {
-                //hier weitermachen
-            } else {
-                echo "Authentifizierung fehlgeschlagen";
-                exit();
-            }
-        } else {
-            echo "Authentifizierung fehlgeschlagen";
-            exit();
-        }
-    } else {
-        echo "Authentifizierung fehlgeschlagen";
-        exit();
-    }
+    // if (isset($_SESSION['username'])) {
+    //     if (isset($_SESSION["dozent"])) {
+    //         if ($_SESSION["dozent"]) {
+    //             //hier weitermachen
+    //         } else {
+    //             echo "Authentifizierung fehlgeschlagen";
+    //             exit();
+    //         }
+    //     } else {
+    //         echo "Authentifizierung fehlgeschlagen";
+    //         exit();
+    //     }
+    // } else {
+    //     echo "Authentifizierung fehlgeschlagen";
+    //     exit();
+    // }
 ?>
 
 <?php
@@ -487,7 +487,7 @@
             switch ($_GET["action"]) {
                 case 'getAll':
                     $resultArr = array();
-                    $sql = "select benutzer_id, benutzername, aktiv, datum_registriert, datum_letzterlogin from vl_benutzer";
+                    $sql = "select benutzer_id, benutzername, aktiv, dozent, datum_registriert, datum_letzterlogin from vl_benutzer";
                     $stmt = mysqli_prepare($link, $sql);
                     if (!mysqli_stmt_execute($stmt)) {
                         $query_success = false;
@@ -498,7 +498,7 @@
                     break;
                 case 'getById':
                     $u_id = $_GET["u_id"];
-                    $sql = "SELECT benutzer_id, benutzername, aktiv from vl_benutzer where benutzer_id = ?";
+                    $sql = "SELECT benutzer_id, benutzername, dozent, aktiv from vl_benutzer where benutzer_id = ?";
                     $stmt = mysqli_prepare($link, $sql);
                     mysqli_stmt_bind_param($stmt, 'i', $u_id);
                     if (!mysqli_stmt_execute($stmt)) {
@@ -613,40 +613,20 @@
                     $pw = md5($_POST['pw']);
                     $user_type = $_POST['user_type'];
 
-                    $sql = "INSERT INTO vl_benutzer(`benutzername`, `password`) VALUES (?, ?)";
+                    $sql = "INSERT INTO vl_benutzer(`benutzername`, `password`, `dozent` ) VALUES (?, ?, ?)";
                     $stmt = mysqli_prepare($link, $sql);
-                    mysqli_stmt_bind_param($stmt, 'ss', $name, $pw);
+                    mysqli_stmt_bind_param($stmt, 'ssi', $name, $pw, $user_type);
 
                     if (!mysqli_stmt_execute($stmt)) {
                         $query_success = false;
                         mysqli_stmt_close($stmt);
                         break;
-                    }
-                    mysqli_stmt_close($stmt);
-
-                    switch ($user_type) {
-                        case 'dozent':
-                            $defaultGroup = appConfig::$defaultDozentGroup;
-                            break;
-                        
-                        case 'student':
-                            $defaultGroup = appConfig::$defaultStudentGroup;
-                            break;
                     }
                     $insert_id = mysqli_insert_id($link);
-                    $sql = "INSERT INTO `vl_benutzer_gruppe_map`(`benutzer_id`, `gruppe_id`) values (?,?)";
-                    $stmt = mysqli_prepare($link, $sql);
-                    mysqli_stmt_bind_param($stmt, 'ii', $insert_id, $defaultGroup);
-
-                    if (!mysqli_stmt_execute($stmt)) {
-                        $query_success = false;
-                        mysqli_stmt_close($stmt);
-                        break;
-                    }
-                    mysqli_stmt_close($stmt);
+                    mysqli_stmt_close($stmt);                  
 
                     if($query_success){
-                        $sql = "SELECT * from vl_benutzer where benutzer_id = ?";
+                        $sql = "SELECT benutzer_id, benutzername from vl_benutzer where benutzer_id = ?";
                         $stmt = mysqli_prepare($link, $sql);
                         mysqli_stmt_bind_param($stmt, 'i', $insert_id);
                         if (!mysqli_stmt_execute($stmt)) {
@@ -658,6 +638,20 @@
                         echo json_encode(mysqli_fetch_assoc($result));
                         mysqli_stmt_close($stmt);
                     }
+                    break;
+                case 'setStatus':
+                    //ggfs. noch funktion ergänzen, die prüft, ob noch mehr als ein benutzer dozent ist. Ansonsten kann regulär keiner mehr auf
+                    //die verwaltungsoberfläche zugreifen
+                    $u_id = $_POST["u_id"];
+                    $status = $_POST["status"];
+
+                    $sql = "UPDATE `vl_benutzer` set `dozent`= ? where `benutzer_id` = ?";
+                    $stmt = mysqli_prepare($link, $sql);
+                    mysqli_stmt_bind_param($stmt, 'ii', $status, $u_id);
+                    if (!mysqli_stmt_execute($stmt)) {
+                        $query_success = false;
+                    }
+                    mysqli_stmt_close($stmt);
                     break;
                 case 'delete':
                     $u_id = $_POST["id"];
@@ -798,7 +792,7 @@
                     break;
                 case 'create':
                     $kuerzel = $_POST['kuerzel'];
-                    $name = $_POST['name'];
+                    $name = $_POST['name'];                    
 
                     $sql = "INSERT INTO vl_gruppe(gruppe_kuerzel, gruppenname) VALUES (?,?)";
                     $stmt = mysqli_prepare($link, $sql);

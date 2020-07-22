@@ -12,10 +12,11 @@
     </head>
 
 <?php
-$conn = sql_connect();
-session_start();
 
 if (isset($_POST['submit'])) {
+    $link = sql_connect();
+    session_start();
+
     //Login validieren
     if (isset($_POST['username']) && $_POST['password']) {
         $username = $_POST['username'];
@@ -23,29 +24,35 @@ if (isset($_POST['submit'])) {
         if (strlen($username) >= 4 && strlen($password) > 0) {
             //Daten validieren
             $hash = md5($password);
-            $sql = "SELECT COUNT(*)  as vorhanden, aktiv, benutzer_id FROM vl_benutzer WHERE benutzername = '" . $username . "' AND password = '" . $hash . "'";
+            $sql = "SELECT COUNT(*)  as vorhanden, aktiv, dozent, benutzername, benutzer_id FROM vl_benutzer WHERE benutzername = ? AND password = ?";
+            $stmt = mysqli_prepare($link, $sql);
+            mysqli_stmt_bind_param($stmt, 'ss', $username, $hash);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $row = mysqli_fetch_assoc($result);
 
-            $result = mysqli_query($conn, $sql);
-            while ($row = mysqli_fetch_assoc($result)) {
-                if ($row["vorhanden"] == 1 && $row["aktiv"] == 1) {
-                    $anmeldung_ok = true;
-                    require_once("configuration.php");
-                    $_SESSION["username"] = $username;
-                    //Timestamp letzter Login
-                    mysqli_query($conn,"UPDATE vl_benutzer SET datum_letzterlogin = NOW() WHERE benutzer_id = ".$row['benutzer_id'].";");
-                    //Prüfen ob Dozent - noch implementieren - erst nachdem db konzept umgestellt wurde
-                    
-                    //temporäre lösung
+            if ($row["vorhanden"] == 1 && $row["aktiv"] == 1 && mysqli_num_rows($result) == 1) {
+                $anmeldung_ok = true;                
+                $_SESSION["username"] = $row["benutzername"];
+
+                //Update timestamp letzter Login
+                $sql = "UPDATE vl_benutzer SET datum_letzterlogin = NOW() WHERE benutzer_id = ?;";
+                $stmt = mysqli_prepare($link, $sql);
+                mysqli_stmt_bind_param($stmt, 'i', $row['benutzer_id']);
+                mysqli_stmt_execute($stmt);
+                
+                //Prüfen ob Dozent
+                if($row["dozent"]){
                     $_SESSION["dozent"] = true;
-                    
-                } elseif ($row["vorhanden"] == 0) {
-                    $anmeldung_ok = false;
-                    $errormsg = "Benutzername oder Passwort falsch";
-                } elseif ($row["aktiv"] == 0) {
-                    $anmeldung_ok = false;
-                    $errormsg = "Benutzer gesperrt";
-                }
-            }
+                }                    
+                
+            } elseif ($row["vorhanden"] == 0) {
+                $anmeldung_ok = false;
+                $errormsg = "Benutzername oder Passwort falsch";
+            } elseif ($row["aktiv"] == 0) {
+                $anmeldung_ok = false;
+                $errormsg = "Benutzer gesperrt";
+            }            
         } else {
             $anmeldung_ok = false;
             $errormsg = "Eingabe wiederholen";
@@ -56,48 +63,69 @@ if (isset($_POST['submit'])) {
     }
 }else if (isset($_POST['submit_register'])) {
     //Benutzer anlegen
-    //prepared statements
+    $link = sql_connect();
+    session_start();
     $successInsert = true;
     $errorMsgInsert = "Allgemeiner Fehler aufgetreten";
 
     if (isset($_POST["username"]) && isset($_POST["password"]) && isset($_POST["kurs"]) && isset($_POST["passwordRepeat"])) {
-        mysqli_autocommit($conn, FALSE);
-        $hash = md5($_POST['password']);
-        //Prüfen ob Benutzer bereits vorhanden
-        $sql = "SELECT benutzer_id FROM vl_benutzer WHERE benutzername = '" . $_POST['username'] . "'";
-        $result = mysqli_query($conn, $sql);
-        if ($row = mysqli_fetch_assoc($result)) {
-            $successInsert = false;
-            $errorMsgInsert = "Benutzer bereits vorhanden";
-        } else {
-            //Benutzer einfügen
-            $sql = "INSERT INTO vl_benutzer(benutzername, Password) VALUES ('" . $_POST['username'] . "','" . $hash . "');";
-            if (mysqli_query($conn, $sql)) {
-                $benutzer_id = mysqli_insert_id($conn);
-                //Benutzer_Gruppe_MAP
-                $sql = "INSERT INTO vl_benutzer_gruppe_map(benutzer_id, gruppe_id) VALUES (" . $benutzer_id . ", " . $_POST['kurs'] . ");";
-                if (mysqli_query($conn, $sql)) {
-                    //erfolgreich
-                } else {                    
-                    $successInsert = false;
-                    $errorMsgInsert = mysqli_error($conn);
-                    mysqli_rollback($conn);
-                }                
-            } else {
+        mysqli_autocommit($link, FALSE);
+
+        $username = $_POST['username'];
+        $pw = md5($_POST['password']);
+        $kurs = $_POST["kurs"];        
+
+        //Prüfen ob Benutzer bereits vorhanden        
+        $sql = "SELECT benutzer_id FROM vl_benutzer WHERE benutzername = ?";
+        $stmt = mysqli_prepare($link, $sql);
+        mysqli_stmt_bind_param($stmt, 's', $username);
+
+        //prüfen ob erste query erfolgreich
+        if(mysqli_stmt_execute($stmt)){
+            //prüfen ob bereits ein datensatz mit dem benutzernamen existiert
+            if (mysqli_num_rows(mysqli_stmt_get_result($stmt)) > 0) {
                 $successInsert = false;
-                $errorMsgInsert = mysqli_error($conn);
-                mysqli_rollback($conn);
+                mysqli_stmt_close($stmt);
+                $errorMsgInsert = "Benutzer bereits vorhanden";
+            }else {
+                //Benutzer einfügen
+                $sql = "INSERT INTO vl_benutzer(benutzername, password) VALUES (?,?);";
+                $stmt = mysqli_prepare($link, $sql);
+                mysqli_stmt_bind_param($stmt, 'ss', $username, $pw);
+                if (mysqli_stmt_execute($stmt)) {
+                    $benutzer_id = mysqli_insert_id($link);
+                    mysqli_stmt_close($stmt);
+                    //Benutzer_Gruppe_MAP
+                    $sql = "INSERT INTO vl_benutzer_gruppe_map(benutzer_id, gruppe_id) VALUES (?,?);";
+                    $stmt = mysqli_prepare($link, $sql);
+                    mysqli_stmt_bind_param($stmt, 'ii', $benutzer_id, $kurs);
+                    if (mysqli_stmt_execute($stmt)) {
+                        mysqli_commit($link);
+                        mysqli_stmt_close($stmt);
+                    } else {                    
+                        $successInsert = false;
+                        $errorMsgInsert = mysqli_error($link);
+                        mysqli_rollback($link);
+                    }                    
+                } else {
+                    $successInsert = false;
+                    $errorMsgInsert = mysqli_error($link);
+                    mysqli_rollback($link);
+                    mysqli_stmt_close($stmt);
+                }                
             }
-        }
-    } else {
+        } else {
         $successInsert = false;
         $errorMsgInsert = "Angaben fehlerhaft";
-        mysqli_rollback($conn);
+        mysqli_rollback($link);
     }
-    mysqli_autocommit($conn, true);
+    mysqli_stmt_close($stmt);
+    mysqli_autocommit($link, true);
 
     if($successInsert){
+        //session username setzen, damit direkt auf die Startseite gewechselt werden kann
         $_SESSION["username"] = $_POST["username"];
+    }
     }
 }
 ?>
@@ -142,6 +170,8 @@ if (isset($_POST['submit'])) {
                         </div>
                     </div>
                     <?php
+                    // an dieser Stelle, da das modal sonst auch bei nicht angemeldeten Benutzern im HTML Dok auftacht
+                    generate_modal_usermenu();
                 }
                     ?>
                 
@@ -245,13 +275,14 @@ if (isset($_POST['submit'])) {
                                             <select id="kurs" class="form-control" name="kurs" required oninput="checkKurs('submit_register','form_register')">
                                                 <option value="" disabled selected>Kurs auswählen</option>
                                                 <?php
-                                                $conn = sql_connect();
-                                                $kurs_select = "SELECT gruppenname, gruppe_id, gruppe_kuerzel FROM vl_gruppe WHERE gruppe_id > 2";
-                                                $result = mysqli_query($conn, $kurs_select);
+                                                //kein prep stmt notwendig, da keine formulareingaben
+                                                $link = sql_connect();
+                                                $kurs_select = "SELECT gruppenname, gruppe_id, gruppe_kuerzel FROM vl_gruppe";
+                                                $result = mysqli_query($link, $kurs_select);
                                                 while ($row = mysqli_fetch_assoc($result)) {
                                                     echo ('<option value="' . $row["gruppe_id"] . '">' . $row["gruppe_kuerzel"] . '</option>');
                                                 }
-                                                mysqli_close($conn);
+                                                mysqli_close($link);
                                                 ?>
                                             </select>
                                             <div class="invalid-Feedback" id="error_kurs" hidden> Bitte Kurs auswählen </div>
@@ -332,11 +363,8 @@ if (isset($_POST['submit'])) {
                 } else {
                     kurs.setCustomValidity('');
                 }
-                changeSubmitButton(submit_id,"form")
-            };            
+                changeSubmitButton(submit_id,"form");
+            };        
         </script>
-
-        <?php generate_modal_usermenu() ?>
-
-    </body>    
+    </body>
 </html>

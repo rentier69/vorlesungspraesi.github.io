@@ -9,6 +9,7 @@ create table if not exists vl_benutzer
    benutzername varchar(50) not null,
    password varchar(50) not null,
    aktiv boolean not null default true,
+   dozent boolean not null default false,
    datum_registriert timestamp not null default current_timestamp,
    datum_letzterlogin timestamp not null default '0000-00-00 00:00:00'
 );
