@@ -34,7 +34,7 @@ function changePassword(){
     data = {
         "pw": document.getElementById("passwordChange").value
     }
-    getData("post", "/vl1/components/api/lecture-api.php?action=changePassword", data, "text").done(function(){
+    getData("post", "/components/api/lecture-api.php?action=changePassword", data, "text").done(function(){
         addNotification("success","Passwort erfolgreich geändert!");
     });
     document.getElementById("formChangePassword").reset();
@@ -51,7 +51,7 @@ var checkField = function (field_id, field_name, submit_id, form_id, check_in_db
         if (check_in_db == true) {
             //Prüfen, ob Wert bereits in DB. Liefert true falls ja            
             setErrorMessage(field, field_id, 'Warten auf Datenbankabfrage')
-            var url = "/vl1/components/functions.php?" + field_id + "=" + field.value;
+            var url = "/components/functions.php?" + field_id + "=" + field.value;
             getData("get",url,null,"text").done(function(data){
                 console.log(data);
                 if (!data) {
@@ -119,7 +119,7 @@ var changeSubmitButton = function (submit_id, form_id) {
 };
 
 function addNotification(type, title, bodyText = ""){
-    getData("get", "/vl1/components/static/notification.html", null, "html").done(function (data) {
+    getData("get", "/components/static/notification.html", null, "html").done(function (data) {
         var parser = new DOMParser();
         //parsen, damit notification vor einblenden angepasst werden kann
         var notification = parser.parseFromString(data, 'text/html');
