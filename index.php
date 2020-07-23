@@ -13,9 +13,10 @@
 
 <?php
 
+session_start();
+
 if (isset($_POST['submit'])) {
     $link = sql_connect();
-    session_start();
 
     //Login validieren
     if (isset($_POST['username']) && $_POST['password']) {
@@ -64,7 +65,6 @@ if (isset($_POST['submit'])) {
 }else if (isset($_POST['submit_register'])) {
     //Benutzer anlegen
     $link = sql_connect();
-    session_start();
     $successInsert = true;
     $errorMsgInsert = "Allgemeiner Fehler aufgetreten";
 
@@ -130,6 +130,12 @@ if (isset($_POST['submit'])) {
 }
 ?>
     <body>
+    <?php
+    if(isset($_SESSION["username"])){
+        // an dieser Stelle, da das modal sonst auch bei nicht angemeldeten Benutzern im HTML Dok auftaucht
+        generate_modal_usermenu();
+    }
+    ?>
         <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
             <div class="navbar-toggler clickable" id="sidebarCollapse">                    
                 <i class="fas fa-chevron-right"></i>
@@ -169,13 +175,9 @@ if (isset($_POST['submit'])) {
                             </div>
                         </div>
                     </div>
-                    <?php
-                    // an dieser Stelle, da das modal sonst auch bei nicht angemeldeten Benutzern im HTML Dok auftacht
-                    generate_modal_usermenu();
+                <?php
                 }
-                    ?>
-                
-                               
+                ?>          
             </div>
         </nav>
         <div class="container-fluid">
@@ -354,7 +356,7 @@ if (isset($_POST['submit'])) {
                     </div>                
                 </div>
             </div>
-        </div>
+        </div>       
         <script type="text/javascript">     
             var checkKurs = function(submit_id,form_id) {
                 var kurs = document.getElementById('kurs');
@@ -366,5 +368,6 @@ if (isset($_POST['submit'])) {
                 changeSubmitButton(submit_id,"form");
             };        
         </script>
+         
     </body>
 </html>
