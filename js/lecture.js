@@ -21,34 +21,56 @@ function disableInput(input_ids) {
     });
 }
 
-function closeLecture(v_id) {
-    //irgendwie bei schließen des Browserfensters ausführen
+
+
+
+
+function sendMessage(v_id, username) {
+    data = {
+        "v_id": v_id,
+        "nachricht": document.getElementById('chatMessage').value,
+        "username": username
+    }
+    getData("post", "api/lecture-api.php?action=postMessage", data, "text").done(getMessages(v_id));
+    document.getElementById('chatMessage').value = "";
+    changeChatButton();
+}
+function getMessages(v_id) {
     data = {
         "v_id": v_id
     }
-    getData("post", "lecture-api.php?action=closeLecture", data, "text").done(prepareHomePage);
+    getData("post", "api/lecture-api.php?action=getMessage", data, "text").done(fillChat);
 }
 
-function getActiveLectures() {
-    getData("get", "lecture-api.php?action=getActiveLectures", null).done(prepareFrontendUI);
-}
-
-function prepareFrontendUI(data) {
-    //ggfs. als Tabelle darstellen
-    for (let row of data) {
-        option = '<option value="' + row.vorlesung_id + '">' + row.vorlesung_name + " - " + row.zeit_gestartet + '</option>'
-        document.getElementById("lectureToJoin").innerHTML += option;
+function fillChat(data) {
+    let chatbox = document.getElementById("chatbox");
+    while(chatbox.firstChild){
+        chatbox.removeChild(chatbox.firstChild);
+    }
+    let messages = JSON.parse(data);
+    for (let message of messages) {
+        div = '<div> <b>' + message.benutzername + ':</b> ' + message.nachricht + '</div>'
+        chatbox.innerHTML += div;
     }
 }
 
-function sendMessage(v_id) {
-    data = {
-        "v_id": v_id,
-        "text": document.getElementById('chatMessage')
-
+function changeChatButton() {
+    if (document.getElementById("chatMessage").value.length > 0) {
+        document.getElementById("sendMessage").disabled = false;
+    } else {
+        document.getElementById("sendMessage").disabled = true;
     }
-    getData("post", "lecture-api.php?action=postMessage", data, "text").done();
 }
-function getMessage(v_id) {
-    getData("post", "lecture-api.php?action=postMessage", data, "text").done();
+
+//Aktualisieren und Scrollen(TO DO) des Chatfensters
+function reloadChat(){
+    getMessages(v_id);
+}
+var RefreshChatInterval;
+function changeChatRefresh(){
+    if(document.getElementById("liveChat").checked==true){
+    RefreshChatInterval=setInterval(reloadChat, 2000);
+    }else{
+        clearInterval(RefreshChatInterval);
+    }
 }
