@@ -104,7 +104,7 @@ create table if not exists vl_vorlesung_aktiv
 (
    vorlesung_id int not null references vl_vorlesung(vorlesung_id),
    zeit_gestartet timestamp not null default current_timestamp,
-   primary key(vorlesung_id, zeit_gestartet),
+   primary key(vorlesung_id),
    foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
 );
 /*
