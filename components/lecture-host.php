@@ -19,16 +19,21 @@ if (isset($_SESSION['username'])) {
     die("Bitte melden Sie sich an");
 }
 
-require('functions.php');
-$conn = sql_connect();
-
+require_once('functions.php');
 if(isset($_POST["lectureToStart"])){
-$v_id =  $_POST["lectureToStart"];
-$insert = "INSERT INTO vl_vorlesung_aktiv(vorlesung_id) VALUES ($v_id)";
-if (!mysqli_query($conn, $insert)){
-    header("Location: ../index.php");
-    die("Fehler beim Start der Vorlesung");
-}
+    //sql connect in if, da nur beim ersten mal benötigt
+    $link = sql_connect();
+
+    // $v_id =  $_POST["lectureToStart"];
+    // in Session Variable, damit ein reload mit F5 möglich ist
+    $_SESSION['v_id'] = $_POST["lectureToStart"];
+    $sql = "INSERT INTO vl_vorlesung_aktiv(vorlesung_id) VALUES (?)";
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, 'i', $_SESSION['v_id']);
+    if (!mysqli_stmt_execute($stmt)){
+        header("Location: ../index.php");
+        die("Fehler beim Start der Vorlesung");
+    }
 }
 ?>
 
@@ -38,14 +43,13 @@ if (!mysqli_query($conn, $insert)){
     <title>Vorlesung halten</title>
     <link rel="stylesheet" href="../css/bootstrap.css" />
     <link rel="stylesheet" href="../css/fontawesome/css/all.css">
-    <!-- <link rel="stylesheet" href="../css/custom.css" /> -->
+    <link rel="stylesheet" href="../css/design.css" />
     <link rel="stylesheet" href="../css/lecture.css" />
     <script src="../js/jquery-3.0.0.min.js"></script>
-    <script src="../js/bootstrap.min.js"> </script>
+    <script src="../js/bootstrap.bundle.min.js"> </script>
     <script src="../js/lecture.js"> </script>
     <script src="../js/lecture-host.js"> </script>
-    <!-- <script src="../js/functions.js"></script> -->
-    <!-- <script src="../js/backend.js"></script> -->
+    <script src="../js/main.js"></script>
 </head>
 
 <body>
@@ -62,15 +66,15 @@ if (!mysqli_query($conn, $insert)){
                 <path fill="#E2001A" d="M70.8 21.4c0 1.6-.2 3.1-.7 4.4-.5 1.4-1.1 2.5-1.9 3.5-.8 1-1.8 1.8-3 2.3-1.2.6-2.5.8-4 .8h-5.3c-.2 0-.4-.1-.6-.2-.1-.2-.2-.3-.2-.6V12c0-.2.1-.4.2-.6.1-.2.3-.2.6-.2h5.3c1.4 0 2.8.2 4 .7 1.2.5 2.2 1.2 3.1 2.1.8.9 1.5 2 2 3.2.3 1.2.5 2.6.5 4.2zm-3.8 0c0-1-.1-2-.4-2.9-.3-.9-.6-1.6-1.1-2.3-.5-.6-1.1-1.1-1.8-1.5-.7-.4-1.5-.6-2.4-.6h-2.4v15.4H61c.9 0 1.7-.2 2.4-.6.7-.4 1.3-1 1.9-1.7.5-.7.9-1.6 1.2-2.6.3-.9.5-2 .5-3.2zm22.1 10.9c-.1.1-.3.2-.6.2h-2.2c-.2 0-.4-.1-.6-.2-.1-.1-.2-.3-.2-.6v-8.8h-7.4v8.8c0 .2-.1.4-.2.6-.1.1-.3.2-.6.2h-2.2c-.2 0-.4-.1-.6-.2-.1-.2-.2-.3-.2-.6V12c0-.2.1-.4.2-.6.1-.2.3-.2.6-.2h2.2c.2 0 .4.1.6.2.1.1.2.3.2.6v7.8h7.4V12c0-.2.1-.4.2-.6.1-.2.3-.2.6-.2h2.2c.2 0 .4.1.6.2.1.1.2.3.2.6v19.7c0 .2-.1.4-.2.6z"></path>
                 <path fill="#5C6971" d="M106.6 26.4c0 1-.2 1.8-.6 2.6-.4.8-.9 1.4-1.6 1.9-.7.5-1.5.9-2.3 1.2-.9.3-1.8.4-2.8.4h-4.9c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4V11.7c0-.1.1-.3.2-.4.1-.1.2-.1.4-.1h5.3c.8 0 1.6.1 2.4.3.8.2 1.5.5 2 1 .6.4 1.1 1 1.4 1.7.4.7.5 1.5.5 2.4 0 .6-.1 1.1-.4 1.6-.3.5-.6 1-1 1.4-.4.4-.8.8-1.3 1.1-.5.3-.9.5-1.3.6.6.1 1.2.3 1.7.6s1 .7 1.4 1.1c.4.4.7 1 1 1.5.4.6.5 1.2.5 1.9zm-2.9-9.8c0-1.1-.4-1.9-1.1-2.6-.7-.6-1.7-1-2.9-1h-3.5v7.4h3.4c.5 0 1-.1 1.5-.3.5-.2.9-.5 1.3-.8.4-.3.7-.7.9-1.2.3-.4.4-.9.4-1.5zm.5 9.7c0-1.2-.4-2.2-1.3-2.9-.8-.7-1.9-1.1-3.3-1.1h-3.5v8.3h3.5c.6 0 1.2-.1 1.8-.3.6-.2 1-.5 1.5-.9.4-.4.7-.8 1-1.4.2-.5.3-1.1.3-1.7zm21.3 5.6c0 .1-.1.3-.2.4-.1.1-.2.2-.4.2h-1.6c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4l-3.5-17.8-3.5 17.8c0 .1-.1.3-.2.4-.1.1-.3.2-.4.2h-1.6c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4l-4.1-20.2c0-.1 0-.3.1-.4.1-.1.2-.1.4-.1h1.3c.3 0 .6.2.6.5l3.2 17.9 3.5-17.9c.1-.3.3-.5.6-.5h1.6c.3 0 .5.2.6.5l3.5 17.9 3.2-17.9c.1-.3.3-.5.6-.5h1.3c.1 0 .3 0 .4.1.1.1.1.2.1.4l-4.3 20.2z"></path>
             </svg>
-        </a>
+        </a>        
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-        </button>
+        </button>        
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="form-inline my-2 my-lg-0 justify-content-end w-100">
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-user"></i> <?= $_SESSION["username"] ?>
+                        <i class="fas fa-user mr-2"></i><?= $_SESSION["username"] ?>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupUserMenu">
                         <a class="dropdown-item" data-toggle="modal" data-target="#userMenu" href="#">
@@ -81,45 +85,66 @@ if (!mysqli_query($conn, $insert)){
                         </a>
                     </div>
                 </div>
-            </div>
-        </div>
+                <button type="button" class="btn btn-dark"">
+                    <i class="fas fa-desktop mr-2"></i>Bildschirm freigeben
+                </button>
+                <a onclick="closeLecture(<?= $_SESSION['v_id'] ?>);" href="../index.php" class="btn btn-dark">
+                <i class="fas fa-times mr-2"></i>Beenden 
+                </a>
+            </div>            
+        </div>        
     </nav>
     <div role="main" class="container-fluid">
-        <div class="row">
-
-            <div class="col border" id="chatbox"> </div>
-
-            <div class="col">
-                <a onclick="closeLecture(<?= $v_id ?>);" href="../index.php" class="btn btn-sm btn-outline-secondary">
-                    <i class="fas fa-times"></i>
-                </a>
+        <div class="row" id="lecture">
+            <div class="col-sm-1 d-flex flex-column border-right pt-2 bg-light" id="people">
+                <div class="people_item bg-white p-2 mb-2 font-weight-light">
+                    Dozent
+                </div>
+                <div class="people_item bg-white p-2 mb-2 font-weight-light">
+                    Student
+                </div>
+                <div class="people_item bg-white p-2 mb-2 font-weight-light">
+                    Student
+                </div>
             </div>
+            <div class="col-sm-2 d-flex flex-column border-right px-0" id="chat">
+                <div id="chatbox" class="mb-auto px-2"></div>
+                <div id="chat_controls" class="input-group d-flex justify-content-end mt-1">
+                        <textarea class="form-control rounded-0" rows="2" name="chatMessage" id="chatMessage" placeholder="Nachricht eingeben" oninput="changeChatButton()"></textarea>
+                        <div class="input-group-append">
+                            <button disabled class="btn btn-outline-secondary rounded-0" name="sendMessage" id="sendMessage" type="button"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary dropdown-toggle rounded-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item btn btn-outline-danger" onclick="deleteChat();" name="deleteChat" id="deleteChat" href="#">Chat löschen</a>
+                                <a class="dropdown-item btn btn-outline-secondary" onclick="reloadChat();" href="#">Aktualisieren</a>
+                                <a class="dropdown-item" href="#">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="liveChat" name="liveChat" oninput="changeChatRefresh()" checked>
+                                    <label class="custom-control-label" for="liveChat">Auto Aktualisierung</label>
+                                </div>
+                                </a>
+                                <a class="dropdown-item btn btn-outline-secondary" href="#">Aufgabe auswählen</a>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="col px-0" id="screen">
+                <video width="100%" height="100%" controls></video>
+            </div>            
         </div>
-
-        <div class="row">
-            <textarea name="chatMessage" id="chatMessage" placeholder="Nachricht eingeben" oninput="changeChatButton()"></textarea>
-        </div>
-        <div class="row">
-            <button class="btn btn-primary form-group" name="sendMessage" id="sendMessage" disabled>Send</button>
-            <button onClick="deleteChat();" class="btn btn-danger form-group" name="deleteChat" id="deleteChat" >Chat löschen</button>
-        </div>
-        <div class="row">
-            <input type="checkbox" id="liveChat" name="liveChat" class="form-group" oninput="changeChatRefresh()" checked/>
-            <label for="liveChat"> Auto Aktualisierung</label>
-            <button onclick="reloadChat();" class="btn btn-secondary form-group"> Aktualisieren</button>
-        </div>
-
     </div>
-
 </body>
 
 <script>
-    var v_id = <?= $v_id ?>;
+    var v_id = <?= $_SESSION['v_id'] ?>;
 
     $(document).ready(function(){
-        getMessages(<?=$v_id?>);
+        getMessages(<?=$_SESSION['v_id']?>);
         document.getElementById("sendMessage").addEventListener("click", function(){
-        sendMessage(<?= $v_id ?>,"<?=$_SESSION['username']?>");});
+            sendMessage(<?= $_SESSION['v_id'] ?>,"<?=$_SESSION['username']?>");
+        });
         changeChatRefresh();
     });
 </script>

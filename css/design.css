@@ -1,9 +1,6 @@
 html {
     position: relative;
     min-height: 100%;
-  }
-body{
-  margin-bottom: 80px; /* Margin bottom by footer height +20px */
 }
 [role="main"] {
   padding-top: 65px; /* Space for fixed navbar */

@@ -21,10 +21,6 @@ function disableInput(input_ids) {
     });
 }
 
-
-
-
-
 function sendMessage(v_id, username) {
     data = {
         "v_id": v_id,
@@ -49,8 +45,16 @@ function fillChat(data) {
     }
     let messages = JSON.parse(data);
     for (let message of messages) {
-        div = '<div> <b>' + message.benutzername + ':</b> ' + message.nachricht + '</div>'
-        chatbox.innerHTML += div;
+        html = '<div class="message my-2">';
+        html += '<div class="message_head d-flex">';
+        html += '<div class="message_sender w-50">'+ message.benutzername +'</div>';
+        html +=  '<div class="message_time w-50 text-right">'+ message.nachricht_zeitstempel +'</div>';
+        html +=  '</div> ';
+        html +=  '<div class="message_body bg-info p-2">';
+        html +=  '<span>'+ message.nachricht +'<span>';
+        html +=  '</div>';
+        html +=  '</div>';
+        chatbox.innerHTML += html;
     }
 }
 

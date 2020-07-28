@@ -60,7 +60,7 @@ if (isset($_GET["action"])) {
         case 'getMessage':
             $v_id = $_POST["v_id"];
             $resultArr = array();
-            $sql = "SELECT nachricht, benutzername FROM vl_chat LEFT JOIN vl_benutzer ON vl_chat.benutzer_id=vl_benutzer.benutzer_id WHERE vorlesung_id = ? ORDER BY nachricht_zeitstempel ASC";
+            $sql = "SELECT nachricht, benutzername, DATE_FORMAT(nachricht_zeitstempel, '%k:%i:%s') as nachricht_zeitstempel FROM vl_chat LEFT JOIN vl_benutzer ON vl_chat.benutzer_id=vl_benutzer.benutzer_id WHERE vorlesung_id = ? ORDER BY nachricht_zeitstempel ASC";
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, 'i', $v_id);
             mysqli_stmt_execute($stmt);
