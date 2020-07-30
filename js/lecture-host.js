@@ -13,7 +13,7 @@ function deleteChat(){
 }
 
 function closeLecture(v_id) {
-    //irgendwie bei schließen des Browserfensters ausführen
+    //irgendwie bei schließen des Browserfensters ausführen - erledigt - eventListener in lecture-host.php
     data = {
         "v_id": v_id
     }

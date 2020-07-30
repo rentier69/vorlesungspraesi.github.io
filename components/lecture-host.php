@@ -54,7 +54,7 @@ if(isset($_POST["lectureToStart"])){
 
 <body>
     <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
-        <a class="navbar-brand" href="backend.php">
+        <a class="navbar-brand" href="..\index.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                 <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
                 <path fill="#E2001A" d="M33 .3l-9 9.1c-.4.4-.8 1.2-.8 1.6v19.7c0 .4.4.4.8 0l9.1-9.1c.4-.4.8-1.2.8-1.6V.3c-.1-.4-.4-.4-.9 0z"></path>
@@ -88,8 +88,9 @@ if(isset($_POST["lectureToStart"])){
                 <button type="button" class="btn btn-dark"">
                     <i class="fas fa-desktop mr-2"></i>Bildschirm freigeben
                 </button>
-                <a onclick="closeLecture(<?= $_SESSION['v_id'] ?>);" href="../index.php" class="btn btn-dark">
+                <a href="../index.php" class="btn btn-dark">
                 <i class="fas fa-times mr-2"></i>Beenden 
+
                 </a>
             </div>            
         </div>        
@@ -146,6 +147,19 @@ if(isset($_POST["lectureToStart"])){
             sendMessage(<?= $_SESSION['v_id'] ?>,"<?=$_SESSION['username']?>");
         });
         changeChatRefresh();
+    });
+
+    //eventListener um Benutzer zu fragen, ob er wirklich beenden will
+    window.addEventListener('beforeunload', function (e) {
+        // Cancel the event
+        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
+    });
+
+    //eventListener um aktive Session aus der DB zu löschen
+    window.addEventListener('unload',function (e) {
+        closeLecture(v_id);
     });
 </script>
 
