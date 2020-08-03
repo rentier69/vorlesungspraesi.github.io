@@ -91,6 +91,18 @@
                     echo json_encode(mysqli_fetch_all($result, MYSQLI_ASSOC));
                     mysqli_stmt_close($stmt);
                     break;
+                case 'getActiveQuestions':
+                    $v_id = $_GET["v_id"];
+                    $sql = "SELECT frage_id, frage_titel, frage_typ_titel, aktiv, vorherige_version_id, fragenummer FROM vl_vorlesung_frage INNER JOIN vl_vorlesung_frage_typ ON (vl_vorlesung_frage.frage_typ_id = vl_vorlesung_frage_typ.frage_typ_id) WHERE vorlesung_id = ? AND aktiv = 1 order by fragenummer";
+                    $stmt = mysqli_prepare($link, $sql);
+                    mysqli_stmt_bind_param($stmt, 'i', $v_id);
+                    if (!mysqli_stmt_execute($stmt)) {
+                        $query_success = false;
+                    }
+                    $result = mysqli_stmt_get_result($stmt);
+                    echo json_encode(mysqli_fetch_all($result, MYSQLI_ASSOC));
+                    mysqli_stmt_close($stmt);
+                    break;
                 case 'getAssignedGroups':
                     $v_id = $_GET["v_id"];
                     $resultArr = array();

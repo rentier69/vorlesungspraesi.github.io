@@ -80,7 +80,7 @@ create table if not exists vl_vorlesung_frage_antworten
    frage_id int not null references vl_vorlesung_frage(frage_id),
    benutzer_id int not null references vl_benutzer(benutzer_id),
    antwort varchar(255) not null,
-   primary key (frage_id, benutzer_id),
+   primary key (frage_id, benutzer_id, antwort),
    foreign key(benutzer_id) references vl_benutzer(benutzer_id) on delete cascade,
    foreign key(frage_id) references vl_vorlesung_frage(frage_id) on delete cascade
 );
@@ -113,11 +113,23 @@ wenn dort die aktive Vorlesung gelöscht wird, werden alle zugehörigen Chat-Nac
 */
 create table if not exists vl_chat 
 (
+   nachricht_id int not null auto_increment primary key,
    benutzer_id int not null references vl_benutzer(benutzer_id),
    nachricht_zeitstempel timestamp not null,
    vorlesung_id int not null references vl_vorlesung_aktiv(vorlesung_id),
    nachricht varchar(255) not null,
-   primary key(benutzer_id, nachricht_zeitstempel, vorlesung_id),
+   frage boolean not null default false, /* kennzeichnet eine Nachricht als Frage */
+   -- primary key(benutzer_id, nachricht_zeitstempel, vorlesung_id),
    foreign key(vorlesung_id) references vl_vorlesung_aktiv(vorlesung_id) on delete cascade,
    foreign key(benutzer_id) references vl_benutzer(benutzer_id) /* kein "on delete cascade" - bei löschen eines Benutzers während einer Vorlesung würden bereits abgeschickte Nachrichten gelöscht */
+);
+
+create table if not exists vl_chat_frage
+(
+   nachricht_id int not null references vl_chat(nachricht_id),
+   frage_id int not null references vl_vorlesung_frage(frage_id),
+	frage_aktiv boolean not null default true, /* falls frage zur beantwortung deaktivert werden soll */
+   primary key(nachricht_id, frage_id),
+   foreign key (nachricht_id) references vl_chat(nachricht_id) on delete cascade,
+   foreign key (frage_id) references vl_vorlesung_frage(frage_id) on delete cascade
 );

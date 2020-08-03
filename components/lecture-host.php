@@ -111,7 +111,7 @@ if(isset($_POST["lectureToStart"])){
             <div class="col-sm-2 d-flex flex-column border-right px-0" id="chat">
                 <div id="chatbox" class="mb-auto px-2"></div>
                 <div id="chat_controls" class="input-group d-flex justify-content-end mt-1">
-                        <textarea class="form-control rounded-0" rows="2" name="chatMessage" id="chatMessage" placeholder="Nachricht eingeben" oninput="changeChatButton()"></textarea>
+                        <textarea class="form-control rounded-0" rows="2" name="chatMessage" id="chatMessage" placeholder="Nachricht eingeben" oninput="changeStateChatButton()"></textarea>
                         <div class="input-group-append">
                             <button disabled class="btn btn-outline-secondary rounded-0" name="sendMessage" id="sendMessage" type="button"><i class="fas fa-paper-plane"></i></button>
                         </div>
@@ -126,7 +126,7 @@ if(isset($_POST["lectureToStart"])){
                                     <label class="custom-control-label" for="liveChat">Auto Aktualisierung</label>
                                 </div>
                                 </a>
-                                <a class="dropdown-item btn btn-outline-secondary" href="#">Aufgabe auswählen</a>
+                                <a class="dropdown-item btn btn-outline-secondary" href="#" data-toggle="modal" data-target="#lectureQuestionModal">Aufgabe auswählen</a>
                             </div>
                         </div>
                 </div>
@@ -136,15 +136,40 @@ if(isset($_POST["lectureToStart"])){
             </div>            
         </div>
     </div>
+
+    <div class="modal fade" id="lectureQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div id="loadingOverlay">
+                            <div id="loadingSpinner" style="width: 3rem; height: 3rem; display:none;"></div>
+                </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eine Frage auswählen</h5>
+                    <button type="button" class="btn btn-outline-secondary" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="fas fa-times"></i>
+                        <!-- <span aria-hidden="true">&times;</span> -->
+                    </button>
+                </div>
+                <div class="modal-body" id="listLectureQuestions">
+                    <div class="list-group">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
     var v_id = <?= $_SESSION['v_id'] ?>;
+    var username = "<?= $_SESSION['username'] ?>";
 
     $(document).ready(function(){
-        getMessages(<?=$_SESSION['v_id']?>);
+        getMessages(v_id, username);
         document.getElementById("sendMessage").addEventListener("click", function(){
-            sendMessage(<?= $_SESSION['v_id'] ?>,"<?=$_SESSION['username']?>");
+            sendMessage(v_id, username);
         });
         changeChatRefresh();
     });
@@ -159,8 +184,24 @@ if(isset($_POST["lectureToStart"])){
 
     //eventListener um aktive Session aus der DB zu löschen
     window.addEventListener('unload',function (e) {
-        closeLecture(v_id);
+        //funktion closeLecture() direkt hier eingefügt, da der Aufruf nicht mehr weitergereicht wurde
+        data = {
+            "v_id": v_id
+        }
+        console.log(data);
+        getData("post", "api/lecture-host-api.php?action=closeLecture", data, "text");
+        // closeLecture(v_id);
     });
+
+    $('#lectureQuestionModal').on('shown.bs.modal', function (e) {
+        addLoadingOverlay();
+        getLectureQuestions(v_id);
+    });
+
+    $('#lectureQuestionModal').on('hidden.bs.modal', function (e) {
+        $('#listLectureQuestions').empty();
+    });
+
 </script>
 
 <?php
