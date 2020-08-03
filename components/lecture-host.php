@@ -180,18 +180,22 @@ if(isset($_POST["lectureToStart"])){
         e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
         // Chrome requires returnValue to be set
         e.returnValue = '';
+        console.log("beforeunload");
     });
 
-    //eventListener um aktive Session aus der DB zu löschen
-    window.addEventListener('unload',function (e) {
-        //funktion closeLecture() direkt hier eingefügt, da der Aufruf nicht mehr weitergereicht wurde
+    window.addEventListener('unload',function(){
         data = {
             "v_id": v_id
         }
-        console.log(data);
-        getData("post", "api/lecture-host-api.php?action=closeLecture", data, "text");
-        // closeLecture(v_id);
-    });
+        $.ajax({
+            url: "api/lecture-host-api.php?action=closeLecture",
+            method: "POST",
+            dataType: "text",
+            data: data,
+            async: false
+        });
+        console.log("unload");
+    });    
 
     $('#lectureQuestionModal').on('shown.bs.modal', function (e) {
         addLoadingOverlay();
