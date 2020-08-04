@@ -138,9 +138,6 @@ if (isset($_POST['submit'])) {
     }
     ?>
     <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
-        <div class="navbar-toggler clickable" id="sidebarCollapse">
-            <i class="fas fa-chevron-right"></i>
-        </div>
         <a class="navbar-brand" href="index.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                 <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
@@ -206,7 +203,6 @@ if (isset($_POST['submit'])) {
                                         <div class="form-row">
                                             <div class="col">
                                                 <select class="custom-select form-control bg-light" onchange="enableInput(['joinLecture'])" name="lectureToJoin" id="lectureToJoin">
-                                                    <option selected disabled>-</option>
                                                     <?php
                                                     $conn = sql_connect();
                                                     if (isset($_SESSION["dozent"]) && $_SESSION["dozent"]) {
@@ -216,9 +212,14 @@ if (isset($_POST['submit'])) {
                                                         $sql = "SELECT va.vorlesung_id, v.vorlesung_name, va.zeit_gestartet FROM vl_vorlesung_aktiv va INNER JOIN vl_vorlesung v ON (va.vorlesung_id = v.vorlesung_id)";
                                                     }
                                                     $result = mysqli_query($conn, $sql);
-                                                    while ($row = mysqli_fetch_assoc($result)) {
-                                                        echo '<option value="' . $row["vorlesung_id"] . '">' . $row["vorlesung_name"] . ' - ' . $row["zeit_gestartet"] . '</option>';
-                                                    }
+                                                    if(mysqli_num_rows($result) == 0){
+                                                        echo '<option selected disabled>Keine aktive Vorlesung verfügbar!</option>';
+                                                    }else{
+                                                        echo '<option hidden disabled selected value> - </option>';
+                                                        while ($row = mysqli_fetch_assoc($result)) {
+                                                            echo '<option value="' . $row["vorlesung_id"] . '">' . $row["vorlesung_name"] . ' - ' . $row["zeit_gestartet"] . '</option>';
+                                                        }
+                                                    }                                                    
                                                     ?>
                                                 </select>
                                             </div>
@@ -240,19 +241,42 @@ if (isset($_POST['submit'])) {
                                         </h1>
                                         <h5 class="card-title">Vorlesung starten</h5>
                                         <p class="card-text">Einen Eintrag aus der Liste wählen und auf den Button klicken, um eine Vorlesung zu starten.</p>
-                                        <form action="components/lecture-host.php" method="post">
+                                        <?php
+                                        if (isset($_SESSION['vl_start_success']) && !$_SESSION['vl_start_success']) {
+                                        ?>
+                                            <div class="alert alert-danger" role="alert">
+                                                Start der Vorlesung fehlgeschlagen!
+                                                <?php
+                                                if (isset($_SESSION['vl_start_errormsg'])) {
+                                                ?>
+                                                    <p class="font-weight-light mb-0"><?= $_SESSION["vl_start_errormsg"] ?></p>
+                                                <?php
+                                                unset($_SESSION['vl_start_errormsg']);
+                                                }
+                                                ?>
+                                            </div>
+                                        <?php
+                                        unset($_SESSION['vl_start_success']); //unset session variable for next index.php call
+                                        }
+                                        ?>
+                                        <form action="components/lecture-host.php" class="mb-0" method="post">
                                             <div class="form-row">
                                                 <div class="col">
-                                                    <select class="custom-select form-control bg-light" name="lectureToStart" id="lectureToStart" onchange="enableInput(['startLecture'])">
-                                                        <option selected disabled>-</option>
+                                                    <select class="custom-select form-control bg-light" name="lectureToStart" id="lectureToStart" onchange="enableInput(['startLecture']); checkForActiveLecture(this.value);">
                                                         <?php
                                                         $sql = "SELECT vorlesung_id, vorlesung_name FROM vl_vorlesung ORDER BY vorlesung_name ASC";
                                                         $result = mysqli_query($conn, $sql);
-                                                        while($row= mysqli_fetch_assoc($result)){
-                                                        echo '<option value="' . $row["vorlesung_id"] . '">' . $row["vorlesung_name"] . '</option>';
-                                                        }
+                                                        if(mysqli_num_rows($result) == 0){
+                                                            echo '<option selected disabled>Keine Vorlesung verfügbar!</option>';
+                                                        }else{
+                                                            echo '<option hidden disabled selected value> - </option>';
+                                                            while($row= mysqli_fetch_assoc($result)){
+                                                                echo '<option value="' . $row["vorlesung_id"] . '">' . $row["vorlesung_name"] . '</option>';
+                                                            }
+                                                        }                                                        
                                                         ?>
                                                     </select>
+                                                    <div class="invalid-Feedback" id="error_vl_already_startet"></div>
                                                 </div>
                                                 <div class="col-4">
                                                     <input disabled type="submit" id="startLecture" class="btn btn-primary form-control" value="Go">

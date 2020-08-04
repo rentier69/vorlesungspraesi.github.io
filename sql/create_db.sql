@@ -104,8 +104,10 @@ create table if not exists vl_vorlesung_aktiv
 (
    vorlesung_id int not null references vl_vorlesung(vorlesung_id),
    zeit_gestartet timestamp not null default current_timestamp,
+   benutzer_id int not null references vl_benutzer(benutzer_id),
    primary key(vorlesung_id),
-   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade
+   foreign key(vorlesung_id) references vl_vorlesung(vorlesung_id) on delete cascade,
+   foreign key(benutzer_id) references vl_benutzer(benutzer_id)
 );
 /*
 vorlesung_id bezieht sich auf vl_vorlesung_aktiv

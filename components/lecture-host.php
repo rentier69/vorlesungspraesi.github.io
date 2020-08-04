@@ -27,12 +27,18 @@ if(isset($_POST["lectureToStart"])){
     // $v_id =  $_POST["lectureToStart"];
     // in Session Variable, damit ein reload mit F5 möglich ist
     $_SESSION['v_id'] = $_POST["lectureToStart"];
-    $sql = "INSERT INTO vl_vorlesung_aktiv(vorlesung_id) VALUES (?)";
+    if(isset($_POST['vl_active_overwrite'])){
+        //wenn checkbox "überschreiben" aktiv ist, aktuelle Session überschreiben
+        $sql = "REPLACE INTO vl_vorlesung_aktiv(vorlesung_id, benutzer_id) VALUES (?, (SELECT benutzer_id FROM vl_benutzer WHERE benutzername = ?))";
+    }else{
+        $sql = "INSERT INTO vl_vorlesung_aktiv(vorlesung_id, benutzer_id) VALUES (?, (SELECT benutzer_id FROM vl_benutzer WHERE benutzername = ?))";
+    }
     $stmt = mysqli_prepare($link, $sql);
-    mysqli_stmt_bind_param($stmt, 'i', $_SESSION['v_id']);
+    mysqli_stmt_bind_param($stmt, 'is', $_SESSION['v_id'], $_SESSION["username"]);
     if (!mysqli_stmt_execute($stmt)){
+        $_SESSION['vl_start_success'] = false;
+        $_SESSION['vl_start_errormsg'] = mysqli_error($link);
         header("Location: ../index.php");
-        die("Fehler beim Start der Vorlesung");
     }
 }
 ?>

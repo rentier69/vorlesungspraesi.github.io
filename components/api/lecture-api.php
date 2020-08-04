@@ -15,6 +15,21 @@ if (isset($_GET["action"])) {
             }
             echo json_encode($resultArr);
             break;
+        case 'checkForActiveLecture':
+            $sql = "SELECT va.zeit_gestartet, b.benutzername FROM vl_vorlesung_aktiv va INNER JOIN vl_benutzer b ON (va.benutzer_id = b.benutzer_id) WHERE va.vorlesung_id = ?";
+            $stmt = mysqli_prepare($link, $sql);
+            mysqli_stmt_bind_param($stmt, 'i', $_POST['v_id']);
+            if (mysqli_stmt_execute($stmt)) {
+                if($result = mysqli_stmt_get_result($stmt)){
+                    echo json_encode(mysqli_fetch_all($result, MYSQLI_ASSOC));
+                }else{
+                    $query_success = false;
+                }                
+            }else{
+                $query_success = false;
+            }
+            mysqli_stmt_close($stmt);            
+            break;
         case 'changePassword':
             mysqli_autocommit($link, false);
             session_start();
@@ -40,20 +55,20 @@ if (isset($_GET["action"])) {
             $username = $_POST["username"];
             $nachricht = $_POST["nachricht"];
             if (strlen($nachricht) > 0) {
-                echo $v_id . $username . $nachricht;
-                $sql = "SELECT benutzer_id FROM vl_benutzer WHERE benutzername = ?";
-                $stmt = mysqli_prepare($link, $sql);
-                mysqli_stmt_bind_param($stmt, 's', $username);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
+                // echo $v_id . $username . $nachricht;
+                // $sql = "SELECT benutzer_id FROM vl_benutzer WHERE benutzername = ?";
+                // $stmt = mysqli_prepare($link, $sql);
+                // mysqli_stmt_bind_param($stmt, 's', $username);
+                // mysqli_stmt_execute($stmt);
+                // $result = mysqli_stmt_get_result($stmt);
 
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $user_id = $row["benutzer_id"];
-                    // echo "yes";
-                }
-                $sql = "INSERT INTO vl_chat(vorlesung_id, benutzer_id, nachricht) VALUES (?, ?, ?)";
+                // while ($row = mysqli_fetch_assoc($result)) {
+                //     $user_id = $row["benutzer_id"];
+                //     // echo "yes";
+                // }
+                $sql = "INSERT INTO vl_chat(vorlesung_id, benutzer_id, nachricht) VALUES (?, (SELECT benutzer_id FROM vl_benutzer WHERE benutzername = ?), ?)";
                 $stmt = mysqli_prepare($link, $sql);
-                mysqli_stmt_bind_param($stmt, 'iis', $v_id, $user_id, $nachricht);
+                mysqli_stmt_bind_param($stmt, 'iss', $v_id, $username, $nachricht);
                 mysqli_stmt_execute($stmt);
             }
             break;

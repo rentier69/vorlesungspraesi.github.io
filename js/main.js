@@ -30,6 +30,38 @@ function disableInput(input_ids) {
     });
 }
 
+function checkForActiveLecture(v_id){
+    data = {
+        "v_id": v_id
+    }
+    getData("post", "/components/api/lecture-api.php?action=checkForActiveLecture", data, "json").done(function(data){
+        if(!(Object.keys(data).length == 0)){
+            //eintrag mit v_id in db vl_vorlesung_aktiv
+            try {
+                $('#lectureToStart').removeClass('is-valid');
+            } catch (error) {
+                console.log("class not set")
+            }
+            $('#lectureToStart').addClass('is-invalid');
+            html = '<b>Gewählte Vorlesung bereits aktiv!</b><br>'
+            html += 'Details: Benutzer <i>'+ data[0].benutzername + '</i> // Gestartet <i>' + data[0].zeit_gestartet + '</i><br>';
+            html += '<div class="custom-control custom-checkbox">';
+            html += '<input type="checkbox" class="custom-control-input" value="vl_active_overwrite" id="vl_active_overwrite" name="vl_active_overwrite">';
+            html += '<label class="custom-control-label" for="vl_active_overwrite">Überschreiben</label>';
+            html += '</div>';
+            $('#error_vl_already_startet').html(html);
+        }else{
+            //kein Eintrag in DB
+            try {
+                $('#lectureToStart').removeClass('is-invalid');
+            } catch (error) {
+                console.log("class not set")
+            }
+            $('#lectureToStart').addClass('is-valid');
+        }
+    });
+}
+
 function changePassword(){
     data = {
         "pw": document.getElementById("passwordChange").value
