@@ -157,8 +157,6 @@ if(isset($_POST["lectureToStart"])){
                     </button>
                 </div>
                 <div class="modal-body" id="listLectureQuestions">
-                    <div class="list-group">
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
