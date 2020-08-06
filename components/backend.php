@@ -39,7 +39,7 @@ if (isset($_SESSION['username'])) {
             <div class="navbar-toggler clickable" id="sidebarCollapse">                    
                 <i class="fas fa-chevron-right"></i>
             </div>
-            <a class="navbar-brand" href="backend.php">
+            <a class="navbar-brand" href="../index.php">
                 <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                     <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
                     <path fill="#E2001A" d="M33 .3l-9 9.1c-.4.4-.8 1.2-.8 1.6v19.7c0 .4.4.4.8 0l9.1-9.1c.4-.4.8-1.2.8-1.6V.3c-.1-.4-.4-.4-.9 0z"></path>

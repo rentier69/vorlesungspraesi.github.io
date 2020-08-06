@@ -1,4 +1,3 @@
-
 function searchInTwoColumns(tableId) {
     // Declare variables
     var input, filter, table, tr, td, i, txtValue;
@@ -34,20 +33,12 @@ function changeMode(mode, item_id) {
         
     } catch (error) {
         console.log(error);
-    }
-    
+    }    
     
     //loading overlay hinzufügen
     addLoadingOverlay();
 
     switch (mode) {
-        // case "home":
-        //     getData("get", "static/home.html", null, "html").done(function (data) {
-        //         setStaticHtml(data);
-        //         getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(prepareHomePage);
-        //     });
-        //     document.getElementById("nav_home").classList.add("active");
-        //     break;
         case "lectures":
             getData("get", "static/lectures.html", null, "html").done(function (data) {
                 setStaticHtml(data);
@@ -127,20 +118,6 @@ function removeLoadingOverlay(){
     spinnerElement.style.display = "none";
 }
 
-
-
-function prepareHomePage(data) {    
-    // Build HTML table with given data
-    var selBody = "";
-    for (let row of data) {
-        option = '<option value="' + row.vorlesung_id + '">' + row.vorlesung_name + '</option>';
-        selBody += option;
-    }
-    // Put table into HTML container
-    document.getElementById("lectureToStart").innerHTML = selBody;
-    removeLoadingOverlay();    
-}
-
 /*
 Funktionen für Benutzerverwaltung
 */
@@ -155,11 +132,8 @@ function createUser() {
         addNotification("success","Benutzer " + data.benutzername + " (" + data.benutzer_id + ") wurde erfolgreich erstellt!");
     });
 }
-function loadUserList(data) {
-    if (data == null) {
-        getData("get", "../components/api/backend-api.php?mode=users&action=getAll", null).done(loadUserList);
-    } else {        
-        // Build HTML table with given data
+function loadUserList() {
+    getData("get", "../components/api/backend-api.php?mode=users&action=getAll", null).done(function(data){
         var tbody = "";
         for (let row of data) {
             tbody += '<tr class="clickable" onclick="changeMode(\'edituser\',' + row.benutzer_id + ')">';
@@ -175,8 +149,9 @@ function loadUserList(data) {
         // Put table into HTML container
         document.getElementById("allUsersBody").innerHTML += tbody;
         removeLoadingOverlay();
-    }
+    });
 }
+
 function initializeEditUser(id) {
     editUser.benutzer_id = id;
     editUser.queryDetails();
@@ -355,11 +330,8 @@ var editUser = {
 /*
 Funktionen für Gruppenverwaltung
 */
-function loadGroupList(data) {
-    if (data == null) {
-        getData("get", "../components/api/backend-api.php?mode=groups&action=getAll", null).done(loadGroupList);
-    } else {
-        // Build HTML table with given data
+function loadGroupList(data) {    
+    getData("get", "../components/api/backend-api.php?mode=groups&action=getAll", null).done(function(data){
         var tbody = "";
         for (let row of data) {
             tbody += '<tr class="clickable" onclick="changeMode(\'editgroup\',' + row.gruppe_id + ')">';
@@ -372,7 +344,7 @@ function loadGroupList(data) {
         // Put table into HTML container
         document.getElementById("allGroupsBody").innerHTML = tbody;
         removeLoadingOverlay();
-    }
+    });
 }
 function createGroup(){
     var data = {
@@ -517,10 +489,8 @@ function createLecture(data) {
         addNotification("success","Vorlesung " + data.vorlesung_id + " " + data.vorlesung_name + " wurde erfolgreich erstellt!");
     });
 }
-function loadLectureList(data) {
-    if (data == null) {
-        getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(loadLectureList);
-    } else {
+function loadLectureList() {    
+    getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(function(data){
         // Build HTML table with given data
         var tbody = "";
         for (let row of data) {
@@ -532,7 +502,7 @@ function loadLectureList(data) {
         // Put table into HTML container
         document.getElementById("allLecturesBody").innerHTML = tbody;
         removeLoadingOverlay();
-    }
+    });    
 }
 function initializeEditLecture(id) {
     editLecture.vorlesung_id = id;
