@@ -80,6 +80,7 @@ create table if not exists vl_vorlesung_frage_antworten
    frage_id int not null references vl_vorlesung_frage(frage_id),
    benutzer_id int not null references vl_benutzer(benutzer_id),
    antwort varchar(255) not null,
+   zeit_gespeichert timestamp not null default current_timestamp,
    primary key (frage_id, benutzer_id, antwort),
    foreign key(benutzer_id) references vl_benutzer(benutzer_id) on delete cascade,
    foreign key(frage_id) references vl_vorlesung_frage(frage_id) on delete cascade

@@ -62,6 +62,17 @@ if (isset($_GET["action"])) {
             }
             mysqli_stmt_close($stmt);
             break;
+        case 'deactivateChatQuestion':
+            $nachricht_id = $_POST['nachricht_id'];
+            $sql = "UPDATE `vl_chat_frage` SET frage_aktiv = 0 WHERE nachricht_id = ?";
+            $stmt = mysqli_prepare($link, $sql);
+            mysqli_stmt_bind_param($stmt, 'i', $nachricht_id);
+            if (mysqli_stmt_execute($stmt)) {
+                //nichts zu tun
+            } else {
+                $query_success = false;
+            }
+            break;
         default:
             die("Keine gültige Action gesetzt.");
             break;

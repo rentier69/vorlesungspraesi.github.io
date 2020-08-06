@@ -38,6 +38,7 @@ function deleteChat(){
 // }
 
 function getLectureQuestions(v_id){
+    // to-do optional: prüfen, ob frage schon in chat und aktiv ist
     getData("get", "api/backend-api.php?mode=lectures&action=getActiveQuestions&v_id=" + v_id, null, "json").done(function(questions){
         questions.forEach(question => {
             var questionAnswerListUL = "questionAnswerList" + question.frage_id;
