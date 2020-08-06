@@ -1,45 +1,125 @@
 <?php
-session_start();
-require("functions.php");
 
-if (isset($_SESSION['username'])) {
-    if (isset($_SESSION["dozent"])) {
-        if ($_SESSION["dozent"]) {
-            //hier weitermachen
-        } else {
-            header("Location: ../index.php");
-            die("Bitte melden Sie sich als Dozent an");
-        }
+if (isset($_GET["kuerzel"]) || isset($_GET["newKuerzelSource"])) {
+    $kuerzel;
+    if (isset($_GET["kuerzel"])) {
+        $kuerzel = $_GET["kuerzel"];
     } else {
-        header("Location: ../index.php");
-        die("Bitte melden Sie sich als Dozent an");
+        $kuerzel = $_GET["newKuerzelSource"];
     }
-} else {
-    header("Location: ../index.php");
-    die("Bitte melden Sie sich an");
+    $conn = sql_connect();
+    $sql = "SELECT gruppe_kuerzel FROM vl_gruppe WHERE gruppe_kuerzel='" . $kuerzel . "';";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo true;
+    } else {
+        echo false;
+    }
+    mysqli_close($conn);
+}
+
+if (isset($_GET["kursname"]) || isset($_GET["newNameSource"])) {
+    $kursname;
+    if (isset($_GET["kursname"])) {
+        $kursname = $_GET["kursname"];
+    } else {
+        $kursname = $_GET["newNameSource"];
+    }
+    $conn = sql_connect();
+    $sql = "SELECT gruppenname FROM vl_gruppe WHERE gruppenname='" . $kursname . "';";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo true;
+    } else {
+        echo false;
+    }
+    mysqli_close($conn);
 }
 
 
+if (isset($_GET["username"]) || isset($_GET["newName"])) {
+    $username;
+    if (isset($_GET["username"])) {
+        $username = $_GET["username"];
+    } else {
+        $username = $_GET["newName"];
+    }
+    $conn = sql_connect();
+    $sql = "SELECT benutzername FROM vl_benutzer WHERE benutzername='" . $username . "';";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo true;
+    } else {
+        echo false;
+    }
+    mysqli_close($conn);
+}
+
+function sql_connect()
+{
+    require_once(dirname(__DIR__) . "/configuration.php");
+    // Create connection
+    $conn = mysqli_connect(appConfig::$host, appConfig::$user, appConfig::$password);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    mysqli_select_db($conn, appConfig::$db);
+    //echo 'erfolgreich';
+    return $conn;
+}
+
+//$dirsUp wird benötigt, wenn aus einer Datei in einem Unterordner functions aufgerufen wird.
+//Bsp:     generate_header("Startseite", "Herzlich Willkomen zur Online-Vorlesungsplatform der DHBW Ravensburg", null, '../');
+function generate_header($title, $jumbotron_lead, $loggedOnUser, $dirsUp)
+{
+    if (isset($_POST["passwordChange"]) && isset($_POST["passwordChange"]) && isset($_POST["submitPasswordChange"])) {
+        $passwordChange = $_POST["passwordChange"];
+        $password2Change = $_POST["password2Change"];
+        if (strlen($passwordChange) >= 6 && $passwordChange == $password2Change) {
+            $passwordHash = md5($passwordChange);
+            $conn = sql_connect();
+            $result = mysqli_query($conn, "SELECT benutzer_id FROM vl_benutzer WHERE benutzername='" . $_SESSION['username'] . "';");
+            if ($benutzer_id = mysqli_fetch_assoc($result)) {
+                $sqlPassword = "UPDATE vl_benutzer SET password='" . $passwordHash . "' WHERE benutzer_id =" . $benutzer_id['benutzer_id'] . ";";
+               $errorMsgPassword="";
+                if (mysqli_query($conn, $sqlPassword)) {
+                    $successPassword = true;
+                } else {
+                    $successPassword = false;
+                    $errorMsgPassword . mysqli_error($conn);
+                }
+            } else {
+                $successPassword = false;
+                $errorMsgPassword = "Angaben fehlerhaft";
+            }
+        } else {
+            $successPassword = false;
+            $errorMsgPassword = "Angaben fehlerhaft";
+        }
+    }
 ?>
-<html>
+    <html>
+
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Backend</title>
-        <link rel="stylesheet" href="../css/bootstrap.css" />
-        <link rel="stylesheet" href="../css/fontawesome/css/all.css">
-        <link rel="stylesheet" href="../css/design.css" />
-        <link rel="stylesheet" href="../css/backend.css" />
-        <script src="../js/jquery-3.0.0.min.js"></script>
-        <script src="../js/bootstrap.min.js"> </script>
-        <script src="../js/main.js"></script>
-        <script src="../js/backend.js"></script>
+        <title><?= $title ?></title>
+        <link rel="stylesheet" href="<?= $dirsUp ?>css/bootstrap.css" />
+        <link rel="stylesheet" href="<?= $dirsUp ?>css/fontawesome/css/all.css">
+        <link rel="stylesheet" href="<?= $dirsUp ?>css/custom.css" />
+        <script src="<?= $dirsUp ?>js/jquery-3.0.0.min.js"></script>
+        <script src="<?= $dirsUp ?>js/bootstrap.min.js"> </script>
+        <script src="<?= $dirsUp ?>js/lecture.js"></script>
+        <script src="<?= $dirsUp ?>js/lecture.js"></script>
+        <style>
+        </style>
+        <script>
+        </script>
     </head>
+
     <body>
-        <nav id="topheader" class="navbar navbar-dark navbar-expand-md fixed-top bg-dark flex-md-nowrap shadow py-0">
-            <div class="navbar-toggler clickable" id="sidebarCollapse">                    
-                <i class="fas fa-chevron-right"></i>
-            </div>
-            <a class="navbar-brand" href="backend.php">
+
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand">
                 <svg xmlns="http://www.w3.org/2000/svg" width="129.6" height="53.9" viewBox="0 0 129.6 53.9">
                     <path opacity=".8" fill="#5C6971" d="M43.7 11.2h-9.9V20c0 .4-.4 1.2-.8 1.6l-9 9.1c-.4.4-.8.4-.8 0v1c0 .4.4.8.8.8h19.7c.4 0 .8-.4.8-.8V12c0-.5-.4-.8-.8-.8z"></path>
                     <path fill="#E2001A" d="M33 .3l-9 9.1c-.4.4-.8 1.2-.8 1.6v19.7c0 .4.4.4.8 0l9.1-9.1c.4-.4.8-1.2.8-1.6V.3c-.1-.4-.4-.4-.9 0z"></path>
@@ -52,88 +132,159 @@ if (isset($_SESSION['username'])) {
                     <path fill="#5C6971" d="M106.6 26.4c0 1-.2 1.8-.6 2.6-.4.8-.9 1.4-1.6 1.9-.7.5-1.5.9-2.3 1.2-.9.3-1.8.4-2.8.4h-4.9c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4V11.7c0-.1.1-.3.2-.4.1-.1.2-.1.4-.1h5.3c.8 0 1.6.1 2.4.3.8.2 1.5.5 2 1 .6.4 1.1 1 1.4 1.7.4.7.5 1.5.5 2.4 0 .6-.1 1.1-.4 1.6-.3.5-.6 1-1 1.4-.4.4-.8.8-1.3 1.1-.5.3-.9.5-1.3.6.6.1 1.2.3 1.7.6s1 .7 1.4 1.1c.4.4.7 1 1 1.5.4.6.5 1.2.5 1.9zm-2.9-9.8c0-1.1-.4-1.9-1.1-2.6-.7-.6-1.7-1-2.9-1h-3.5v7.4h3.4c.5 0 1-.1 1.5-.3.5-.2.9-.5 1.3-.8.4-.3.7-.7.9-1.2.3-.4.4-.9.4-1.5zm.5 9.7c0-1.2-.4-2.2-1.3-2.9-.8-.7-1.9-1.1-3.3-1.1h-3.5v8.3h3.5c.6 0 1.2-.1 1.8-.3.6-.2 1-.5 1.5-.9.4-.4.7-.8 1-1.4.2-.5.3-1.1.3-1.7zm21.3 5.6c0 .1-.1.3-.2.4-.1.1-.2.2-.4.2h-1.6c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4l-3.5-17.8-3.5 17.8c0 .1-.1.3-.2.4-.1.1-.3.2-.4.2h-1.6c-.1 0-.3-.1-.4-.2-.1-.1-.2-.2-.2-.4l-4.1-20.2c0-.1 0-.3.1-.4.1-.1.2-.1.4-.1h1.3c.3 0 .6.2.6.5l3.2 17.9 3.5-17.9c.1-.3.3-.5.6-.5h1.6c.3 0 .5.2.6.5l3.5 17.9 3.2-17.9c.1-.3.3-.5.6-.5h1.3c.1 0 .3 0 .4.1.1.1.1.2.1.4l-4.3 20.2z"></path>
                 </svg>
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="form-inline my-2 my-lg-0 justify-content-end w-100">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user"></i> <?= $_SESSION["username"]?>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupUserMenu">
-                            <a class="dropdown-item"  data-toggle="modal" data-target="#userMenu" href="#">
-                                Benutzermenü
-                            </a>
-                            <a class="dropdown-item" href="logout.php">
-                                Logout <i class="fas fa-sign-out-alt"></i>
-                            </a>
+            <?php
+            if ($title != "Startseite" && $title != "Logout" && $title != "Benutzer registrieren") {
+            ?>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav mr-auto">                        
+                            <?php
+                            if (isset($_SESSION['dozent'])) {
+                                //Navbar für Anwender
+                                ?>                                
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="doz_bereich.php">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="usermgmt.php">Benutzer</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="groupmgmt.php">Gruppen</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="lectures.php">Vorlesungen</a>
+                                </li>
+                                <?php
+                            } else {
+                                //Navbar für Studenten
+                                ?>
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="stud_bereich.php">Home</a>
+                                </li>
+                                <?php
+                            }
+                            ?>
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0" action="logout.php" method="post">
+                        <button type="button" class="btn" data-toggle="modal" data-target="#userMenu"> <span style="color: white;"><i class="fas fa-user"></i>&nbsp;<?= $loggedOnUser ?> &nbsp;</span> </button>
+                        <button type="submit" class="btn btn-light my-2 my-sm-0">Logout <i class="fas fa-sign-out-alt"></i></button>
+                    </form>
+                </div>
+                <!-- Modal Passwort ändern-->
+                <div id="passwordChangeModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><?= $loggedOnUser ?> - Passwort zurücksetzen</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="was-validated" method="POST" id="formChangePassword">
+                                    <div class="form-group">
+                                        <input type="password" name="passwordChange" id="passwordChange" class="form-control" placeholder="Passwort" size="25"  />
+                                        <div class="invalid-Feedback" id="error_passwordChange" hidden> Passwort eingeben</div>
+                                        <div class="valid-Feedback" id="valid_passwordChange" hidden> </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password2Change" id="password2Change" class="form-control" placeholder="Passwort wiederholen" size="25"  />
+                                        <div class="invalid-Feedback" id="error_password2Change" hidden> Passwörter müssen übereinstimmen</div>
+                                        <div class="valid-Feedback" id="valid_password2Change" hidden> </div>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success" name="submitPasswordChange" id="submitPasswordChange" disabled>Passwort ändern</button>
+                                </form>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            </div>
                         </div>
                     </div>
-                </div>                
-            </div>
-        </nav>
-        <div class="container-fluid">
-            <div class="row">
-                <nav class="col-md-2 bg-light sidebar" id="sidebar">
-                    <div class="sidebar-sticky">
-                        <ul class="nav flex-column pt-2">
-                            <li class="nav-item">
-                                <a class="nav-link" href="../index.php"><i class="fas fa-home fa-fw mr-1"></i>Home</a>
-                            </li>                            
-                        </ul>
-                        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                            Verwaltungsfunktionen
-                        </h6>
-                        <ul class="nav flex-column" id="nav">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="nav_lectures" href="#" onclick="changeMode('lectures')"><i class="fas fa-chalkboard fa-fw mr-1"></i>Vorlesungen</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="nav_users" href="#" onclick="changeMode('users')"><i class="fas fa-user fa-fw mr-1"></i>Benutzer</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="nav_groups" href="#" onclick="changeMode('groups')"><i class="fas fa-users fa-fw mr-1"></i>Gruppen</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-                
-                <div role="main" class="col no-gutters">
-                    <div id="inAppNotifications" class="inAppNotifications p-1 row">
-                    </div>
-                    <div id="loadingOverlay">
-                        <div id="loadingSpinner" style="width: 3rem; height: 3rem; display:none;"></div>
-                    </div>
-                    <div id="main" class="col"></div>                
                 </div>
+                <!-- Modal Usermenü -->
+                <div id="userMenu" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><?= $loggedOnUser ?> - Benutzermenü</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordChangeModal" data-dismiss="modal">Passwort ändern </button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $("#passwordChangeModal").on('shown.bs.modal', function() {
+                        document.getElementById("passwordChange").focus();
+                        document.getElementById("passwordChange").setAttribute("required", "true");
+                        document.getElementById("password2Change").setAttribute("required","true");
+                    });
+
+                    var checkPasswordChange = function() {
+                        checkPassword("passwordChange", "password2Change");
+                        changeSubmitButton("submitPasswordChange");
+                        if (document.querySelector('#formChangePassword:invalid') === null) {
+            document.getElementById("submitPasswordChange").disabled = false;
+        } else {
+            document.getElementById("submitPasswordChange").disabled = true;
+        }
+                    };
+
+                   
+                    document.getElementById("passwordChange").addEventListener("input", checkPasswordChange);
+                    document.getElementById("password2Change").addEventListener("input", checkPasswordChange);
+                </script>
+                
+            <?php
+            }
+            ?>
+
+        </nav>
+        <div class="jumbotron">
+            <div class="container">
+                <h1 class="display-4"><?= $title ?></h1>
+                <p class="lead"><?= $jumbotron_lead ?></p>
             </div>
         </div>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                changeMode('lectures');
 
-                //eventlistener für responsive sidebar
-                $('#sidebarCollapse').on('click', function () {
-                    $('.sidebar').toggleClass('inactive');
-                });
-                $('#nav').on('click', function () {
-                    //soll nur bei mobile devices ausgeführt werden
-                    //selber wert wie in media query in backend.css
-                    if ($(window).width() < 768 ){
-                        $('.sidebar').toggleClass('inactive');
-                    }                    
-                });
-                $('#main').on('click', function () {
-                    //soll nur bei mobile devices ausgeführt werden
-                    //selber wert wie in media query in backend.css
-                    if ($(window).width() < 768 ){
-                        $('.sidebar').toggleClass('inactive',false);
-                    }  
-                });
-            });
-        </script>
 
-        <?php generate_modal_usermenu() ?>
+
+        <?php
+        
+        if (isset($successPassword)) {
+            if ($successPassword) {
+        ?>
+                <div class="alert alert-success" role="alert">
+                    Passwort gespeichert.
+                </div>
+            <?php
+            } else {
+            ?>
+                <div class="alert alert-danger" role="alert">
+                    Passwort nicht gespeichert - versuchen Sie es erneut.<br>
+                    Fehler: <?= $errorMsgPassword ?>
+                </div>
+        <?php
+            }
+        }
+    }
+    function generate_footer()
+    {
+        $year = date('Y');
+        ?>
+        <footer class="footer-custom">
+            <div class="container">
+                <span class="text-muted">© <?= $year ?> Projektteam 19 Jahrgang 2017</span>
+            </div>
+        </footer>
     </body>
-</html>
+
+    </html>
+
+<?php
+    }

@@ -1,5 +1,5 @@
 <?php
-require("functions.php");
+require("lecture-api.php");
 generate_header("Benutzer registrieren", "Herzlich Willkomen zur Online-Vorlesungsplattform der DHBW Ravensburg", null, '../');
 
 
@@ -102,18 +102,20 @@ mysqli_close($conn);
 
                     <form method="POST" action="register.php" class="was-validated" id="form">
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username">
+                            <input type="text" class="form-control" placeholder="Benutzername" required id="username" minlength="4" maxlength="50" name="username" autofocus oninput="checkField('username', 'Benutzername', 'submit', 'form', true);">
                             <div class="invalid-feedback" id="error_username" hidden>Benutzername eingeben</div>
                             <div class="valid-feedback" id="valid_username"> Benutzername verfügbar </div>
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control" placeholder="Passwort" required id="password" name="password">
+                            <input type="password" class="form-control" placeholder="Passwort" required id="password" name="password" oninput="checkField('password', 'Passwort', 'submit', 'form');">
                             <div class="invalid-Feedback" id="error_password" hidden> Passwort eingeben</div>
-                            <input type="password" class="form-control" placeholder="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat">
+                            <div class="valid-feedback" id="valid_password"></div>
+                            <input type="password" class="form-control" placeholder="Passwort wiederholen" required id="passwordRepeat" name="passwordRepeat" oninput="checkField('password', 'Passwort', 'submit', 'form');">
                             <div class="invalid-Feedback" id="error_passwordRepeat" hidden> Passwörter müssen übereinstimmen</div>
+                            <div class="valid-feedback" id="valid_passwordRepeat"></div>
                         </div>
                         <div class="form-group">
-                            <select id="kurs" class="form-control" name="kurs" required>
+                            <select id="kurs" class="form-control" name="kurs" required oninput="checkKurs()">
                                 <option value="" disabled selected>Kurs auswählen</option>
                                 <?php
                                 $conn = sql_connect();
@@ -154,36 +156,17 @@ mysqli_close($conn);
 generate_footer();
 ?>
 <script>
-    //Formular prüfen
 
-    var password = document.getElementById('password');
-    var passwordRepeat = document.getElementById('passwordRepeat');
-    var username = document.getElementById('username');
-    var form = document.getElementById('form');
+
     var kurs = document.getElementById('kurs');
-
-
-    var checkForm = function() {
-
-        document.getElementById("error_password").removeAttribute("hidden");
-        document.getElementById("error_passwordRepeat").removeAttribute("hidden");
-        document.getElementById("error_kurs").removeAttribute("hidden");
-
-        checkPassword("password","passwordRepeat");
-        checkKurs();
-        checkField("username", "Benutzername", "submit", false, null, "form");
-    };
-
     var checkKurs = function() {
         if (kurs.value == '') {
             kurs.setCustomValidity('Kurs auswählen!');
         } else {
             kurs.setCustomValidity('');
         }
+        changeSubmitButton("submit","form")
     };
 
-    username.addEventListener('input', checkForm);
-    password.addEventListener('input', checkForm);
-    passwordRepeat.addEventListener('input', checkForm);
-    kurs.addEventListener('input', checkForm);
+    
 </script>

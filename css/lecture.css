@@ -1,7 +1,39 @@
-[role="main"] {
-    padding-top: 65px; /* Space for fixed navbar */
+#lecture{
+    height: calc(100vh - 65px);
 }
 
-.clickable {
-    cursor: pointer;
+.people_item{
+    border-radius: 8px;
+    width: 100%;
 }
+/*
+Chat-Design
+*/
+#chatbox{
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 84vh;
+    min-height: 84vh;
+  }
+#chatMessage{
+    resize: none;
+}
+.message_head{
+    font-weight: bold;
+    font-size: smaller;
+    width: 95%;
+  }
+.message_head_own{
+  width: 100%;
+}
+
+.message_body{
+border-radius: 8px;
+width: 95%;
+white-space: pre-wrap;
+}
+
+/* style für eigene nachrichten */
+.message_body_own{
+  width: 100%;
+  }

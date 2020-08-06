@@ -11,10 +11,12 @@
                     <div class="form-group" >
                         <input type="password" name="password1" id="password1" oninput="checkPassword('password1', 'password2', 'submitPasswordReset', 'formPasswordReset')" class="form-control" placeholder="Passwort" size="25" required />
                         <div class="invalid-Feedback" id="error_password1" hidden> Passwort eingeben</div>
+                        <div class="valid-Feedback" id="valid_password1" hidden></div>
                     </div>
                     <div class="form-group">
                         <input type="password" name="password2" id="password2" oninput="checkPassword('password1', 'password2', 'submitPasswordReset', 'formPasswordReset')" class="form-control" placeholder="Passwort wiederholen" size="25" required />
                         <div class="invalid-Feedback" id="error_password2" hidden> Passwörter müssen übereinstimmen</div>
+                        <div class="valid-Feedback" id="valid_password2" hidden></div>
                     </div>
             </div>
             <div class="modal-footer">
@@ -29,10 +31,16 @@
 <div id="main-top" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2" id="main-top-heading"></h1>    
     <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group mr-2">       
-            <!-- <button class="btn btn-sm btn-outline-success">
-                Speichern
-            </button>  -->
+        <div class="btn-group mr-2" role="group">
+            <button class="btn btn-sm btn-outline-secondary" onclick="editUser.delete();">
+                Benutzer löschen
+            </button>
+            <button hidden id="button_setStudent" class="btn btn-sm btn-outline-secondary" onclick="editUser.setStatus(0);">
+                Status ändern (neu: Student)
+            </button>
+            <button hidden id="button_setDozent" class="btn btn-sm btn-outline-secondary" onclick="editUser.setStatus(1);">
+                Status ändern (neu: Dozent)
+            </button>
             <button hidden id="button_activate" onclick="editUser.activate();" class="btn btn-sm btn-outline-secondary">
                 Benutzer aktivieren
             </button>
@@ -41,10 +49,7 @@
             </button>
             <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#passwordResetModal">
                 Passwort zurücksetzen
-            </button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="editUser.delete();">
-                Benutzer löschen
-            </button>
+            </button>            
             <button onclick="closeEditUser();" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-times"></i>
             </button>
@@ -55,7 +60,7 @@
     <form action="#" method="post" class="was-validated" id="formNameAendern">
         <div class="form-group">
             <div class="input-group mb-3">
-                <input disabled type="text" name="newName" id="newName" class="form-control" placeholder="Name" onkeyup="checkField('newName', 'Benutzername', 'buttonSaveUsername', false, null, 'formNameAendern')"/>
+                <input disabled type="text" name="newName" id="newName" class="form-control" placeholder="Name" oninput="checkField('newName', 'Benutzername', 'buttonSaveUsername', 'formNameAendern', true)"/>
                 <div class="invalid-feedback" id="error_newName" hidden>Benutzername eingeben</div>
                 <div class="valid-feedback" id="valid_newName" hidden> Benutzername verfügbar </div>
                 <div class="input-group-append">

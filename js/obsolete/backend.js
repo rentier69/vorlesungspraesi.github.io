@@ -1,4 +1,13 @@
-
+function getData(methodType, url, post_data, dataType = "json", id) {
+    //https://api.jquery.com/jquery.ajax/
+    return $.ajax({
+        url: url,
+        method: methodType,
+        dataType: dataType,
+        cache: false, /* ggfs. später wieder entfernen */
+        data: post_data
+    });
+}
 function searchInTwoColumns(tableId) {
     // Declare variables
     var input, filter, table, tr, td, i, txtValue;
@@ -24,30 +33,34 @@ function searchInTwoColumns(tableId) {
         }
     }
 }
-
-
+//input_ids als array übergeben!
+//bsp: onclick="enableInput(['newNameSource','buttonSaveUsername'])"
+function enableInput(input_ids) {
+    input_ids.forEach(input => {
+        document.getElementById(input).removeAttribute('disabled');
+    });
+}
+function disableInput(input_ids) {
+    input_ids.forEach(input => {
+        document.getElementById(input).setAttribute('disabled', 'true');
+    });
+}
 //item_id benötigt für die Bearbeitung von best. Benutzern / Gruppen / Vorlesungen
 function changeMode(mode, item_id) {
-    try {
-        var activeNav = nav.querySelector('.active');
-        activeNav.classList.remove("active");
-        
-    } catch (error) {
-        console.log(error);
-    }
-    
+    var activeNav = nav.querySelector('.active');
+    activeNav.classList.remove("active");
     
     //loading overlay hinzufügen
     addLoadingOverlay();
 
     switch (mode) {
-        // case "home":
-        //     getData("get", "static/home.html", null, "html").done(function (data) {
-        //         setStaticHtml(data);
-        //         getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(prepareHomePage);
-        //     });
-        //     document.getElementById("nav_home").classList.add("active");
-        //     break;
+        case "home":
+            getData("get", "static/home.html", null, "html").done(function (data) {
+                setStaticHtml(data);
+                getData("get", "backend-api.php?mode=lectures&action=getAll", null).done(prepareHomePage);
+            });
+            document.getElementById("nav_home").classList.add("active");
+            break;
         case "lectures":
             getData("get", "static/lectures.html", null, "html").done(function (data) {
                 setStaticHtml(data);
@@ -127,7 +140,52 @@ function removeLoadingOverlay(){
     spinnerElement.style.display = "none";
 }
 
+function addNotification(type, title, bodyText = ""){
+    getData("get", "static/notification.html", null, "html").done(function (data) {
+        var parser = new DOMParser();
+        //parsen, damit notification vor einblenden angepasst werden kann
+        var notification = parser.parseFromString(data, 'text/html');
+        var notification_id = "notification" + Date.now();
 
+        //id muss einzigartig sein, damit zeitgesteuerter fade-out funktioniert
+        notification.getElementById("notification").id = notification_id;
+        switch (type) {
+            case "success":
+                notification.getElementById(notification_id).classList.add("border-success");
+                notification.getElementById("notificationType").classList.add("bg-success");
+                notification.getElementById("notificationIcon").classList.add("fa-check");
+                break;
+            case "danger":
+                notification.getElementById(notification_id).classList.add("border-danger");
+                notification.getElementById("notificationType").classList.add("bg-danger");
+                notification.getElementById("notificationIcon").classList.add("fa-exclamation-circle");
+                break;
+            case "warning":
+                notification.getElementById(notification_id).classList.add("border-warning");
+                notification.getElementById("notificationType").classList.add("bg-warning");
+                notification.getElementById("notificationIcon").classList.add("fa-exclamation-circle");
+                break;        
+            default:
+                break;
+        }
+        notification.getElementById("notificationHeader").innerHTML = title;
+        notification.getElementById("notificationBodyText").innerHTML = bodyText;
+        //notification.getElementById("closeNotification").onclick = "document.getElementById('" + notification_id + "').style.display = 'none'";
+        notification.getElementById("closeNotification").setAttribute("onclick","document.getElementById('" + notification_id + "').style.display = 'none'");
+        //nicht sichtbar machen, damit fade-in klappt
+        notification.getElementById(notification_id).style.display = "none";
+        document.getElementById("inAppNotifications").innerHTML += notification.documentElement.innerHTML;
+        $('#' + notification_id).fadeIn("fast", "linear", function(){
+            timeoutNotification(notification_id)
+        });        
+    });
+}
+function timeoutNotification(notification_id){
+    //5000ms warten, bis Benachrichtigung ausgeblendet wird
+    setTimeout(function(){
+        $('#' + notification_id).fadeOut("slow", "linear");
+    }, 3000);
+}
 
 function prepareHomePage(data) {    
     // Build HTML table with given data
@@ -150,14 +208,14 @@ function createUser() {
         pw: document.getElementById('password1').value,
         user_type: document.getElementById('user_type').value
     }
-    getData("post", "../components/api/backend-api.php?mode=users&action=create", data).done(function(data){
+    getData("post", "backend-api.php?mode=users&action=create", data).done(function(data){
         changeMode('users');
-        addNotification("success","Benutzer " + data.benutzername + " (" + data.benutzer_id + ") wurde erfolgreich erstellt!");
+        addNotification("success","Benutzer " + data.benutzer_id + " " + data.benutzername + " wurde erfolgreich erstellt!");
     });
 }
 function loadUserList(data) {
     if (data == null) {
-        getData("get", "../components/api/backend-api.php?mode=users&action=getAll", null).done(loadUserList);
+        getData("get", "backend-api.php?mode=users&action=getAll", null).done(loadUserList);
     } else {        
         // Build HTML table with given data
         var tbody = "";
@@ -166,7 +224,6 @@ function loadUserList(data) {
             tbody += "<td>" + row.benutzer_id + "</td>";
             tbody += "<td>" + row.benutzername + "</td>";
             tbody += "<td>" + row.aktiv + "</td>";
-            tbody += "<td>" + row.dozent + "</td>";
             tbody += "<td>" + row.datum_registriert + "</td>";
             tbody += "<td>" + row.datum_letzterlogin + "</td>";
             tbody += "</tr>";
@@ -201,11 +258,11 @@ var editUser = {
     details: null,
     groupMembership: null,
     queryDetails: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=getById&u_id=" + editUser.benutzer_id;
+        var url = "backend-api.php?mode=users&action=getById&u_id=" + editUser.benutzer_id;
         getData("get", url, null).done(editUser.setDetails);
     },
     queryGroupMembership: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=getGroupMembership&u_id=" + editUser.benutzer_id;
+        var url = "backend-api.php?mode=users&action=getGroupMembership&u_id=" + editUser.benutzer_id;
         getData("get", url, null).done(editUser.setGroupMembership);
     },
     setDetails: function (data) {
@@ -218,21 +275,12 @@ var editUser = {
         if (editUser.details != null && editUser.groupMembership != null) {
             document.getElementById("main-top-heading").innerHTML = "Benutzer bearbeiten: " + editUser.details.benutzername;
             document.getElementById("newName").value = editUser.details.benutzername;
-
             if (editUser.details.aktiv == 1) {
                 document.getElementById("button_deactivate").removeAttribute("hidden");
                 document.getElementById("button_activate").setAttribute("hidden", true);
             } else {
                 document.getElementById("button_activate").removeAttribute("hidden");
                 document.getElementById("button_deactivate").setAttribute("hidden", true);
-            }
-            console.log(editUser.details);
-            if (editUser.details.dozent == 1) {
-                document.getElementById("button_setStudent").removeAttribute("hidden");
-                document.getElementById("button_setDozent").setAttribute("hidden", true);
-            } else {
-                document.getElementById("button_setDozent").removeAttribute("hidden");
-                document.getElementById("button_setStudent").setAttribute("hidden", true);
             }
 
             document.getElementById("memberOfBody").innerHTML = "";
@@ -264,7 +312,7 @@ var editUser = {
         }
     },
     activate: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=activate";
+        var url = "backend-api.php?mode=users&action=activate";
         var data = {
             id: editUser.benutzer_id
         }
@@ -274,7 +322,7 @@ var editUser = {
         });
     },
     deactivate: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=deactivate";
+        var url = "backend-api.php?mode=users&action=deactivate";
         var data = {
             id: editUser.benutzer_id
         }
@@ -284,7 +332,7 @@ var editUser = {
         });
     },
     rename: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=rename";
+        var url = "backend-api.php?mode=users&action=rename";
         var data = {
             name: document.getElementById("newName").value,
             id: editUser.benutzer_id
@@ -296,7 +344,7 @@ var editUser = {
         disableInput(['newName', 'buttonSaveUsername'])
     },
     resetPasswort: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=resetPw";
+        var url = "backend-api.php?mode=users&action=resetPw";
         var data = {
             id: editUser.benutzer_id,
             pw: document.getElementById("password1").value
@@ -308,7 +356,7 @@ var editUser = {
         document.getElementById("formPasswordReset").reset();
     },
     addToGroup: function (group_id) {
-        var url = "../components/api/backend-api.php?mode=users&action=addToGroup";
+        var url = "backend-api.php?mode=users&action=addToGroup";
         var data = {
             u_id: editUser.benutzer_id,
             g_id: group_id
@@ -319,7 +367,7 @@ var editUser = {
         });
     },
     removeFromGroup: function (group_id) {
-        var url = "../components/api/backend-api.php?mode=users&action=removeFromGroup";
+        var url = "backend-api.php?mode=users&action=removeFromGroup";
         var data = {
             u_id: editUser.benutzer_id,
             g_id: group_id
@@ -329,20 +377,8 @@ var editUser = {
             userCallbackHandler();
         });
     },
-    //dozent = 1 oder 0
-    setStatus: function (dozent){
-        var url = "../components/api/backend-api.php?mode=users&action=setStatus";
-        var data = {
-            u_id: editUser.benutzer_id,
-            status: dozent
-        }        
-        getData("post", url, data, "text").done(function(){
-            addNotification("success", "Status von " + editUser.details.benutzername + " geändert");
-            userCallbackHandler();
-        });
-    },
     delete: function () {
-        var url = "../components/api/backend-api.php?mode=users&action=delete";
+        var url = "backend-api.php?mode=users&action=delete";
         var data = {
             id: editUser.benutzer_id
         }
@@ -357,7 +393,7 @@ Funktionen für Gruppenverwaltung
 */
 function loadGroupList(data) {
     if (data == null) {
-        getData("get", "../components/api/backend-api.php?mode=groups&action=getAll", null).done(loadGroupList);
+        getData("get", "backend-api.php?mode=groups&action=getAll", null).done(loadGroupList);
     } else {
         // Build HTML table with given data
         var tbody = "";
@@ -379,7 +415,7 @@ function createGroup(){
         kuerzel: document.getElementById('kuerzel').value,
         name: document.getElementById('kursname').value,
     }
-    getData("post", "../components/api/backend-api.php?mode=groups&action=create", data).done(function(data){
+    getData("post", "backend-api.php?mode=groups&action=create", data).done(function(data){
         addNotification("success","Gruppe " + data.gruppe_id + " " + data.gruppenname + " wurde erfolgreich erstellt!");
         changeMode('groups');
     });
@@ -408,11 +444,11 @@ var editGroup = {
     details: null,
     groupMembership: null,
     queryDetails: function () {
-        var url = "../components/api/backend-api.php?mode=groups&action=getById&g_id=" + editGroup.gruppen_id;
+        var url = "backend-api.php?mode=groups&action=getById&g_id=" + editGroup.gruppen_id;
         getData("get", url, null).done(editGroup.setDetails);
     },
     queryGroupMembership: function () {
-        var url = "../components/api/backend-api.php?mode=groups&action=getGroupMembership&g_id=" + editGroup.gruppen_id;
+        var url = "backend-api.php?mode=groups&action=getGroupMembership&g_id=" + editGroup.gruppen_id;
         getData("get", url, null).done(editGroup.setGroupMembership);
     },
     setDetails: function (data) {
@@ -459,7 +495,7 @@ var editGroup = {
         }
     },
     rename: function () {
-        var url = "../components/api/backend-api.php?mode=groups&action=rename";
+        var url = "backend-api.php?mode=groups&action=rename";
         var data = {
             g_id : editGroup.gruppen_id,
             kuerzel: document.getElementById("newKuerzel").value,
@@ -472,7 +508,7 @@ var editGroup = {
         disableInput(['newName', 'newKuerzel','group_rename']);
     },
     addToGroup: function (benutzer_id) {
-        var url = "../components/api/backend-api.php?mode=groups&action=addToGroup";
+        var url = "backend-api.php?mode=groups&action=addToGroup";
         var data = {
             u_id: benutzer_id,
             g_id: editGroup.gruppen_id
@@ -483,7 +519,7 @@ var editGroup = {
         });
     },
     removeFromGroup: function (benutzer_id) {
-        var url = "../components/api/backend-api.php?mode=groups&action=removeFromGroup";
+        var url = "backend-api.php?mode=groups&action=removeFromGroup";
         var data = {
             u_id: benutzer_id,
             g_id: editGroup.gruppen_id
@@ -494,7 +530,7 @@ var editGroup = {
         });
     },
     delete: function () {
-        var url = "../components/api/backend-api.php?mode=groups&action=delete";
+        var url = "backend-api.php?mode=groups&action=delete";
         var data = {
             g_id: editGroup.gruppen_id
         }
@@ -512,14 +548,14 @@ function createLecture(data) {
     var data = {
         name: document.getElementById('newLecture').value,
     }
-    getData("post", "../components/api/backend-api.php?mode=lectures&action=create", data).done(function(data){
+    getData("post", "backend-api.php?mode=lectures&action=create", data).done(function(data){
         changeMode('lectures');
         addNotification("success","Vorlesung " + data.vorlesung_id + " " + data.vorlesung_name + " wurde erfolgreich erstellt!");
     });
 }
 function loadLectureList(data) {
     if (data == null) {
-        getData("get", "../components/api/backend-api.php?mode=lectures&action=getAll", null).done(loadLectureList);
+        getData("get", "backend-api.php?mode=lectures&action=getAll", null).done(loadLectureList);
     } else {
         // Build HTML table with given data
         var tbody = "";
@@ -567,15 +603,15 @@ var editLecture = {
     assignedGroups: null,
 
     queryDetails: function () {
-        var url = "../components/api/backend-api.php?mode=lectures&action=getById&v_id=" + editLecture.vorlesung_id;
+        var url = "backend-api.php?mode=lectures&action=getById&v_id=" + editLecture.vorlesung_id;
         getData("get", url, null).done(editLecture.setDetails);
     },
     queryQuestions: function () {
-        var url = "../components/api/backend-api.php?mode=lectures&action=getQuestions&v_id=" + editLecture.vorlesung_id;
+        var url = "backend-api.php?mode=lectures&action=getQuestions&v_id=" + editLecture.vorlesung_id;
         getData("get", url, null).done(editLecture.setQuestions);
     },
     queryAssignedGroups: function () {
-        var url = "../components/api/backend-api.php?mode=lectures&action=getAssignedGroups&v_id=" + editLecture.vorlesung_id;
+        var url = "backend-api.php?mode=lectures&action=getAssignedGroups&v_id=" + editLecture.vorlesung_id;
         getData("get", url, null).done(editLecture.setAssignedGroups);
     },
     setDetails: function (data) {
@@ -665,7 +701,7 @@ var editLecture = {
     },
     onSortSelect : function (value){
         selected = JSON.parse(value);
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=setRank";
+        var url = "backend-api.php?mode=lecturequestion&action=setRank";
         var data = {
             "q_id": selected.q_id,
             "rank": selected.rank
@@ -676,7 +712,7 @@ var editLecture = {
         });
     },
     rename: function () {
-        var url = "../components/api/backend-api.php?mode=lectures&action=rename";
+        var url = "backend-api.php?mode=lectures&action=rename";
         var data = {
             name: document.getElementById("newName").value,
             v_id: editLecture.vorlesung_id
@@ -688,7 +724,7 @@ var editLecture = {
         disableInput(['newName', 'buttonSaveLectureName'])
     },
     assignToGroup: function (group_id) {
-        var url = "../components/api/backend-api.php?mode=lectures&action=assignToGroup";
+        var url = "backend-api.php?mode=lectures&action=assignToGroup";
         var data = {
             v_id: editLecture.vorlesung_id,
             g_id: group_id
@@ -699,7 +735,7 @@ var editLecture = {
         });
     },
     unassignFromGroup: function (group_id) {
-        var url = "../components/api/backend-api.php?mode=lectures&action=unassignFromGroup";
+        var url = "backend-api.php?mode=lectures&action=unassignFromGroup";
         var data = {
             v_id: editLecture.vorlesung_id,
             g_id: group_id
@@ -710,7 +746,7 @@ var editLecture = {
         });
     },
     delete: function () {
-        var url = "../components/api/backend-api.php?mode=lectures&action=delete";
+        var url = "backend-api.php?mode=lectures&action=delete";
         var data = {
             v_id: editLecture.vorlesung_id
         }
@@ -733,7 +769,7 @@ var createQuestion = {
     questionTypes: null,
 
     queryQuestionTypes: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=getQuestionTypes";
+        var url = "backend-api.php?mode=lecturequestion&action=getQuestionTypes";
         getData("get", url, null).done(createQuestion.setQuestionTypes);
     },
     setQuestionTypes: function (data) {
@@ -811,7 +847,7 @@ var createQuestion = {
         changeMode(createQuestion);
     },
     save: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=create";
+        var url = "backend-api.php?mode=lecturequestion&action=create";
         var data = {
             "v_id": editLecture.vorlesung_id,
             "question_text": document.getElementById("question_text").value,
@@ -858,19 +894,19 @@ var editQuestion = {
     hasGivenAnswers: null,
 
     queryQuestionTypes: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=getQuestionTypes";
+        var url = "backend-api.php?mode=lecturequestion&action=getQuestionTypes";
         getData("post", url, null).done(editQuestion.setQuestionTypes);
     },
     queryQuestionDetails: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=getById&q_id=" + editQuestion.questionId;
+        var url = "backend-api.php?mode=lecturequestion&action=getById&q_id=" + editQuestion.questionId;
         getData("post", url, null).done(editQuestion.setQuestionDetails);
     },
     queryQuestionAnswerOptions: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=getAllAnswerOptionsByQId&q_id=" + editQuestion.questionId;
+        var url = "backend-api.php?mode=lecturequestion&action=getAllAnswerOptionsByQId&q_id=" + editQuestion.questionId;
         getData("post", url, null).done(editQuestion.setQuestionAnswerOptions);
     },
     queryHasGivenAnswers: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=hasGivenAnswer&q_id=" + editQuestion.questionId;
+        var url = "backend-api.php?mode=lecturequestion&action=hasGivenAnswer&q_id=" + editQuestion.questionId;
         getData("post", url, null).done(editQuestion.setHasGivenAnswers);
     },
     setQuestionTypes: function (data) {
@@ -999,7 +1035,7 @@ var editQuestion = {
         }
     },
     delete: function () {
-        var url = "../components/api/backend-api.php?mode=lecturequestion&action=delete";
+        var url = "backend-api.php?mode=lecturequestion&action=delete";
         var data = {
             "q_id": editQuestion.questionId
         }
@@ -1011,9 +1047,9 @@ var editQuestion = {
     },
     save: function () {
         if (editQuestion.hasGivenAnswers) {
-            var url = "../components/api/backend-api.php?mode=lecturequestion&action=createNewVersion";
+            var url = "backend-api.php?mode=lecturequestion&action=createNewVersion";
         } else {
-            var url = "../components/api/backend-api.php?mode=lecturequestion&action=modifyExistingVersion";
+            var url = "backend-api.php?mode=lecturequestion&action=modifyExistingVersion";
         }
         var data = {
             "q_id": editQuestion.questionId,

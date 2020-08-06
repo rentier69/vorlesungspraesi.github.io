@@ -18,7 +18,7 @@
     <form action="#" method="post" class="was-validated" id="formNameAendern">
         <div class="form-group">
             <div class="input-group mb-3">
-                <input required disabled type="text" name="newKuerzel" id="newKuerzel" class="form-control" placeholder="Kürzel" onkeyup="checkField('newKuerzel', 'Kürzel', 'group_rename', false, null, 'formNameAendern');" />
+                <input required disabled type="text" name="newKuerzel" id="newKuerzel" class="form-control" placeholder="Kürzel" oninput="checkField('newKuerzel', 'Kürzel', 'group_rename', 'formNameAendern',true);" />
                 <div class="invalid-feedback order-last" id="error_kursname" hidden>Kürzel eingeben</div>
                 <div class="valid-feedback order-last" id="valid_kursname"> Kürzel verfügbar </div>
                 <input required disabled type="text" name="newName" id="newName" class="form-control" placeholder="Kursname" />
