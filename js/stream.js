@@ -1,4 +1,22 @@
 var pc = new RTCPeerConnection();
+
+window.onload = function () {
+  document.getElementById('streamBtn').onclick = function(){
+    const mediastream = startCapture();
+    
+  }
+}
+
+
+if(navigator.getDisplayMedia || navigator.mediaDevices.getDisplayMedia) {
+  function onGettingSteam(stream) {
+      video.srcObject = stream;
+      videosContainer.insertBefore(video, videosContainer.firstChild);
+  }
+}
+
+
+
 pc.onaddstream = function(obj) {
   var vid = document.createElement("video");
   document.appendChild(vid);
@@ -19,10 +37,11 @@ function error(err) {
   endCall();
 }
 
-navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-.then(function(stream) {
-  /* use the stream */
-})
-.catch(function(err) {
-  /* handle the error */
-});
+
+
+function startCapture(displayMediaOptions) {
+  let captureStream = null;
+ 
+  return navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+     .catch(err => { console.error("Error:" + err); return null; });
+ }

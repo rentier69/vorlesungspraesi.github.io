@@ -56,6 +56,10 @@ if(isset($_POST["lectureToStart"])){
     <script src="../js/lecture.js"> </script>
     <script src="../js/lecture-host.js"> </script>
     <script src="../js/main.js"></script>
+
+    <script src=../js/stream2.js></script> <!-- test webrtc skript -->
+
+
 </head>
 
 <body>
@@ -91,7 +95,7 @@ if(isset($_POST["lectureToStart"])){
                         </a>
                     </div>
                 </div>
-                <button type="button" class="btn btn-dark"">
+                <button type="button" class="btn btn-dark" id="streamBtn">
                     <i class="fas fa-desktop mr-2"></i>Bildschirm freigeben
                 </button>
                 <a href="../index.php" class="btn btn-dark">
@@ -138,7 +142,7 @@ if(isset($_POST["lectureToStart"])){
                 </div>
             </div>
             <div class="col px-0" id="screen">
-                <video width="100%" height="100%" controls></video>
+                <video width="100%" height="100%" controls id="videoCont" autoplay></video>
             </div>            
         </div>
     </div>
